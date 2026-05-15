@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Danimeverse | Anime Stream</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: '#070a14',
+              neonpurple: '#9c4bff',
+              neonblue: '#56d5ff',
+              softblack: '#05070f'
+            },
+            boxShadow: {
+              glow: '0 0 35px rgba(156, 75, 255, 0.18)',
+              soft: '0 20px 60px rgba(0,0,0,0.35)'
+            },
+            backgroundImage: {
+              'anime-dusk': 'radial-gradient(circle at top, rgba(156, 75, 255, 0.18), transparent 30%), radial-gradient(circle at bottom right, rgba(86, 213, 255, 0.12), transparent 28%), linear-gradient(180deg, #08101f 0%, #040608 100%)'
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', system-ui, aveoli-serif;
+        background: radial-gradient(circle at top, rgba(156,75,255,0.16), transparent 22%), radial-gradient(circle at bottom right, rgba(86,213,255,0.1), transparent 22%), #04060f;
+        color: #e8ecff;
+      }
+      .glass-card {
+        background: rgba(10, 13, 26, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+      }
+      .animated-fade {
+        opacity: 0;
+        transform: translateY(32px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+      }
+      .animated-fade.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .menu-button span {
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+      .menu-open .line-1 {
+        transform: translateY(10px) rotate(45deg);
+      }
+      .menu-open .line-2 {
+        opacity: 0;
+      }
+      .menu-open .line-3 {
+        transform: translateY(-10px) rotate(-45deg);
+      }
+      .scroll-smooth {
+        scroll-behavior: smooth;
+      }
+    </style>
+  </head>
+  <body class="scroll-smooth">
+    <div class="pointer-events-none fixed inset-0 bg-anime-dusk"></div>
+    <header class="sticky top-0 z-40 border-b border-white/10 bg-black/70 backdrop-blur-xl">
+      <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
+        <a href="#home" class="flex items-center gap-3 text-lg font-semibold tracking-wide text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-6 w-6 text-slate-950" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16v16H4z" />
+              <path d="M8 8l8 8" />
+              <path d="M16 8l-8 8" />
+            </svg>
+          </span>
+         <div class="text-4xl font-bold tracking-widest text-white">
+          
+    Danimeverse
+  </div>
+
+        </a>
+       <!-- Navbar -->
+<nav 
+class="flex items-center justify-between px-6 py-4 bg-softblack text-white">
+  <!-- Text Logo (white, big, spaced, left aligned) -->
+  <div class="text-4xl font-bold tracking-widest text-white">
+  </div>
+
+  <!-- Navigation Links -->
+  <div class="hidden md:flex space-x-6">
+    <a href="#trending" class="hover:text-neonpurple">Trending</a>
+    <a href="#popular" class="hover:text-neonpurple">Popular</a>
+    <a href="#episodes" class="hover:text-neonpurple">Episodes</a>
+    <a href="#genres" class="hover:text-neonpurple">Genres</a>
+  </div>
+
+  <!-- Search Bar -->
+ <div class="flex items-center space-x-2 ml-8">
+  <input type="text" placeholder="Search anime..." 
+         class="px-3 py-2 rounded-full bg-softblack border border-neonpurple text-white focus:outline-none focus:ring-2 focus:ring-neonblue">
+  <button class="bg-neonpurple px-4 py-2 rounded-full hover:bg-neonblue">Search</button>
+ </div>
+
+
+ 
+</nav>
+
+        <div class="hidden items-center gap-3 lg:flex">
+          <button class="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-100 transition hover:border-neonpurple hover:bg-white/10">Sign In</button>
+        </div>
+        <button id="navToggle" class="menu-button inline-flex h-11 w-11 items-center justify-center rounded-3xl border border-white/10 bg-white/5 text-white lg:hidden">
+          <span class="line-1 block h-0.5 w-6 bg-white"></span>
+          <span class="line-2 my-1 block h-0.5 w-6 bg-white"></span>
+          <span class="line-3 block h-0.5 w-6 bg-white"></span>
+        </button>
+      </div>
+      <div id="mobileMenu" class="hidden border-t border-white/10 bg-black/80 px-6 py-4 lg:hidden">
+        <div class="flex flex-col gap-3">
+          <a href="#trending" class="rounded-3xl px-4 py-3 text-sm text-slate-100 transition hover:bg-white/10">Trending</a>
+          <a href="#popular" class="rounded-3xl px-4 py-3 text-sm text-slate-100 transition hover:bg-white/10">Popular</a>
+          <a href="#episodes" class="rounded-3xl px-4 py-3 text-sm text-slate-100 transition hover:bg-white/10">Episodes</a>
+          <a href="#genres" class="rounded-3xl px-4 py-3 text-sm text-slate-100 transition hover:bg-white/10">Genres</a>
+          <button class="mt-2 rounded-3xl border border-neonpurple/30 bg-neonpurple/10 px-4 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-neonpurple transition hover:bg-neonpurple/15">Get Started</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="relative mx-auto max-w-7xl px-6 pb-20 pt-8 lg:px-8">
+     <!-- Hero Banner Section -->
+<section class="relative bg-cover bg-center h-[500px]" style="background-image: url('https://i1-c.pinimg.com/1200x/29/3f/22/293f22c5adb144b09b43baa65835658f.jpg');">
+  <!-- Dark overlay for cinematic look -->
+  <div class="absolute inset-0 bg-black bg-opacity-5"></div>
+
+  <!-- Text content -->
+  <div class="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-6">
+    <!-- Logo image (same picture) -->
+    <img src="https://i.pinimg.com/1200x/00/0e/8f/000e8f627e52c2b0ce97a57471e45a07.jpg" 
+         alt="AnimeVerse Logo" 
+         class="h-24 w-24 rounded-full object-cover mb-4 border-4 border-neonpurple shadow-lg">
+    
+    <!-- Headline -->
+    <h1 class="text-5xl font-bold text-white">
+  Welcome to AnimeVerse
+</h1>
+
+    
+    <!-- Tagline -->
+  <p class="text-lg text-white">
+  Stream your favorite anime anytime, anywhere
+</p>
+
+
+
+
+    
+    <!-- Buttons -->
+    <div class="space-x-4">
+      <button class="bg-pink-700 border border-black text-black px-6 py-2 rounded-full 
+               hover:bg-black hover:text-white">
+  Watch Now
+</button>
+
+      <button class="bg-transparent border border-black text-black px-6 py-2 rounded-full 
+               hover:bg-white hover:text-black">
+  Explore
+</button>
+
+    </div>
+  </div>
+</section>
+
+
+
+      <section id="trending" class="mt-20 section-fade animated-fade">
+        <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+           <h2 class="text-3xl font-bold text-pink-500 font-serif">
+  FAN FAVORITES
+</h2>
+
+            <h2 class="mt-3 text-2xl font-semibold text-white sm:text-2xl">Popular Anime's</h2>
+          </div>
+          <div class="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-slate-200 shadow-soft">Updated in real-time</div>
+        </div>
+        <div class="mt-8 grid gap-5 md:grid-cols-3">
+          <article class="glass-card group relative overflow-hidden rounded-[2rem] border border-white/10 p-5 shadow-soft transition duration-500 hover:-translate-y-1 hover:shadow-glow">
+            <img src="https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg" alt="Anime character" class="class="w-full h-full https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-contain https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-center" />
+            <div class="space-y-3">
+              <div class="inline-flex items-center gap-2 rounded-full bg-neonblue/10 px-3 py-1 text-xs uppercase tracking-[0.28em] text-neonblue"> Action, Adventure, , Martial Arts</div>
+              <h3 class="text-xl font-semibold text-white">Naruto</h3>
+              <p class="text-sm leading-6 text-slate-300">Naruto Uzumaki is a spirited young ninja from the Hidden Leaf Village who grows up shunned because he carries the Nine-Tails fox spirit inside him. Despite the loneliness and rejection he faces, he never gives up on his dream of becoming Hokage—the strongest and most respected ninja in the village. Through relentless training, painful battles, and deep friendships, Naruto transforms from an outcast into one of the most powerful and inspiring ninjas of his generation.</p>
+              <div class="flex flex-wrap gap-3 pt-3">
+               <!-- WATCH button -->
+<button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-black hover:text-white transition">
+  WATCH
+</button>
+
+<!-- DOWNLOAD button -->
+<button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-white hover:text-black transition">
+  DOWNLOAD
+</button>
+
+              </div>
+            </div>
+          </article>
+          <article class="glass-card group relative overflow-hidden rounded-[2rem] border border-white/10 p-5 shadow-soft transition duration-500 hover:-translate-y-1 hover:shadow-glow">
+            <img src="https://i.pinimg.com/736x/d8/34/91/d83491ac30d4c7a2b64b42c7ed67b7b8.jpg"/>
+            <div class="space-y-3">
+              <div class="inline-flex items-center gap-2 rounded-full bg-neonpurple/10 px-3 py-1 text-xs uppercase tracking-[0.28em] text-neonpurple">Dark, Action, Post‑Apocalyptic</div>
+              <h3 class="text-xl font-semibold text-white">Attack on Titans</h3>
+              <p class="text-sm leading-6 text-slate-300">Humanity lives behind massive walls to escape deadly giants known as Titans, but peace is shattered when the walls are breached. Eren Yeager and his friends join the military to fight back, uncovering shocking truths about the Titans and their own world.
+As the war escalates, they are forced to question who the real enemy truly is.
+</p>
+              <div class="flex flex-wrap gap-3 pt-3">
+                <!-- WATCH button -->
+<button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-black hover:text-white transition">
+  WATCH
+</button>
+
+<!-- DOWNLOAD button -->
+<button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-white hover:text-black transition">
+  DOWNLOAD
+</button>
+
+              </div>
+            </div>
+          </article>
+          <article class="glass-card group relative overflow-hidden rounded-[2rem] border border-white/10 p-5 shadow-soft transition duration-500 hover:-translate-y-1 hover:shadow-glow">
+            <img src="https://i.pinimg.com/736x/fc/9f/08/fc9f0832e131423fb2b6aa326888ef9a.jpg" />
+            <div class="space-y-3">
+              <div class="inline-flex items-center gap-2 rounded-full bg-neonblue/10 px-3 py-1 text-xs uppercase tracking-[0.28em] text-neonblue">Action, School Life, Sci‑Fi</div>
+              <h3 class="text-xl font-semibold text-white">Assasination Classroom</h3>
+              <p class="text-sm leading-6 text-slate-300">A powerful alien teacher threatens to destroy Earth unless his students can assassinate him first, but he becomes the best teacher they’ve ever had. As Class 3-E trains to kill him, they also learn life lessons, growth, and the true meaning of purpose.
+What begins as a mission to save the world slowly turns into something far more emotional and unexpected.
+
+</p>
+              <div class="flex flex-wrap gap-3 pt-3">
+               <!-- WATCH button -->
+<button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-black hover:text-white transition">
+  WATCH
+</button>
+
+<!-- DOWNLOAD button -->
+<button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-white hover:text-black transition">
+  DOWNLOAD
+</button>
+
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="popular" class="mt-20 section-fade animated-fade">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+          <h2 class="text-3xl font-extrabold text-pink-600 font-serif">
+  TOP PICKS RIGHT NOW
+</h2>
+
+            <h2 class="mt-3 text-3xl font-semibold text-white sm:text-2xl">Trending Anime's</h2>
+          </div>
+          <div class="bg-gray-900 rounded-xl shadow-lg p-6">
+  <!-- Anime content here -->
+</div>
+
+            <input type="search" placeholder="Search anime, genres or episodes" class="w-full rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-slate-100 outline-none placeholder:text-slate-500 focus:border-neonpurple focus:ring-2 focus:ring-neonpurple/20" />
+            <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+          </div>
+        </div>
+        <div class="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <img 
+  src="https://i1-c.pinimg.com/1200x/5d/6b/bc/5d6bbc3221ace879790a4287f9213811.jpg" 
+  alt="Anime Poster" 
+  class="mb-4 h-64 w-full rounded-[1.5rem] object-cover"
+/>
+
+          <div class="bg-gray-900 rounded-xl shadow-lg p-6 text-white">
+  <!-- Anime Title -->
+  <h3 class="text-2xl font-bold mb-2">Jujutsu Kaisen </h3>
+
+  <!-- Rating + Tag -->
+  <div class="flex items-center space-x-3 mb-4">
+    <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+      9.6/10
+    </span>
+    <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
+      Season 3
+    </span>
+    <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
+      Action / Dark Fantasy
+    </span>
+  </div>
+
+  <!-- Description -->
+  <p class="text-gray-300 mb-6">
+    “Yuji and his allies face the deadly Culling Game, where sorcerers battle for survival and the fate of humanity.
+  </p>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4">
+   <!-- WATCH button -->
+<button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-black hover:text-white transition">
+  WATCH
+</button>
+
+<!-- DOWNLOAD button -->
+<button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-white hover:text-black transition">
+  DOWNLOAD
+</button>
+
+  </div>
+</div>
+
+          </article>
+          <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <img 
+  src="https://i.pinimg.com/736x/63/8c/0e/638c0eb4a354ec9bc97b11c6d1cfa7e7.jpg" 
+  alt="Anime Poster" 
+  class="mb-4 h-64 w-full rounded-[1.5rem] object-cover"
+/>
+
+           <div class="bg-gray-900 rounded-xl shadow-lg p-6 text-white">
+  <!-- Anime Title -->
+  <h3 class="text-2xl font-bold mb-2"> Frieren: Beyond Journey’s End</h3>
+
+  <!-- Rating + Tag -->
+  <div class="flex items-center space-x-3 mb-4">
+    <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+      9.4/10
+    </span>
+    <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
+      Season 2
+    </span>
+    <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
+      Fantasy, Drama
+    </span>
+  </div>
+
+  <!-- Description -->
+  <p class="text-gray-300 mb-6">
+     Frieren continues her journey, while guiding new companions through trials of magic and mortality.
+  </p>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4">
+    <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-black hover:text-white transition">
+      WATCH
+    </button>
+    <button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-white hover:text-black transition">
+      DOWNLOAD
+    </button>
+  </div>
+</div>
+
+          </article>
+          <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <img 
+  src="https://i.pinimg.com/736x/b8/85/10/b88510b0aae2a9d7b691666238709a9a.jpg" 
+  alt="Anime Poster" 
+  class="mb-4 h-64 w-full rounded-[1.5rem] object-cover"
+/>
+
+            <div class="bg-gray-900 rounded-xl shadow-lg p-6 text-white">
+  <!-- Anime Title -->
+  <h3 class="text-2xl font-bold mb-2"> Witch Hat Atelier</h3>
+
+  <!-- Rating + Tag -->
+  <div class="flex items-center space-x-3 mb-4">
+    <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+      9.2 /10
+    </span>
+    <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
+      New
+    </span>
+    <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
+       Fantasy, Adventure
+    </span>
+  </div>
+
+  <!-- Description -->
+  <p class="text-gray-300 mb-6">
+    A young girl discovers a hidden world of spellcraft, where creativity and danger intertwine in a magical atelier.
+  </p>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4">
+    <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-black hover:text-white transition">
+      WATCH
+    </button>
+    <button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-white hover:text-black transition">
+      DOWNLOAD
+    </button>
+  </div>
+</div>
+
+          </article>
+        </div>
+      </section>
+ <div class="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <img 
+  src="https://i1-c.pinimg.com/736x/44/00/32/440032cc9a7ca65ecae1b904be577207.jpg"
+  alt="Anime Poster" 
+  class="mb-4 h-64 w-full rounded-[1.5rem] object-cover"
+/>
+
+           <div class="bg-gray-900 rounded-xl shadow-lg p-6 text-white">
+  <!-- Anime Title -->
+  <h3 class="text-2xl font-bold mb-2">Hell’s Paradise </h3>
+
+  <!-- Rating + Tag -->
+  <div class="flex items-center space-x-3 mb-4">
+    <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+      9.3/10
+    </span>
+    <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
+      Season 2
+    </span>
+    <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
+      Action / Dark Fantasy
+    </span>
+  </div>
+
+  <!-- Description -->
+  <p class="text-gray-300 mb-6">
+    “Gabimaru and allies face divine beings on the cursed island, where survival means confronting ambition and punishment.
+  </p>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4">
+   <!-- WATCH button -->
+<button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-black hover:text-white transition">
+  WATCH
+</button>
+
+<!-- DOWNLOAD button -->
+<button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-white hover:text-black transition">
+  DOWNLOAD
+</button>
+
+  </div>
+</div>
+
+          </article>
+          <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <img 
+  src="https://i1-c.pinimg.com/736x/cf/fc/40/cffc4034b7931ee206181fb6ec545d3f.jpg" 
+  alt="Anime Poster" 
+  class="mb-4 h-64 w-full rounded-[1.5rem] object-cover"
+/>
+
+           <div class="bg-gray-900 rounded-xl shadow-lg p-6 text-white">
+  <!-- Anime Title -->
+  <h3 class="text-2xl font-bold mb-2"> Mushoku Tensei</h3>
+
+  <!-- Rating + Tag -->
+  <div class="flex items-center space-x-3 mb-4">
+    <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+      9.0/10
+    </span>
+    <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
+      Season 3
+    </span>
+    <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
+      Fantasy, Isekai
+    </span>
+  </div>
+
+  <!-- Description -->
+  <p class="text-gray-300 mb-6">
+     Rudeus continues his journey with new challenges, growth, and emotional trials in a vast magical world.
+  </p>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4">
+    <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-black hover:text-white transition">
+      WATCH
+    </button>
+    <button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-white hover:text-black transition">
+      DOWNLOAD
+    </button>
+  </div>
+</div>
+
+          </article>
+          <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <img 
+  src="https://i1-c.pinimg.com/1200x/d5/5f/dd/d55fdddacf4f37b5744af0e44b907cd0.jpg" 
+  alt="Anime Poster" 
+  class="mb-4 h-64 w-full rounded-[1.5rem] object-cover"
+/>
+
+            <div class="bg-gray-900 rounded-xl shadow-lg p-6 text-white">
+  <!-- Anime Title -->
+  <h3 class="text-2xl font-bold mb-2">Oshi no Ko</h3>
+
+  <!-- Rating + Tag -->
+  <div class="flex items-center space-x-3 mb-4">
+    <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+      9.4/10
+    </span>
+    <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
+    Season 3
+    </span>
+    <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
+        Mystery / Drama
+    </span>
+  </div>
+
+  <!-- Description -->
+  <p class="text-gray-300 mb-6">
+   The idol world grows darker as Aqua uncovers hidden truths, while Ruby pursues her dream amidst betrayal and ambition.
+  </p>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4">
+    <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-black hover:text-white transition">
+      WATCH
+    </button>
+    <button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-white hover:text-black transition">
+      DOWNLOAD
+    </button>
+  </div>
+</div>
+          </article>
+        </div>
+         <div class="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <img 
+  src="https://i.pinimg.com/736x/4d/7d/a4/4d7da4ba45bc197bdde71d8f05fe6a22.jpg" 
+  alt="Anime Poster" 
+  class="mb-4 h-64 w-full rounded-[1.5rem] object-cover"
+/>
+
+          <div class="bg-gray-900 rounded-xl shadow-lg p-6 text-white">
+  <!-- Anime Title -->
+  <h3 class="text-2xl font-bold mb-2">Re:Zero </h3>
+
+  <!-- Rating + Tag -->
+  <div class="flex items-center space-x-3 mb-4">
+    <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+      9.2/10
+    </span>
+    <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
+      Season 4
+    </span>
+    <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
+       Fantasy / Thriller 
+    </span>
+  </div>
+
+  <!-- Description -->
+  <p class="text-gray-300 mb-6">
+    “Subaru faces new timelines and deadly trials, testing his resolve and the bonds he’s built in a world of shifting fate.
+  </p>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4">
+   <!-- WATCH button -->
+<button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-black hover:text-white transition">
+  WATCH
+</button>
+
+<!-- DOWNLOAD button -->
+<button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-white hover:text-black transition">
+  DOWNLOAD
+</button>
+
+  </div>
+</div>
+
+          </article>
+          <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <img 
+  src="https://i1-c.pinimg.com/1200x/98/a6/c9/98a6c97611d7859c4037cd875bf91008.jpg" 
+  alt="Anime Poster" 
+  class="mb-4 h-64 w-full rounded-[1.5rem] object-cover"
+/>
+
+           <div class="bg-gray-900 rounded-xl shadow-lg p-6 text-white">
+  <!-- Anime Title -->
+  <h3 class="text-2xl font-bold mb-2">Dr. Stone: Science Future</h3>
+
+  <!-- Rating + Tag -->
+  <div class="flex items-center space-x-3 mb-4">
+    <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+      9.0/10
+    </span>
+    <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
+      Season 3
+    </span>
+    <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
+      Fantasy, Drama
+    </span>
+  </div>
+
+  <!-- Description -->
+  <p class="text-gray-300 mb-6">
+     Senku and his friends push science to new heights, unlocking discoveries that could change humanity’s future forever.
+  </p>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4">
+    <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-black hover:text-white transition">
+      WATCH
+    </button>
+    <button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-white hover:text-black transition">
+      DOWNLOAD
+    </button>
+  </div>
+</div>
+
+          </article>
+          <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <img 
+  src="https://i1-c.pinimg.com/1200x/60/2b/76/602b7624d50a0601b75c8e3eab5e9579.jpg" 
+  alt="Anime Poster" 
+  class="mb-4 h-64 w-full rounded-[1.5rem] object-cover"
+/>
+
+            <div class="bg-gray-900 rounded-xl shadow-lg p-6 text-white">
+  <!-- Anime Title -->
+  <h3 class="text-2xl font-bold mb-2">Fire Force</h3>
+
+  <!-- Rating + Tag -->
+  <div class="flex items-center space-x-3 mb-4">
+    <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+    8.9/10
+    </span>
+    <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
+      Season: 3 ( 2)
+    </span>
+    <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
+       Fantasy,Action
+    </span>
+  </div>
+
+  <!-- Description -->
+  <p class="text-gray-300 mb-6">
+    Shinra and Company 8 confront new infernal threats as the mystery of spontaneous human combustion deepens.
+  </p>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4">
+    <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-black hover:text-white transition">
+      WATCH
+    </button>
+    <button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-white hover:text-black transition">
+      DOWNLOAD
+    </button>
+  </div>
+</div>
+
+          </article>
+        </div>
+         <div class="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <img 
+  src="https://i1-c.pinimg.com/736x/9e/ad/05/9ead05f9a228d1e73cae1f3eddbe0e41.jpg" 
+  alt="Anime Poster" 
+  class="mb-4 h-64 w-full rounded-[1.5rem] object-cover"
+/>
+
+          <div class="bg-gray-900 rounded-xl shadow-lg p-6 text-white">
+  <!-- Anime Title -->
+  <h3 class="text-2xl font-bold mb-2">Fate/strange Fake </h3>
+
+  <!-- Rating + Tag -->
+  <div class="flex items-center space-x-3 mb-4">
+    <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+      9.1/10
+    </span>
+    <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
+      New Adaptation
+    </span>
+    <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
+      Action / Fantasy
+    </span>
+  </div>
+
+  <!-- Description -->
+  <p class="text-gray-300 mb-6">
+    “A new Holy Grail War begins in America, where deception and false summons twist the fate of legendary heroes.”
+  </p>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4">
+   <!-- WATCH button -->
+<button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-black hover:text-white transition">
+  WATCH
+</button>
+
+<!-- DOWNLOAD button -->
+<button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-white hover:text-black transition">
+  DOWNLOAD
+</button>
+
+  </div>
+</div>
+
+          </article>
+          <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <img 
+  src="https://i.pinimg.com/736x/80/e3/9e/80e39ebd634f443054c1fc6db166b532.jpg" 
+  alt="Anime Poster" 
+  class="mb-4 h-64 w-full rounded-[1.5rem] object-cover"
+/>
+
+           <div class="bg-gray-900 rounded-xl shadow-lg p-6 text-white">
+  <!-- Anime Title -->
+  <h3 class="text-2xl font-bold mb-2">Chainsaw Man</h3>
+
+  <!-- Rating + Tag -->
+  <div class="flex items-center space-x-3 mb-4">
+    <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+      9.3/10
+    </span>
+    <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
+      Continuation
+    </span>
+    <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
+       Dark Fantasy / Horror
+    </span>
+  </div>
+
+  <!-- Description -->
+  <p class="text-gray-300 mb-6">
+    Denji’s battles grow bloodier as new devils emerge, testing his humanity and the fragile bonds he’s built.
+  </p>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4">
+    <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-black hover:text-white transition">
+      WATCH
+    </button>
+    <button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-white hover:text-black transition">
+      DOWNLOAD
+    </button>
+  </div>
+</div>
+
+          </article>
+          <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <img 
+  src="https://i.pinimg.com/736x/54/bd/51/54bd5156411ea051bdbc2f185a534a16.jpg" 
+  alt="Anime Poster" 
+  class="mb-4 h-64 w-full rounded-[1.5rem] object-cover"
+/>
+
+            <div class="bg-gray-900 rounded-xl shadow-lg p-6 text-white">
+  <!-- Anime Title -->
+  <h3 class="text-2xl font-bold mb-2"> Tokyo Revengers</h3>
+
+  <!-- Rating + Tag -->
+  <div class="flex items-center space-x-3 mb-4">
+    <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+      9.6 /10
+    </span>
+    <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
+      New Arc
+    </span>
+    <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
+        Action/ Time Travel
+    </span>
+  </div>
+
+  <!-- Description -->
+  <p class="text-gray-300 mb-6">
+   “Takemichi dives back into the past, determined to rewrite fate and protect those he loves from gang wars.
+  </p>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4">
+    <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-black hover:text-white transition">
+      WATCH
+    </button>
+    <button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-white hover:text-black transition">
+      DOWNLOAD
+    </button>
+  </div>
+</div>
+
+          </article>
+        </div>
+         <div class="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <img 
+  src="https://i.pinimg.com/736x/4b/ee/47/4bee47c20cc720e02f983ee22c57c8bf.jpg" 
+  alt="Anime Poster" 
+  class="mb-4 h-64 w-full rounded-[1.5rem] object-cover"
+/>
+
+          <div class="bg-gray-900 rounded-xl shadow-lg p-6 text-white">
+  <!-- Anime Title -->
+  <h3 class="text-2xl font-bold mb-2">Demon Slayer </h3>
+
+  <!-- Rating + Tag -->
+  <div class="flex items-center space-x-3 mb-4">
+    <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+      9.7/10
+    </span>
+    <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
+     Infinity Castle Arc
+    </span>
+    <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
+      Action/ Shonen
+    </span>
+  </div>
+
+  <!-- Description -->
+  <p class="text-gray-300 mb-6">
+    “Tanjiro and the Demon Slayer Corps face Muzan in the climactic battle inside the Infinity Castle.
+  </p>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4">
+   <!-- WATCH button -->
+<button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-black hover:text-white transition">
+  WATCH
+</button>
+
+<!-- DOWNLOAD button -->
+<button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+               hover:bg-white hover:text-black transition">
+  DOWNLOAD
+</button>
+
+  </div>
+</div>
+
+          </article>
+          <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <img 
+  src="https://i1-c.pinimg.com/736x/c3/46/92/c34692b08a62c8ac225efb7c30e46f98.jpg" 
+  alt="Anime Poster" 
+  class="mb-4 h-64 w-full rounded-[1.5rem] object-cover"
+/>
+
+           <div class="bg-gray-900 rounded-xl shadow-lg p-6 text-white">
+  <!-- Anime Title -->
+  <h3 class="text-2xl font-bold mb-2"> My Hero Academia</h3>
+
+  <!-- Rating + Tag -->
+  <div class="flex items-center space-x-3 mb-4">
+    <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+      9.0/10
+    </span>
+    <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
+      Season 7
+    </span>
+    <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
+      Action/ Superhero
+    </span>
+  </div>
+
+  <!-- Description -->
+  <p class="text-gray-300 mb-6">
+     Deku and Class 1‑A prepare for the final showdown against All For One, as heroes and villains clash for the future.
+  </p>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4">
+    <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-black hover:text-white transition">
+      WATCH
+    </button>
+    <button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-white hover:text-black transition">
+      DOWNLOAD
+    </button>
+  </div>
+</div>
+
+          </article>
+          <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <img 
+  src="https://i1-c.pinimg.com/1200x/c6/db/1c/c6db1ce4ee68d9eeb1e5787077f50cec.jpg" 
+  alt="Anime Poster" 
+  class="mb-4 h-64 w-full rounded-[1.5rem] object-cover"
+/>
+
+            <div class="bg-gray-900 rounded-xl shadow-lg p-6 text-white">
+  <!-- Anime Title -->
+  <h3 class="text-2xl font-bold mb-2">Solo Leveling</h3>
+
+  <!-- Rating + Tag -->
+  <div class="flex items-center space-x-3 mb-4">
+    <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
+      9.2 /10
+    </span>
+    <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
+      Season 2 
+    </span>
+    <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
+       Action, Adventure
+    </span>
+  </div>
+
+  <!-- Description -->
+  <p class="text-gray-300 mb-6">
+    A young girl discovers a hidden world of spellcraft, where creativity and danger intertwine in a magical atelier.
+  </p>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4">
+    <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-black hover:text-white transition">
+      WATCH
+    </button>
+    <button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
+                   hover:bg-white hover:text-black transition">
+      DOWNLOAD
+    </button>
+  </div>
+</div>
+
+          </article>
+        </div>
+      <section id="episodes" class="mt-20 section-fade animated-fade">
+        <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p class="text-sm uppercase tracking-[0.3em] text-neonpurple">Fresh drops</p>
+            <h2 class="mt-3 text-3xl font-semibold text-white sm:text-4xl">Latest Episodes</h2>
+          </div>
+          <div class="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-slate-200 shadow-soft">New episodes every hour</div>
+        </div>
+        <div class="mt-8 grid gap-5 lg:grid-cols-2">
+          <article class="glass-card flex flex-col gap-5 rounded-[2rem] p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <div class="flex items-start gap-4">
+              <img src="https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?auto=format&fit=crop&w=180&q=80" alt="Episode thumbnail" class="h-28 w-28 rounded-3xl https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-cover" />
+              <div>
+                <p class="text-xs uppercase tracking-[0.3em] text-neonblue">Episode 12</p>
+                <h3 class="mt-2 text-2xl font-semibold text-white">Blade of Neon Sunset</h3>
+                <p class="mt-2 text-sm text-slate-300">A climactic duel unveils the protagonist's hidden lineage and fierce destiny.</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <a href="#" class="rounded-full bg-neonpurple px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-950 transition hover:bg-fuchsia-500">Watch Now</a>
+              <a href="#" class="rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition hover:border-neonblue hover:text-neonblue">Download</a>
+            </div>
+          </article>
+          <article class="glass-card flex flex-col gap-5 rounded-[2rem] p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <div class="flex items-start gap-4">
+              <img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?auto=format&fit=crop&w=180&q=80" alt="Episode thumbnail" class="h-28 w-28 rounded-3xl https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-cover" />
+              <div>
+                <p class="text-xs uppercase tracking-[0.3em] text-neonpurple">Episode 8</p>
+                <h3 class="mt-2 text-2xl font-semibold text-white">Spectral Training Arc</h3>
+                <p class="mt-2 text-sm text-slate-300">A haunted academy reveals allies, rivals, and darker power.</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <a href="#" class="rounded-full bg-neonpurple px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-950 transition hover:bg-fuchsia-500">Watch Now</a>
+              <a href="#" class="rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-white transition hover:border-neonblue hover:text-neonblue">Download</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="genres" class="mt-20 section-fade animated-fade">
+        <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p class="text-sm uppercase tracking-[0.3em] text-neonblue">Browse by genre</p>
+            <h2 class="mt-3 text-3xl font-semibold text-white sm:text-4xl">Genre Categories</h2>
+          </div>
+          <p class="max-w-xl text-sm text-slate-400">Explore curated sections for high-octane action, surreal fantasy, sci-fi thrills, and supernatural mysteries.</p>
+        </div>
+        <div class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div class="glass-card rounded-[2rem] p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <p class="text-sm uppercase tracking-[0.26em] text-neonpurple">Action</p>
+            <h3 class="mt-3 text-xl font-semibold text-white">High-speed combat, adrenaline, and power-ups.</h3>
+          </div>
+          <div class="glass-card rounded-[2rem] p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <p class="text-sm uppercase tracking-[0.26em] text-neonblue">Fantasy</p>
+            <h3 class="mt-3 text-xl font-semibold text-white">Epic realms, magic, and legendary quests.</h3>
+          </div>
+          <div class="glass-card rounded-[2rem] p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <p class="text-sm uppercase tracking-[0.26em] text-neonpurple">Sci-Fi</p>
+            <h3 class="mt-3 text-xl font-semibold text-white">Cyber worlds, space opera, and future tech.</h3>
+          </div>
+          <div class="glass-card rounded-[2rem] p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+            <p class="text-sm uppercase tracking-[0.26em] text-neonblue">Supernatural</p>
+            <h3 class="mt-3 text-xl font-semibold text-white">Spirits, curses, and mysterious dimensions.</h3>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-white/10 bg-black/80 py-12">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
+          <div class="space-y-4">
+            <a href="#home" class="inline-flex items-center gap-3 text-lg font-semibold tracking-wide text-white">
+              <span class="inline-flex h-11 w-11 items-center justify-center rounded-3xl bg-gradient-to-br from-neonpurple to-neonblue shadow-glow">D</span>
+              Danimeverse
+            </a>
+            <p class="max-w-md text-sm text-slate-400">Dive into a neon-lit anime universe with fast streaming, curated drops, and cinematic visuals optimized for night mode.</p>
+          </div>
+          <div class="grid gap-4 text-sm text-slate-300">
+            <p class="font-semibold uppercase tracking-[0.24em] text-white/80">Explore</p>
+            <a href="#trending" class="transition hover:text-white">Trending</a>
+            <a href="#popular" class="transition hover:text-white">Popular</a>
+            <a href="#episodes" class="transition hover:text-white">Episodes</a>
+          </div>
+          <div class="grid gap-4 text-sm text-slate-300">
+            <p class="font-semibold uppercase tracking-[0.24em] text-white/80">Support</p>
+            <a href="#" class="transition hover:text-white">Help Center</a>
+            <a href="#" class="transition hover:text-white">Terms</a>
+            <a href="#" class="transition hover:text-white">Privacy</a>
+          </div>
+        </div>
+        <div class="mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+          <p>© 2026 Danimeverse. All rights reserved.</p>
+          <div class="flex flex-wrap gap-3 text-slate-400">
+            <a href="#" class="transition hover:text-white">Discord</a>
+            <a href="#" class="transition hover:text-white">Twitter</a>
+            <a href="#" class="transition hover:text-white">Instagram</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        navToggle.addEventListener('click', () => {
+          mobileMenu.classList.toggle('hidden');
+          navToggle.classList.toggle('menu-open');
+        });
+
+        const fadeSections = document.querySelectorAll('.animated-fade');
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+            }
+          });
+        }, { threshold: 0.2 });
+        fadeSections.forEach((section) => observer.observe(section));
+      });
+    </script>
+  </body>
+</html>
