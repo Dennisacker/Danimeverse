@@ -28,18 +28,91 @@
       };
     </script>
     <style>
-      body {
-      
-        font-family: 'Inter', system-ui, aveoli-serif;
-        background: radial-gradient(circle at top, rgba(156,75,255,0.16), transparent 22%), radial-gradient(circle at bottom right, rgba(86,213,255,0.1), transparent 22%), #04060f;
-        color: #e8ecff;
-      }
+      :root {
+  --bg: #ffffff;
+  --text: #0f172a;
+
+  /* light mode accents */
+  --glow-1: rgba(0, 0, 0, 0.05);
+  --glow-2: rgba(0, 0, 0, 0.02);
+}
+
+.dark {
+  --bg: #0a0a0f;
+  --text: #e8ecff;
+
+  /* Netflix-style glow palette */
+  --glow-1: rgba(255, 0, 80, 0.12);
+  --glow-2: rgba(120, 0, 255, 0.10);
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.4s ease, color 0.4s ease;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* 🔥 Netflix-style ambient glow layer */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+
+  background:
+    radial-gradient(circle at top left, var(--glow-1), transparent 40%),
+    radial-gradient(circle at bottom right, var(--glow-2), transparent 45%);
+  transition: all 0.6s ease;
+}
       .glass-card {
-        background: rgba(10, 13, 26, 0.75);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
-      }
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition: all 0.3s ease;
+}
+
+/* DARK MODE glow effect */
+.dark .glass-card {
+  background: rgba(20, 20, 30, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(255, 0, 80, 0.08);
+}
+.dark .glass-card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.6),
+    0 0 25px rgba(255, 0, 80, 0.18),
+    0 0 40px rgba(120, 0, 255, 0.12);
+}
+.dark .genre-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 1.5rem;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255,0,80,0.3), rgba(120,0,255,0.3));
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.dark .genre-card:hover::before {
+  opacity: 1;
+}
       .animated-fade {
         opacity: 0;
         transform: translateY(32px);
@@ -66,6 +139,18 @@
       }
     </style>
   </head>
+  :root {
+  --bg: #ffffff;
+  --text: #0f172a;
+}
+
+.dark {
+  --bg: #0a0a0f;
+  --text: #e8ecff;
+}
+.dark body {
+  background: red !important;
+}
   <body class="scroll-smooth">
     <div class="pointer-events-none fixed inset-0 bg-anime-dusk"></div>
     <header class="sticky top-0 z-40 border-b border-white/10 bg-black/70 backdrop-blur-xl">
@@ -157,7 +242,7 @@ class="flex items-center justify-between px-6 py-4 bg-softblack text-white">
     
     <!-- Tagline -->
   <p class="text-sm md:text-lg text-white">
-  Stream your favorite anime anytime, anywhere
+  Watch anime without limits
 </p>
 
 
@@ -195,6 +280,7 @@ class="flex items-center justify-between px-6 py-4 bg-softblack text-white">
         </div>
         <div class="mt-8 grid gap-5 md:grid-cols-3">
           <article class="glass-card group relative overflow-hidden rounded-[2rem] border border-white/10 p-5 shadow-soft transition duration-500 hover:-translate-y-1 hover:shadow-glow">
+            <div class="anime-card cursor-pointer"></div>
             <img src="https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg" alt="Anime character" class="class="w-full h-full https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-contain https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-center" />
             <div class="space-y-3">
              <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
@@ -273,17 +359,17 @@ What begins as a mission to save the world slowly turns into something far more 
           </article>
         </div>
       </section>
-
+<div id="topPicks"></div>
       <section id="popular" class="mt-20 section-fade animated-fade">
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
           <h2 class="text-2xl md:text-3xl font-extrabold text-pink-600 font-serif">
   TOP PICKS RIGHT NOW
 </h2>
-
+<div id="top-picks" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 transition-opacity duration-300"></div>
             <h2 class="mt-3 text-2xl md:text-3xl font-semibold text-white sm:text-2xl">Trending Anime's</h2>
           </div>
-          <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6">
+          <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4">
   <!-- Anime content here -->
 </div>
 
@@ -291,13 +377,13 @@ What begins as a mission to save the world slowly turns into something far more 
             <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
           </div>
         </div>
-        <div class="grid grid-cols-1 gap-4 md:p-6 sm:grid-cols-2 xl:grid-cols-3">
+        <div class="grid grid-cols-1 gap-3 md:p-4 sm:grid-cols-2 xl:grid-cols-3">
           <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
             <img src="https://i1-c.pinimg.com/1200x/5d/6b/bc/5d6bbc3221ace879790a4287f9213811.jpg" 
   alt="Anime Poster" 
   class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"/>
 
-          <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 text-white">
+          <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
   <!-- Anime Title -->
   <h3 class="text-xl md:text-2xl font-bold mb-2">Jujutsu Kaisen </h3>
 
@@ -342,7 +428,7 @@ What begins as a mission to save the world slowly turns into something far more 
   alt="Anime Poster" 
   class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"/>
 
-           <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 text-white">
+           <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
   <!-- Anime Title -->
   <h3 class="text-xl md:text-2xl font-bold mb-2"> Frieren: Beyond Journey’s End</h3>
 
@@ -383,7 +469,7 @@ What begins as a mission to save the world slowly turns into something far more 
   alt="Anime Poster" 
   class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"/>
 
-            <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 text-white">
+            <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
   <!-- Anime Title -->
   <h3 class="text-xl md:text-2xl font-bold mb-2"> Witch Hat Atelier</h3>
 
@@ -421,13 +507,13 @@ What begins as a mission to save the world slowly turns into something far more 
           </article>
         </div>
       </section>
-<div class="grid grid-cols-1 gap-4 md:p-6 sm:grid-cols-2 xl:grid-cols-3">
+<div class="grid grid-cols-1 gap-3 md:p-4 sm:grid-cols-2 xl:grid-cols-3">
           <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
             <img src="https://i1-c.pinimg.com/736x/44/00/32/440032cc9a7ca65ecae1b904be577207.jpg"
   alt="Anime Poster" 
   class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"/>
 
-           <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 text-white">
+           <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
   <!-- Anime Title -->
   <h3 class="text-xl md:text-2xl font-bold mb-2">Hell’s Paradise </h3>
 
@@ -472,7 +558,7 @@ What begins as a mission to save the world slowly turns into something far more 
   alt="Anime Poster" 
   class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"/>
 
-           <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 text-white">
+           <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
   <!-- Anime Title -->
   <h3 class="text-xl md:text-2xl font-bold mb-2"> Mushoku Tensei</h3>
 
@@ -513,7 +599,7 @@ What begins as a mission to save the world slowly turns into something far more 
   alt="Anime Poster" 
   class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"/>
 
-            <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 text-white">
+            <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
   <!-- Anime Title -->
   <h3 class="text-xl md:text-2xl font-bold mb-2">Oshi no Ko</h3>
 
@@ -549,13 +635,13 @@ What begins as a mission to save the world slowly turns into something far more 
 </div>
           </article>
         </div>
-        <div class="grid grid-cols-1 gap-4 md:p-6 sm:grid-cols-2 xl:grid-cols-3">
+        <div class="grid grid-cols-1 gap-3 md:p-4 sm:grid-cols-2 xl:grid-cols-3">
           <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
             <img src="https://i.pinimg.com/736x/4d/7d/a4/4d7da4ba45bc197bdde71d8f05fe6a22.jpg" 
   alt="Anime Poster" 
   class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"/>
 
-          <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 text-white">
+          <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
   <!-- Anime Title -->
   <h3 class="text-xl md:text-2xl font-bold mb-2">Re:Zero </h3>
 
@@ -600,7 +686,7 @@ What begins as a mission to save the world slowly turns into something far more 
   alt="Anime Poster" 
   class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"/>
 
-           <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 text-white">
+           <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
   <!-- Anime Title -->
   <h3 class="text-xl md:text-2xl font-bold mb-2">Dr. Stone: Science Future</h3>
 
@@ -641,7 +727,7 @@ What begins as a mission to save the world slowly turns into something far more 
   alt="Anime Poster" 
   class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"/>
 
-            <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 text-white">
+            <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
   <!-- Anime Title -->
   <h3 class="text-xl md:text-2xl font-bold mb-2">Fire Force</h3>
 
@@ -678,13 +764,13 @@ What begins as a mission to save the world slowly turns into something far more 
 
           </article>
         </div>
-        <div class="grid grid-cols-1 gap-4 md:p-6 sm:grid-cols-2 xl:grid-cols-3">
+        <div class="grid grid-cols-1 gap-3 md:p-4 sm:grid-cols-2 xl:grid-cols-3">
           <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
             <img src="https://i1-c.pinimg.com/736x/9e/ad/05/9ead05f9a228d1e73cae1f3eddbe0e41.jpg" 
   alt="Anime Poster" 
   class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"/>
 
-          <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 text-white">
+          <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
   <!-- Anime Title -->
   <h3 class="text-xl md:text-2xl font-bold mb-2">Fate/strange Fake </h3>
 
@@ -729,7 +815,7 @@ What begins as a mission to save the world slowly turns into something far more 
   alt="Anime Poster" 
   class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"/>
 
-           <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 text-white">
+           <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
   <!-- Anime Title -->
   <h3 class="text-xl md:text-2xl font-bold mb-2">Chainsaw Man</h3>
 
@@ -770,7 +856,7 @@ What begins as a mission to save the world slowly turns into something far more 
   alt="Anime Poster" 
   class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"/>
 
-            <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 text-white">
+            <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
   <!-- Anime Title -->
   <h3 class="text-xl md:text-2xl font-bold mb-2"> Tokyo Revengers</h3>
 
@@ -807,13 +893,13 @@ What begins as a mission to save the world slowly turns into something far more 
 
           </article>
         </div>
-         <div class="grid grid-cols-1 gap-4 md:p-6 sm:grid-cols-2 xl:grid-cols-3">
+         <div class="grid grid-cols-1 gap-3 md:p-4 sm:grid-cols-2 xl:grid-cols-3">
           <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
             <img src="https://i.pinimg.com/736x/4b/ee/47/4bee47c20cc720e02f983ee22c57c8bf.jpg" 
   alt="Anime Poster" 
   class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"/>
 
-          <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 text-white">
+          <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
   <!-- Anime Title -->
   <h3 class="text-xl md:text-2xl font-bold mb-2">Demon Slayer </h3>
 
@@ -858,7 +944,7 @@ What begins as a mission to save the world slowly turns into something far more 
   alt="Anime Poster" 
   class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"/>
 
-           <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 text-white">
+           <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
   <!-- Anime Title -->
   <h3 class="text-xl md:text-2xl font-bold mb-2"> My Hero Academia</h3>
 
@@ -899,7 +985,7 @@ What begins as a mission to save the world slowly turns into something far more 
   alt="Anime Poster" 
   class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"/>
 
-            <div class="bg-gray-900 rounded-xl shadow-lg p-4 md:p-6 text-white">
+            <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
   <!-- Anime Title -->
   <h3 class="text-xl md:text-2xl font-bold mb-2">Solo Leveling</h3>
 
@@ -947,7 +1033,7 @@ What begins as a mission to save the world slowly turns into something far more 
           <div class="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-slate-200 shadow-soft">New episodes every week</div>
         </div>
         <div class="mt-8 grid gap-5 lg:grid-cols-2">
-          <article class="glass-card flex flex-col gap-5 rounded-[2rem] p-4 md:p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+          <article class="glass-card flex flex-col gap-5 rounded-[2rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
             <div class="flex items-start gap-4">
               <img src="https://i.pinimg.com/736x/ed/3a/17/ed3a17a531903144f29435fc754f6d2a.jpg" alt="Episode thumbnail" class="h-20 w-20 md:h-28 md:w-28 rounded-3xl https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-cover" />
               <div>
@@ -969,7 +1055,7 @@ What begins as a mission to save the world slowly turns into something far more 
 </button>
             </div>
           </article>
-          <article class="glass-card flex flex-col gap-5 rounded-[2rem] p-4 md:p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+          <article class="glass-card flex flex-col gap-5 rounded-[2rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
             <div class="flex items-start gap-4">
               <img src="https://i1-c.pinimg.com/1200x/86/09/d9/8609d9333ffdbc7eb373fce2c2d2923f.jpg" alt="Episode thumbnail" class="h-20 w-20 md:h-28 md:w-28 rounded-3xl https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-cover" />
               <div>
@@ -993,7 +1079,7 @@ What begins as a mission to save the world slowly turns into something far more 
           </article>
         </div>
          <div class="mt-8 grid gap-5 lg:grid-cols-2">
-          <article class="glass-card flex flex-col gap-5 rounded-[2rem] p-4 md:p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+          <article class="glass-card flex flex-col gap-5 rounded-[2rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
             <div class="flex items-start gap-4">
               <img src="https://i.pinimg.com/736x/30/82/80/308280c8ce225c7fa91807a803bfa2b4.jpg" alt="Episode thumbnail" class="h-20 w-20 md:h-28 md:w-28 rounded-3xl https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-cover" />
               <div>
@@ -1015,7 +1101,7 @@ What begins as a mission to save the world slowly turns into something far more 
 </button>
             </div>
           </article>
-          <article class="glass-card flex flex-col gap-5 rounded-[2rem] p-4 md:p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
+          <article class="glass-card flex flex-col gap-5 rounded-[2rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
             <div class="flex items-start gap-4">
               <img src="https://i.pinimg.com/736x/d9/58/9d/d9589d44e87a840e6c3701272f7ad4e5.jpg" alt="Episode thumbnail" class="h-20 w-20 md:h-28 md:w-28 rounded-3xl https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-cover" />
               <div>
@@ -1046,49 +1132,169 @@ What begins as a mission to save the world slowly turns into something far more 
         <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <h2 class="text-2xl md:text-3xl font-bold text-pink-500 font-serif">
+              <div class="flex items-center gap-2 mb-3 flex-wrap">
+  <span class="text-sm text-slate-400">Selected:</span>
+  <span id="activeGenre" class="px-3 py-1 rounded-full bg-pink-600 text-white text-xs">
+    All
+  </span>
+</div>
+
+<div id="genreUnderline" class="h-[2px] w-20 bg-pink-500 transition-all duration-300"></div>
   BROWSE BY GENRE
 </h2>
-            <h2 class="mt-3 text-xl md:text-2xl font-semibold text-white sm:text-2xl">GENRE CATEGORIES</h2>
-          </div>
-          <p class="max-w-xl text-sm text-slate-400">Explore curated sections for high-octane action, surreal fantasy, sci-fi thrills, and supernatural mysteries.</p>
-        </div>
-        <div class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <div class="glass-card rounded-[2rem] p-4 md:p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
-            <p class="text-sm uppercase tracking-[0.26em] text-white">Action</p>
-            <h3 class="mt-3 text-xl font-semibold text-white">High-speed combat, adrenaline, and power-ups.</h3>
-          </div>
-          <div class="glass-card rounded-[2rem] p-4 md:p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
-            <p class="text-sm uppercase tracking-[0.26em] text-white">Fantasy</p>
-            <h3 class="mt-3 text-xl font-semibold text-white">Epic realms, magic, and legendary quests.</h3>
-          </div>
-          <div class="glass-card rounded-[2rem] p-4 md:p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
-            <p class="text-sm uppercase tracking-[0.26em] text-red">Sci-Fi</p>
-            <h3 class="mt-3 text-xl font-semibold text-white">Cyber worlds, space opera, and future tech.</h3>
-          </div>
-          <div class="glass-card rounded-[2rem] p-4 md:p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
-            <p class="text-sm uppercase tracking-[0.26em] text-neongreen">Supernatural</p>
-            <h3 class="mt-3 text-xl font-semibold text-white">Spirits, curses, and mysterious dimensions.</h3>
-          </div>
-        </div>
-        <div class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <div class="glass-card rounded-[2rem] p-4 md:p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
-            <p class="text-sm uppercase tracking-[0.26em] text-white">Adventure</p>
-            <h3 class="mt-3 text-xl font-semibold text-white">Epic journeys, danger, and discovery.</h3>
-          </div>
-          <div class="glass-card rounded-[2rem] p-4 md:p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
-            <p class="text-sm uppercase tracking-[0.26em] text-white">Thriller </p>
-            <h3 class="mt-3 text-xl font-semibold text-white">Secrets, suspense, and shocking twists.</h3>
-          </div>
-          <div class="glass-card rounded-[2rem] p-4 md:p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
-            <p class="text-sm uppercase tracking-[0.26em] text-white">Isekai </p>
-            <h3 class="mt-3 text-xl font-semibold text-white">Ordinary lives in extraordinary worlds.</h3>
-          </div>
-          <div class="glass-card rounded-[2rem] p-4 md:p-6 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
-            <p class="text-sm uppercase tracking-[0.26em] text-white">Superhero </p>
-            <h3 class="mt-3 text-xl font-semibold text-white">Heroes rise, battles shape destiny.</h3>
-          </div>
-        </div>
-        <div></div>
+       <h2 class="mt-3 text-xl md:text-2xl font-semibold text-white sm:text-2xl">
+  GENRE CATEGORIES
+</h2>
+
+<p class="max-w-xl text-sm text-slate-400">
+  Explore curated sections for high-octane action, surreal fantasy, sci-fi thrills, and supernatural mysteries.
+</p>
+
+<!-- TOP ROW -->
+<div id="genreGrid" class="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
+
+  <!-- ACTION -->
+  <div class="genre-card group relative overflow-hidden rounded-[1.5rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow"
+       data-genre="action">
+    
+    <div class="absolute inset-0 bg-gradient-to-br from-red-600/30 via-black/40 to-orange-500/20"></div>
+    <div class="absolute inset-0 group-hover:scale-110 transition-transform duration-500 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_60%)]"></div>
+
+    <div class="absolute top-3 right-3 text-lg">⚔️</div>
+
+    <div class="relative z-10">
+      <p class="text-[10px] md:text-xs uppercase tracking-[0.25em] text-white/80">Action</p>
+      <h3 class="mt-2 text-sm md:text-base font-semibold text-white leading-5 md:leading-6">
+        High-speed combat, adrenaline, and power-ups.
+      </h3>
+    </div>
+  </div>
+
+  <!-- FANTASY -->
+  <div class="genre-card group relative overflow-hidden rounded-[1.5rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow"
+       data-genre="fantasy">
+
+    <div class="absolute inset-0 bg-gradient-to-br from-purple-600/30 via-black/40 to-indigo-500/20"></div>
+    <div class="absolute inset-0 group-hover:scale-110 transition-transform duration-500 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_60%)]"></div>
+
+    <div class="absolute top-3 right-3 text-lg">🧙</div>
+
+    <div class="relative z-10">
+      <p class="text-[10px] md:text-xs uppercase tracking-[0.25em] text-white/80">Fantasy</p>
+      <h3 class="mt-2 text-sm md:text-base font-semibold text-white leading-5 md:leading-6">
+        Epic realms, magic, and legendary quests.
+      </h3>
+    </div>
+  </div>
+
+  <!-- SCI-FI -->
+  <div class="genre-card group relative overflow-hidden rounded-[1.5rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow"
+       data-genre="sci-fi">
+
+    <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/30 via-black/40 to-blue-600/20"></div>
+    <div class="absolute inset-0 group-hover:scale-110 transition-transform duration-500 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_60%)]"></div>
+
+    <div class="absolute top-3 right-3 text-lg">🚀</div>
+
+    <div class="relative z-10">
+      <p class="text-[10px] md:text-xs uppercase tracking-[0.25em] text-white/80">Sci-Fi</p>
+      <h3 class="mt-2 text-sm md:text-base font-semibold text-white leading-5 md:leading-6">
+        Cyber worlds, space opera, and future tech.
+      </h3>
+    </div>
+  </div>
+
+  <!-- SUPERNATURAL -->
+  <div class="genre-card group relative overflow-hidden rounded-[1.5rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow"
+       data-genre="supernatural">
+
+    <div class="absolute inset-0 bg-gradient-to-br from-green-500/20 via-black/40 to-emerald-500/20"></div>
+    <div class="absolute inset-0 group-hover:scale-110 transition-transform duration-500 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_60%)]"></div>
+
+    <div class="absolute top-3 right-3 text-lg">👻</div>
+
+    <div class="relative z-10">
+      <p class="text-[10px] md:text-xs uppercase tracking-[0.25em] text-white/80">Supernatural</p>
+      <h3 class="mt-2 text-sm md:text-base font-semibold text-white leading-5 md:leading-6">
+        Spirits, curses, and mysterious dimensions.
+      </h3>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM ROW -->
+<div id="genreGrid" class="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
+
+  <!-- ADVENTURE -->
+  <div class="genre-card group relative overflow-hidden rounded-[1.5rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow"
+       data-genre="adventure">
+
+    <div class="absolute inset-0 bg-gradient-to-br from-yellow-500/20 via-black/40 to-orange-500/20"></div>
+    <div class="absolute inset-0 group-hover:scale-110 transition-transform duration-500 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_60%)]"></div>
+
+    <div class="absolute top-3 right-3 text-lg">🧭</div>
+
+    <div class="relative z-10">
+      <p class="text-[10px] md:text-xs uppercase tracking-[0.25em] text-white/80">Adventure</p>
+      <h3 class="mt-2 text-sm md:text-base font-semibold text-white leading-5 md:leading-6">
+        Epic journeys, danger, and discovery.
+      </h3>
+    </div>
+  </div>
+
+  <!-- THRILLER -->
+  <div class="genre-card group relative overflow-hidden rounded-[1.5rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow"
+       data-genre="thriller">
+
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-600/30 via-black/50 to-red-500/20"></div>
+    <div class="absolute inset-0 group-hover:scale-110 transition-transform duration-500 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_60%)]"></div>
+
+    <div class="absolute top-3 right-3 text-lg">🕵️</div>
+
+    <div class="relative z-10">
+      <p class="text-[10px] md:text-xs uppercase tracking-[0.25em] text-white/80">Thriller</p>
+      <h3 class="mt-2 text-sm md:text-base font-semibold text-white leading-5 md:leading-6">
+        Secrets, suspense, and shocking twists.
+      </h3>
+    </div>
+  </div>
+
+  <!-- ISEKAI -->
+  <div class="genre-card group relative overflow-hidden rounded-[1.5rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow"
+       data-genre="isekai">
+
+    <div class="absolute inset-0 bg-gradient-to-br from-pink-500/20 via-black/40 to-purple-600/20"></div>
+    <div class="absolute inset-0 group-hover:scale-110 transition-transform duration-500 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_60%)]"></div>
+
+    <div class="absolute top-3 right-3 text-lg">🌌</div>
+
+    <div class="relative z-10">
+      <p class="text-[10px] md:text-xs uppercase tracking-[0.25em] text-white/80">Isekai</p>
+      <h3 class="mt-2 text-sm md:text-base font-semibold text-white leading-5 md:leading-6">
+        Ordinary lives in extraordinary worlds.
+      </h3>
+    </div>
+  </div>
+
+  <!-- SUPERHERO -->
+  <div class="genre-card group relative overflow-hidden rounded-[1.5rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow"
+       data-genre="superhero">
+
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-600/30 via-black/40 to-red-600/20"></div>
+    <div class="absolute inset-0 group-hover:scale-110 transition-transform duration-500 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_60%)]"></div>
+
+    <div class="absolute top-3 right-3 text-lg">🦸</div>
+
+    <div class="relative z-10">
+      <p class="text-[10px] md:text-xs uppercase tracking-[0.25em] text-white/80">Superhero</p>
+      <h3 class="mt-2 text-sm md:text-base font-semibold text-white leading-5 md:leading-6">
+        Heroes rise, battles shape destiny.
+      </h3>
+      
+    </div>
+  </div>
+
+</div>    <div></div>
 <div class="h-8"></div> <!-- spacer -->
 <div></div>
 <div class="text-center my-6">
@@ -1191,14 +1397,282 @@ What begins as a mission to save the world slowly turns into something far more 
 <div class="bg-purple-700 text-white text-sm py-2 text-center animate-pulse">
     🔥 Trending: Demon Slayer • Jujutsu Kaisen • One Piece
   </div>
+  <body class="bg-black text-white scroll-smooth"></body>
 <script>
   const themeToggle = document.getElementById('themeToggle');
+
   themeToggle.addEventListener('click', () => {
     document.documentElement.classList.toggle('dark');
   });
-</script>
-<body class="bg-black text-white scroll-smooth">
 
+  // 👉 body styling should be INSIDE JS block
+  document.body.classList.add("bg-black");
+</script>
+
+<script>
+  const genreCards = document.querySelectorAll('.genre-card');
+  const animeCards = document.querySelectorAll('.anime-card');
+
+  const activeGenre = document.getElementById('activeGenre');
+  const underline = document.getElementById('genreUnderline');
+
+  function filterAnime(genre) {
+    animeCards.forEach(card => {
+      const genres = card.getAttribute('data-genres');
+
+      if (genre === 'all') {
+        card.style.display = 'block';
+        return;
+      }
+
+      if (genres && genres.includes(genre)) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  genreCards.forEach(card => {
+    card.addEventListener('click', () => {
+
+      const genre = card.dataset.genre;
+
+      genreCards.forEach(c => {
+        c.classList.remove('ring-2', 'ring-pink-500', 'scale-105');
+      });
+
+      card.classList.add('ring-2', 'ring-pink-500', 'scale-105');
+
+      activeGenre.textContent = genre;
+
+      filterAnime(genre);
+
+      localStorage.setItem('selectedGenre', genre);
+
+      document.querySelector('#anime-section')?.scrollIntoView({
+        behavior: 'smooth'
+      });
+
+      underline.style.width = card.offsetWidth + "px";
+      underline.style.transform = `translateX(${card.offsetLeft}px)`;
+    });
+  });
+
+  window.addEventListener('load', () => {
+    const saved = localStorage.getItem('selectedGenre');
+
+    if (saved) {
+      const match = [...genreCards].find(c => c.dataset.genre === saved);
+      if (match) match.click();
+    }
+  });
+  const topPicks = document.getElementById("top-picks");
+
+function filterTopPicks(genre) {
+  const cards = topPicks.querySelectorAll(".anime-card");
+
+  // fade out first
+  topPicks.style.opacity = "0.2";
+
+  setTimeout(() => {
+    cards.forEach(card => {
+      const genres = card.dataset.genres || "";
+
+      if (genre === "all" || genres.includes(genre)) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    });
+
+    // fade back in
+    topPicks.style.opacity = "1";
+  }, 200);
+}
+console.log("🔥 Danimeverse JS loaded");
+
+/* =========================
+   THEME TOGGLE
+========================= */
+const themeToggle = document.getElementById("themeToggle");
+
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    document.documentElement.classList.toggle("dark");
+  });
+}
+
+/* =========================
+   GENRE FILTER + STATE
+========================= */
+const genreCards = document.querySelectorAll(".genre-card");
+const animeCards = document.querySelectorAll(".anime-card");
+
+const activeGenreText = document.getElementById("activeGenre");
+const underline = document.getElementById("genreUnderline");
+
+function filterAnime(genre) {
+  animeCards.forEach(card => {
+    const genres = card.getAttribute("data-genres") || "";
+
+    if (genre === "all") {
+      card.style.display = "block";
+      return;
+    }
+
+    card.style.display = genres.includes(genre) ? "block" : "none";
+  });
+}
+
+genreCards.forEach(card => {
+  card.addEventListener("click", () => {
+    const genre = card.dataset.genre;
+
+    // active UI
+    genreCards.forEach(c =>
+      c.classList.remove("ring-2", "ring-pink-500", "scale-105")
+    );
+
+    card.classList.add("ring-2", "ring-pink-500", "scale-105");
+
+    // update text
+    if (activeGenreText) {
+      activeGenreText.textContent = genre;
+    }
+
+    // filter
+    filterAnime(genre);
+
+    // save
+    localStorage.setItem("selectedGenre", genre);
+
+    // scroll
+    document.querySelector("#anime-section")?.scrollIntoView({
+      behavior: "smooth"
+    });
+
+    // underline (if exists)
+    if (underline) {
+      underline.style.width = card.offsetWidth + "px";
+      underline.style.transform = `translateX(${card.offsetLeft}px)`;
+    }
+  });
+});
+
+/* restore last genre */
+window.addEventListener("load", () => {
+  const saved = localStorage.getItem("selectedGenre");
+  if (!saved) return;
+
+  const match = [...genreCards].find(c => c.dataset.genre === saved);
+  if (match) match.click();
+});
+
+/* =========================
+   ANIME MODAL (NETFLIX STYLE)
+========================= */
+const modal = document.getElementById("animeModal");
+const modalImg = document.getElementById("modalImg");
+const modalTitle = document.getElementById("modalTitle");
+const modalDesc = document.getElementById("modalDesc");
+const closeModal = document.getElementById("closeModal");
+
+/* open modal (works even for filtered content) */
+document.addEventListener("click", (e) => {
+  const card = e.target.closest(".anime-card");
+  if (!card || !modal) return;
+
+  const img = card.querySelector("img")?.src;
+  const title = card.querySelector("h3")?.textContent;
+  const desc = card.querySelector("p")?.textContent;
+
+  if (modalImg) modalImg.src = img || "";
+  if (modalTitle) modalTitle.textContent = title || "";
+  if (modalDesc) modalDesc.textContent = desc || "";
+
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+});
+
+/* close modal */
+if (closeModal && modal) {
+  closeModal.addEventListener("click", () => {
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+  });
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+  });
+}
+console.log("🔥 Anime script is running");
+document.addEventListener("click", (e) => {
+  const card = e.target.closest(".anime-card");
+  if (!card) return;
+
+  const modal = document.getElementById("animeModal");
+  const modalImg = document.getElementById("modalImg");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalDesc = document.getElementById("modalDesc");
+
+  const img = card.querySelector("img");
+  const title = card.querySelector("h3");
+  const desc = card.querySelector("p");
+
+  if (img) modalImg.src = img.src;
+  if (title) modalTitle.textContent = title.textContent;
+  if (desc) modalDesc.textContent = desc.textContent;
+
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+});
+
+// close button
+document.addEventListener("click", (e) => {
+  if (e.target.id === "closeModal") {
+    const modal = document.getElementById("animeModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+  }
+});
+
+// click outside modal
+document.addEventListener("click", (e) => {
+  const modal = document.getElementById("animeModal");
+
+  if (e.target === modal) {
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+  }
+});
+</script>
+<script src="app.js"></script>
+<div id="animeModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 backdrop-blur-md z-50">
+
+  <div class="w-[90%] max-w-2xl rounded-2xl overflow-hidden bg-gray-900 shadow-2xl transform transition duration-300">
+
+    <!-- IMAGE -->
+    <img id="modalImg" class="w-full h-56 object-cover" />
+
+    <!-- CONTENT -->
+    <div class="p-4">
+      <h2 id="modalTitle" class="text-xl font-bold"></h2>
+      <p id="modalDesc" class="text-sm text-gray-300 mt-2"></p>
+
+      <div class="mt-4 flex gap-3">
+        <button class="px-4 py-2 bg-pink-600 rounded-full text-sm">Watch Now</button>
+        <button id="closeModal" class="px-4 py-2 border border-white/20 rounded-full text-sm">
+          Close
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
   </body>
   
 

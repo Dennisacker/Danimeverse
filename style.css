@@ -1,4 +1,20 @@
-.site-footer {
+
+:root {
+  --bg: #ffffff;
+  --text: #0f172a;
+
+  --glow-1: rgba(0, 0, 0, 0.05);
+  --glow-2: rgba(0, 0, 0, 0.02);
+}
+
+/* DARK MODE = NETFLIX STYLE */
+.dark {
+  --bg: #0a0a0f;
+  --text: #e8ecff;
+
+  --glow-1: rgba(255, 0, 80, 0.12);
+  --glow-2: rgba(120, 0, 255, 0.10);
+}.site-footer {
   background: linear-gradient(135deg, #6b21a8, #000, #9333ea);
   color: #fff;
   padding: 3rem 1rem;
@@ -33,9 +49,18 @@
   transition: color 0.3s ease, transform 0.3s ease;
 }
 
-.site-footer a:hover {
-  color: #c084fc;
-  transform: translateY(-2px);
+.site-footer {
+  background: linear-gradient(135deg,
+    rgba(107,33,168,0.8),
+    rgba(0,0,0,0.9),
+    rgba(147,51,234,0.8)
+  );
+
+  color: var(--text);
+  padding: 3rem 1rem;
+  text-align: center;
+  border-top: 4px solid #9333ea;
+  transition: all 0.3s ease;
 }
 .back-to-top {
   position: fixed;
@@ -107,5 +132,40 @@
   background: #9333ea; /* hover purple */
 }
 body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
   overflow-x: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+.anime-card {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.anime-card.hide {
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  background:
+    radial-gradient(circle at top left, var(--glow-1), transparent 45%),
+    radial-gradient(circle at bottom right, var(--glow-2), transparent 50%);
+}
+#top-picks {
+  transition: opacity 0.25s ease;
 }
