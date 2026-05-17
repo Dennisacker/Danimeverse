@@ -1,0 +1,108 @@
+.site-footer {
+  background: linear-gradient(135deg, #6b21a8, #000, #9333ea);
+  color: #fff;
+  padding: 3rem 1rem;
+  text-align: center;
+  border-top: 4px solid #9333ea;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.site-footer .brand {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #c084fc; /* light purple */
+  margin-bottom: 0.5rem;
+}
+
+.site-footer .copy {
+  font-size: 0.9rem;
+  color: #e5e7eb; /* light gray */
+  margin-bottom: 1.5rem;
+}
+
+.site-footer .links,
+.site-footer .social {
+  margin: 1rem 0;
+}
+
+.site-footer a {
+  margin: 0 1rem;
+  color: #e5e7eb;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.site-footer a:hover {
+  color: #c084fc;
+  transform: translateY(-2px);
+}
+.back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #9333ea;
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.back-to-top:hover {
+  background: #6b21a8;
+}
+.social-float {
+  position: fixed;
+  bottom: 100px;   /* sits above back-to-top button */
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 999;
+}
+
+.social-float {
+  position: fixed;
+  bottom: 100px;   /* sits above back-to-top button */
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 999;
+}
+
+.social-float a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 1.2rem;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+/* WhatsApp */
+.social-float a.whatsapp {
+  background: #25D366; /* WhatsApp green */
+}
+
+/* Discord */
+.social-float a.discord {
+  background: #5865F2; /* Discord purple */
+}
+
+/* TikTok */
+.social-float a.tiktok {
+  background: #000; /* TikTok black */
+  border: 2px solid #ff0050; /* TikTok accent */
+}
+
+.social-float a:hover {
+  transform: scale(1.1);
+  background: #9333ea; /* hover purple */
+}
