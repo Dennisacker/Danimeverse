@@ -106,3 +106,6 @@
   transform: scale(1.1);
   background: #9333ea; /* hover purple */
 }
+body {
+  overflow-x: hidden;
+}
