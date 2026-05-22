@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assassination Classroom | Danimeverse</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: Inter, sans-serif;
+      background: #050816;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .hero-overlay {
+      background: linear-gradient(
+        to top,
+        rgba(5,8,22,1),
+        rgba(5,8,22,0.7),
+        rgba(5,8,22,0.3)
+      );
+    }
+
+    .episode-card:hover {
+      transform: translateY(-4px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HERO -->
+  <section class="relative h-[70vh] overflow-hidden">
+
+    <img
+      src="https://wallpapercave.com/wp/wp1873873.jpg"
+      class="absolute inset-0 h-full w-full object-cover"
+    />
+
+    <div class="hero-overlay absolute inset-0"></div>
+
+    <div class="relative z-10 flex h-full items-end">
+      <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 pb-10 md:flex-row md:items-end">
+
+        <img
+          src="https://cdn.myanimelist.net/images/anime/5/75639.jpg"
+          class="w-44 rounded-2xl shadow-2xl"
+        />
+
+        <div class="max-w-3xl">
+
+          <p class="mb-3 text-yellow-400 font-semibold uppercase tracking-[0.3em]">
+            Anime Series
+          </p>
+
+          <h1 class="text-4xl md:text-6xl font-black">
+            Assassination Classroom
+          </h1>
+
+          <div class="mt-4 flex flex-wrap gap-2">
+
+            <span class="rounded-full bg-yellow-500/20 px-3 py-1 text-sm text-yellow-300">
+              Comedy
+            </span>
+
+            <span class="rounded-full bg-red-500/20 px-3 py-1 text-sm text-red-300">
+              Action
+            </span>
+
+            <span class="rounded-full bg-blue-500/20 px-3 py-1 text-sm text-blue-300">
+              School
+            </span>
+
+          </div>
+
+          <p class="mt-5 max-w-2xl text-slate-300 leading-7">
+            A powerful alien teacher threatens to destroy Earth unless 
+            his students can assassinate him first, but he becomes the best
+             teacher they’ve ever had. As Class 3-E trains to kill him, they also
+              learn life lessons, growth, and the true meaning of purpose. What begins
+               as a mission to save the world slowly turns into something far more emotional 
+               and unexpected. </p>
+
+          <div class="mt-6 flex flex-wrap gap-4">
+
+            <button class="rounded-full bg-yellow-500 text-black px-6 py-3 font-semibold hover:bg-yellow-400 transition">
+              ▶ Watch Now
+            </button>
+
+            <button class="rounded-full border border-white/20 px-6 py-3 hover:bg-white/10 transition">
+              + My List
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- EPISODES -->
+  <section class="mx-auto max-w-7xl px-6 py-16">
+
+    <div class="mb-8 flex items-center justify-between">
+      <h2 class="text-3xl font-bold">
+        Episodes
+      </h2>
+
+      <span class="text-slate-400">
+        47 Episodes
+      </span>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2">
+
+      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+
+        <img
+          src="https://i.ytimg.com/vi/kgNkGohA20k/maxresdefault.jpg"
+          class="h-24 w-40 rounded-xl object-cover"
+        />
+
+        <div>
+          <p class="text-sm text-yellow-400">
+            Episode 1
+          </p>
+
+          <h3 class="mt-1 text-lg font-semibold">
+            Assassination Time
+          </h3>
+
+          <p class="mt-2 text-sm text-slate-400">
+            Class 3-E meets their strange new teacher, Koro Sensei.
+          </p>
+        </div>
+      </div>
+
+      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+
+        <img
+          src="https://i.ytimg.com/vi/0KZ8H6C6N28/maxresdefault.jpg"
+          class="h-24 w-40 rounded-xl object-cover"
+        />
+
+        <div>
+          <p class="text-sm text-yellow-400">
+            Episode 2
+          </p>
+
+          <h3 class="mt-1 text-lg font-semibold">
+            Baseball Time
+          </h3>
+
+          <p class="mt-2 text-sm text-slate-400">
+            Karma and the class begin adapting to assassination lessons.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</body>
+</html>

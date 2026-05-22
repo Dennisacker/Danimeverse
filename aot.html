@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Attack on Titan | Danimeverse</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: Inter, sans-serif;
+      background: #050816;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .hero-overlay {
+      background: linear-gradient(
+        to top,
+        rgba(5,8,22,1),
+        rgba(5,8,22,0.7),
+        rgba(5,8,22,0.3)
+      );
+    }
+
+    .episode-card:hover {
+      transform: translateY(-4px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HERO -->
+  <section class="relative h-[70vh] overflow-hidden">
+
+    <img
+      src="https://wallpapercave.com/wp/wp2162775.jpg"
+      class="absolute inset-0 h-full w-full object-cover"
+    />
+
+    <div class="hero-overlay absolute inset-0"></div>
+
+    <div class="relative z-10 flex h-full items-end">
+      <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 pb-10 md:flex-row md:items-end">
+
+        <img
+          src="https://cdn.myanimelist.net/images/anime/10/47347.jpg"
+          class="w-44 rounded-2xl shadow-2xl"
+        />
+
+        <div class="max-w-3xl">
+
+          <p class="mb-3 text-red-500 font-semibold uppercase tracking-[0.3em]">
+            Anime Series
+          </p>
+
+          <h1 class="text-4xl md:text-6xl font-black">
+            Attack on Titan
+          </h1>
+
+          <div class="mt-4 flex flex-wrap gap-2">
+
+            <span class="rounded-full bg-red-500/20 px-3 py-1 text-sm text-red-300">
+              Action
+            </span>
+
+            <span class="rounded-full bg-orange-500/20 px-3 py-1 text-sm text-orange-300">
+              Dark Fantasy
+            </span>
+
+            <span class="rounded-full bg-yellow-500/20 px-3 py-1 text-sm text-yellow-300">
+              Drama
+            </span>
+
+          </div>
+
+          <p class="mt-5 max-w-2xl text-slate-300 leading-7">
+           Humanity lives behind massive walls to escape deadly giants
+            known as Titans, but peace is shattered when the walls are breached.
+             Eren Yeager and his friends join the military to fight back, uncovering
+              shocking truths about the Titans and their own world.As the war escalates, 
+              they are forced to question who the real enemy truly is.
+          </p>
+
+          <div class="mt-6 flex flex-wrap gap-4">
+
+            <button class="rounded-full bg-red-600 px-6 py-3 font-semibold hover:bg-red-500 transition">
+              ▶ Watch Now
+            </button>
+
+            <button class="rounded-full border border-white/20 px-6 py-3 hover:bg-white/10 transition">
+              + My List
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- EPISODES -->
+  <section class="mx-auto max-w-7xl px-6 py-16">
+
+    <div class="mb-8 flex items-center justify-between">
+      <h2 class="text-3xl font-bold">
+        Episodes
+      </h2>
+
+      <span class="text-slate-400">
+        87 Episodes
+      </span>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2">
+
+      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+
+        <img
+          src="https://i.ytimg.com/vi/LV-nazLVmgo/maxresdefault.jpg"
+          class="h-24 w-40 rounded-xl object-cover"
+        />
+
+        <div>
+          <p class="text-sm text-red-400">
+            Episode 1
+          </p>
+
+          <h3 class="mt-1 text-lg font-semibold">
+            To You, in 2000 Years
+          </h3>
+
+          <p class="mt-2 text-sm text-slate-400">
+            Humanity faces destruction after the Titans breach Wall Maria.
+          </p>
+        </div>
+      </div>
+
+      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+
+        <img
+          src="https://i.ytimg.com/vi/2S4qGKmzBJE/maxresdefault.jpg"
+          class="h-24 w-40 rounded-xl object-cover"
+        />
+
+        <div>
+          <p class="text-sm text-red-400">
+            Episode 2
+          </p>
+
+          <h3 class="mt-1 text-lg font-semibold">
+            That Day
+          </h3>
+
+          <p class="mt-2 text-sm text-slate-400">
+            Eren begins his journey toward revenge and freedom.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</body>
+</html>
