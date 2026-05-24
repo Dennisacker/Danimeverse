@@ -70,27 +70,50 @@
   <script>
 
     // GET URL DATA
-    const params = new URLSearchParams(window.location.search);
+   console.log("🎥 Watch page loaded");
 
-    const anime = params.get("anime");
-    const video = params.get("video");
-    const ep = params.get("ep");
-    const title = params.get("title");
-    const desc = params.get("desc");
+const params = new URLSearchParams(window.location.search);
 
-    // VIDEO
-    document.getElementById("videoPlayer").src = video;
+const anime = params.get("anime");
+const video = params.get("video");
+const ep = params.get("ep");
+const title = params.get("title");
+const desc = params.get("desc");
 
-    // INFO
-    document.getElementById("animeName").textContent =
-      anime || "Anime";
+const player = document.getElementById("videoPlayer");
+const animeName = document.getElementById("animeName");
+const episodeTitle = document.getElementById("episodeTitle");
+const episodeDesc = document.getElementById("episodeDesc");
 
-    document.getElementById("episodeTitle").textContent =
-      "Episode " + (ep || "?") + ": " + (title || "Untitled");
+/* =========================
+   VIDEO SAFETY CHECK
+========================= */
 
-    document.getElementById("episodeDesc").textContent =
-      desc || "No description available.";
+if (video) {
+  player.src = video;
+} else {
+  console.log("❌ No video found in URL");
+  player.src = "";
 
+  // optional fallback message
+  player.insertAdjacentHTML(
+    "afterend",
+    "<p style='color:red;text-align:center;margin-top:10px;'>No video provided</p>"
+  );
+}
+
+/* =========================
+   TEXT INFO
+========================= */
+
+if (animeName) animeName.textContent = anime || "Anime";
+
+if (episodeTitle)
+  episodeTitle.textContent =
+    "Episode " + (ep || "?") + ": " + (title || "Untitled");
+
+if (episodeDesc)
+  episodeDesc.textContent = desc || "No description available.";
   </script>
 
 </body>

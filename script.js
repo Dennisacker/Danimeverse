@@ -46,26 +46,50 @@ if (video) {
 }
 <script>
 
-const params = new URLSearchParams(window.location.search);
+const video = params.get("video");
 
-const ep = params.get("ep");
+if (video) {
+  document.getElementById("videoPlayer").src = video;
+} else {
+  document.getElementById("videoPlayer").innerHTML =
+    "<p style='color:console.log("🔥 Anime script is running");
 
-const player = document.getElementById("videoPlayer");
+/* =========================
+   ANIME MODAL SYSTEM
+========================= */
 
-if (ep == "1") {
-  player.src = "videos/episode1.mp4";
+document.addEventListener("click", (e) => {
+  const card = e.target.closest(".anime-card");
+  if (!card) return;
+
+  const modal = document.getElementById("animeModal");
+  const modalImg = document.getElementById("modalImg");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalDesc = document.getElementById("modalDesc");
+
+  const img = card.querySelector("img");
+  const title = card.querySelector("h3");
+  const desc = card.querySelector("p");
+
+  if (img) modalImg.src = img.src;
+  if (title) modalTitle.textContent = title.textContent;
+  if (desc) modalDesc.textContent = desc.textContent;
+
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+});
+
+/* =========================
+   CLOSE MODAL (button + outside click)
+========================= */
+
+document.addEventListener("click", (e) => {
+  const modal = document.getElementById("animeModal");
+  if (!modal) return;
+
+  if (e.target.id === "closeModal" || e.target === modal) {
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+  }
+});red'>No video found</p>";
 }
-
-else if (ep == "2") {
-  player.src = "videos/episode2.mp4";
-}
-
-else if (ep == "3") {
-  player.src = "videos/episode3.mp4";
-}
-
-else if (ep == "4") {
-  player.src = "videos/episode4.mp4";
-}
-
-</script>
