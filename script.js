@@ -44,3 +44,28 @@ const video = params.get("video");
 if (video) {
   document.getElementById("videoPlayer").src = video;
 }
+<script>
+
+const params = new URLSearchParams(window.location.search);
+
+const ep = params.get("ep");
+
+const player = document.getElementById("videoPlayer");
+
+if (ep == "1") {
+  player.src = "videos/episode1.mp4";
+}
+
+else if (ep == "2") {
+  player.src = "videos/episode2.mp4";
+}
+
+else if (ep == "3") {
+  player.src = "videos/episode3.mp4";
+}
+
+else if (ep == "4") {
+  player.src = "videos/episode4.mp4";
+}
+
+</script>
