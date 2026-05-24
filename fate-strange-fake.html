@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fate/strange Fake | Danimeverse</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: Inter, sans-serif;
+      background: #050816;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .hero-overlay {
+      background: linear-gradient(
+        to top,
+        rgba(5,8,22,1),
+        rgba(5,8,22,0.7),
+        rgba(5,8,22,0.3)
+      );
+    }
+
+    .episode-card:hover {
+      transform: translateY(-4px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HERO SECTION -->
+  <section class="relative h-[70vh] overflow-hidden">
+
+    <img
+      src="https://wallpapercave.com/wp/wp12609093.jpg"
+      class="absolute inset-0 h-full w-full object-cover"
+    />
+
+    <div class="hero-overlay absolute inset-0"></div>
+
+    <div class="relative z-10 flex h-full items-end">
+
+      <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 pb-10 md:flex-row md:items-end">
+
+        <!-- Poster -->
+        <img
+          src="https://i1-c.pinimg.com/736x/9e/ad/05/9ead05f9a228d1e73cae1f3eddbe0e41.jpg" 
+          class="w-44 rounded-2xl shadow-2xl"
+        />
+
+        <!-- INFO -->
+        <div class="max-w-3xl">
+
+          <p class="mb-3 text-pink-500 font-semibold uppercase tracking-[0.3em]">
+            Anime Series
+          </p>
+
+          <h1 class="text-4xl md:text-6xl font-black">
+            Fate/strange Fake
+          </h1>
+
+          <!-- Tags -->
+          <div class="mt-4 flex flex-wrap gap-2">
+
+            <span class="rounded-full bg-red-500/20 px-3 py-1 text-sm text-red-300">
+              Action
+            </span>
+
+            <span class="rounded-full bg-purple-500/20 px-3 py-1 text-sm text-purple-300">
+              Fantasy
+            </span>
+
+            <span class="rounded-full bg-blue-500/20 px-3 py-1 text-sm text-blue-300">
+              Supernatural
+            </span>
+
+          </div>
+
+          <!-- Description -->
+          <p class="mt-5 max-w-2xl text-slate-300 leading-7">
+            In Snowfield, America, a flawed imitation of the Holy Grail War begins. Masters and Servants clash in a chaotic battle filled with false heroes, hidden conspiracies, and unpredictable legends.
+          </p>
+
+          <!-- Buttons -->
+          <div class="mt-6 flex flex-wrap gap-4">
+
+            <button class="rounded-full bg-pink-600 px-6 py-3 font-semibold hover:bg-pink-500 transition">
+              ▶ Watch Now
+            </button>
+
+            <button class="rounded-full border border-white/20 px-6 py-3 hover:bg-white/10 transition">
+              + My List
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- EPISODES -->
+  <section class="mx-auto max-w-7xl px-6 py-16">
+
+    <div class="mb-8 flex items-center justify-between">
+
+      <h2 class="text-3xl font-bold">
+        Episodes
+      </h2>
+
+      <span class="text-slate-400">
+        New Adaptation
+      </span>
+
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2">
+
+      <!-- Episode 1 -->
+      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+
+        <img
+          src="https://static1.cbrimages.com/wordpress/wp-content/uploads/2023/07/fate-strange-fake.jpg"
+          class="h-24 w-40 rounded-xl object-cover"
+        />
+
+        <div>
+
+          <p class="text-sm text-pink-400">
+            Episode 1
+          </p>
+
+          <h3 class="mt-1 text-lg font-semibold">
+            False Grail War
+          </h3>
+
+          <p class="mt-2 text-sm text-slate-400">
+            A new Holy Grail War erupts in America, bringing together mysterious Masters and Servants.
+          </p>
+
+        </div>
+
+      </div>
+
+      <!-- Episode 2 -->
+      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+
+        <img
+          src="https://animecorner.me/wp-content/uploads/2023/07/fate-strange-fake-whispers-of-dawn.jpg"
+          class="h-24 w-40 rounded-xl object-cover"
+        />
+
+        <div>
+
+          <p class="text-sm text-pink-400">
+            Episode 2
+          </p>
+
+          <h3 class="mt-1 text-lg font-semibold">
+            Heroes and Deception
+          </h3>
+
+          <p class="mt-2 text-sm text-slate-400">
+            Hidden motives and fake summons begin to distort the fate of the war.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</body>
+</html>

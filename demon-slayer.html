@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Demon Slayer | Danimeverse</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: Inter, sans-serif;
+      background: #050816;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .hero-overlay {
+      background: linear-gradient(
+        to top,
+        rgba(5,8,22,1),
+        rgba(5,8,22,0.7),
+        rgba(5,8,22,0.3)
+      );
+    }
+
+    .episode-card:hover {
+      transform: translateY(-4px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HERO -->
+  <section class="relative h-[70vh] overflow-hidden">
+
+    <img
+      src="https://i.pinimg.com/1200x/6d/47/0d/6d470d4b1d66e3f3df0f2d71bb43b7a5.jpg"
+      class="absolute inset-0 h-full w-full object-cover"
+    />
+
+    <div class="hero-overlay absolute inset-0"></div>
+
+    <div class="relative z-10 flex h-full items-end">
+
+      <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 pb-10 md:flex-row md:items-end">
+
+        <!-- POSTER -->
+        <img
+          src="https://i.pinimg.com/736x/4b/ee/47/4bee47c20cc720e02f983ee22c57c8bf.jpg"
+          class="w-44 rounded-2xl shadow-2xl"
+        />
+
+        <!-- INFO -->
+        <div class="max-w-3xl">
+
+          <p class="mb-3 text-pink-500 font-semibold uppercase tracking-[0.3em]">
+            Anime Series
+          </p>
+
+          <h1 class="text-4xl md:text-6xl font-black">
+            Demon Slayer
+          </h1>
+
+          <!-- TAGS -->
+          <div class="mt-4 flex flex-wrap gap-2">
+
+            <span class="rounded-full bg-red-500/20 px-3 py-1 text-sm text-red-300">
+              Action
+            </span>
+
+            <span class="rounded-full bg-orange-500/20 px-3 py-1 text-sm text-orange-300">
+              Shonen
+            </span>
+
+            <span class="rounded-full bg-pink-500/20 px-3 py-1 text-sm text-pink-300">
+              Supernatural
+            </span>
+
+          </div>
+
+          <!-- DESCRIPTION -->
+          <p class="mt-5 max-w-2xl text-slate-300 leading-7">
+            Tanjiro Kamado and the Demon Slayer Corps enter the deadly Infinity Castle to confront Muzan Kibutsuji in the ultimate battle between humans and demons. As powerful Hashira fight for survival, the fate of humanity hangs in the balance.
+          </p>
+
+          <!-- BUTTONS -->
+          <div class="mt-6 flex flex-wrap gap-4">
+
+            <button class="rounded-full bg-pink-600 px-6 py-3 font-semibold hover:bg-pink-500 transition">
+              ▶ Watch Now
+            </button>
+
+            <button class="rounded-full border border-white/20 px-6 py-3 hover:bg-white/10 transition">
+              + My List
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- EPISODES -->
+  <section class="mx-auto max-w-7xl px-6 py-16">
+
+    <div class="mb-8 flex items-center justify-between">
+
+      <h2 class="text-3xl font-bold">
+        Episodes
+      </h2>
+
+      <span class="text-slate-400">
+        Infinity Castle Arc
+      </span>
+
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2">
+
+      <!-- EPISODE 1 -->
+      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+
+        <img
+          src="https://i.pinimg.com/736x/e2/4d/39/e24d39b7ff42f87f62d15c79e6c5b42f.jpg"
+          class="h-24 w-40 rounded-xl object-cover"
+        />
+
+        <div>
+
+          <p class="text-sm text-pink-400">
+            Episode 1
+          </p>
+
+          <h3 class="mt-1 text-lg font-semibold">
+            Into the Infinity Castle
+          </h3>
+
+          <p class="mt-2 text-sm text-slate-400">
+            The Demon Slayer Corps launches its final mission against Muzan.
+          </p>
+
+        </div>
+
+      </div>
+
+      <!-- EPISODE 2 -->
+      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+
+        <img
+          src="https://i.pinimg.com/736x/6f/2e/75/6f2e7561d0e4fbe4b4bbfbfa45fd74fc.jpg"
+          class="h-24 w-40 rounded-xl object-cover"
+        />
+
+        <div>
+
+          <p class="text-sm text-pink-400">
+            Episode 2
+          </p>
+
+          <h3 class="mt-1 text-lg font-semibold">
+            Flames of Resolve
+          </h3>
+
+          <p class="mt-2 text-sm text-slate-400">
+            The Hashira confront terrifying Upper Rank demons in brutal battles.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</body>
+</html>

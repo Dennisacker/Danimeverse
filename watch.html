@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Watch Episode</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      background: #050816;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+  </style>
+</head>
+
+<body class="p-4 md:p-8">
+
+  <!-- VIDEO PLAYER -->
+  <!-- VIDEO PLAYER -->
+<div class="glass rounded-2xl overflow-hidden">
+
+  <video controls class="w-full aspect-video">
+  <source src="videos/KILL.BLUE.S01E06.NaijaPrey.com" type="video/mp4">
+  Your browser does not support video playback.
+</video>
+
+</div>
+  <!-- EPISODE INFO -->
+  <div class="mt-6 glass rounded-2xl p-5">
+
+    <p id="animeName" class="text-pink-400 uppercase tracking-widest text-sm"></p>
+
+    <h1 id="episodeTitle" class="text-3xl font-bold mt-2"></h1>
+
+    <p id="episodeDesc" class="text-gray-300 mt-3 leading-6"></p>
+
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="mt-6 flex gap-4">
+
+    <button class="bg-pink-600 px-6 py-3 rounded-full hover:bg-pink-500 transition">
+      ▶ Play
+    </button>
+
+    <button class="border border-white/20 px-6 py-3 rounded-full hover:bg-white/10 transition">
+      Download
+    </button>
+
+  </div>
+
+  <script>
+    // GET URL DATA
+    const params = new URLSearchParams(window.location.search);
+
+    const anime = params.get("anime");
+    const ep = params.get("ep");
+    const title = params.get("title");
+    const desc = params.get("desc");
+
+    // FILL PAGE
+    document.getElementById("animeName").textContent = anime || "Anime";
+    document.getElementById("episodeTitle").textContent =
+      "Episode " + (ep || "?") + ": " + (title || "Untitled");
+
+    document.getElementById("episodeDesc").textContent =
+      desc || "No description available for this episode.";
+  </script>
+
+</body>
+</html>

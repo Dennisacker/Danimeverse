@@ -38,3 +38,9 @@ document.addEventListener("click", (e) => {
     modal.classList.remove("flex");
   }
 });
+const video = params.get("video");
+
+// SET VIDEO PLAYER
+if (video) {
+  document.getElementById("videoPlayer").src = video;
+}
