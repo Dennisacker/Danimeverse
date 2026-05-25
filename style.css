@@ -169,3 +169,8 @@ body::before {
 #top-picks {
   transition: opacity 0.25s ease;
 }
+.genre-btn.active {
+  background: #a855f7;
+  color: white;
+  border-radius: 999px;
+}
