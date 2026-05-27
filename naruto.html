@@ -123,56 +123,73 @@
       </span>
     </div>
 
-    <div class="grid gap-4 md:grid-cols-2">
-
-      <!-- Episode -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
-
-        <img
-          src="https://i.ytimg.com/vi/-G9BqkgZXRA/maxresdefault.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
-
-        <div>
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
-
-          <h3 class="mt-1 text-lg font-semibold">
-            Enter Naruto Uzumaki!
-          </h3>
-
-          <p class="mt-2 text-sm text-slate-400">
-            Naruto begins his journey toward becoming Hokage.
-          </p>
-        </div>
-      </div>
-
-      <!-- Episode -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
-
-        <img
-          src="https://i.ytimg.com/vi/Bjz7P4A8m2A/maxresdefault.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
-
-        <div>
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
-
-          <h3 class="mt-1 text-lg font-semibold">
-            My Name is Konohamaru!
-          </h3>
-
-          <p class="mt-2 text-sm text-slate-400">
-            Naruto meets Konohamaru and causes chaos again.
-          </p>
-        </div>
-      </div>
-
-    </div>
+   <div
+  id="episodeList"
+  class="grid gap-4 md:grid-cols-2">
+</div>
   </section>
+<script>
 
+const narutoEpisodes = [];
+
+for (let i = 1; i <= 220; i++) {
+
+  narutoEpisodes.push({
+
+    ep: i,
+
+    title: `Naruto Episode ${i}`,
+
+    desc: `Watch Naruto Episode ${i} on Danimeverse.`,
+
+    image: "https://cdn.myanimelist.net/images/anime/13/17405.jpg",
+
+   video: "https://drive.google.com/file/d/1Bljox6hd-iJLU9q-215wJXGOZKEyiEFd/preview"
+
+  });
+
+}
+/* =========================
+   GENERATE EPISODES
+========================= */
+
+narutoEpisodes.forEach(ep => {
+
+  episodeList.innerHTML += `
+
+    <a href="watch.html?anime=Naruto&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&desc=${encodeURIComponent(ep.desc)}&video=${encodeURIComponent(ep.video)}">
+
+      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300 hover:bg-white/5">
+
+        <img
+          src="${ep.image}"
+          class="h-24 w-40 rounded-xl object-cover"
+        />
+
+        <div>
+
+          <p class="text-sm text-pink-400">
+            Episode ${ep.ep}
+          </p>
+
+          <h3 class="mt-1 text-lg font-semibold">
+            ${ep.title}
+          </h3>
+
+          <p class="mt-2 text-sm text-slate-400">
+            ${ep.desc}
+          </p>
+
+        </div>
+
+      </div>
+
+    </a>
+
+  `;
+
+});
+
+</script>
 </body>
 </html>
