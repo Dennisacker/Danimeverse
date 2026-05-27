@@ -120,55 +120,234 @@
         87 Episodes
       </span>
     </div>
+<!-- SEASON BUTTONS -->
+<div class="mb-8 flex gap-3 flex-wrap">
 
-    <div class="grid gap-4 md:grid-cols-2">
+  <button onclick="showSeason(1)"
+    class="rounded-full bg-green-600 px-5 py-2 hover:bg-green-500 transition">
+    Season 1
+  </button>
 
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  <button onclick="showSeason(2)"
+    class="rounded-full bg-yellow-600 px-5 py-2 hover:bg-yellow-500 transition">
+    Season 2
+  </button>
 
-        <img
-          src="https://i.ytimg.com/vi/LV-nazLVmgo/maxresdefault.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+  <button onclick="showSeason(3)"
+    class="rounded-full bg-orange-600 px-5 py-2 hover:bg-orange-500 transition">
+    Season 3
+  </button>
 
-        <div>
-          <p class="text-sm text-red-400">
-            Episode 1
-          </p>
+  <button onclick="showSeason(4)"
+    class="rounded-full bg-red-600 px-5 py-2 hover:bg-red-500 transition">
+    Final Season
+  </button>
 
-          <h3 class="mt-1 text-lg font-semibold">
-            To You, in 2000 Years
-          </h3>
+<button onclick="showSeason(5)"
+  class="rounded-full bg-white/10 px-5 py-2 hover:bg-white/20 transition">
+  Finale Specials
+</button>
 
-          <p class="mt-2 text-sm text-slate-400">
-            Humanity faces destruction after the Titans breach Wall Maria.
-          </p>
-        </div>
-      </div>
-
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
-
-        <img
-          src="https://i.ytimg.com/vi/2S4qGKmzBJE/maxresdefault.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
-
-        <div>
-          <p class="text-sm text-red-400">
-            Episode 2
-          </p>
-
-          <h3 class="mt-1 text-lg font-semibold">
-            That Day
-          </h3>
-
-          <p class="mt-2 text-sm text-slate-400">
-            Eren begins his journey toward revenge and freedom.
-          </p>
-        </div>
-      </div>
-
-    </div>
+</div>
+   <div
+  id="episodeList"
+  class="grid gap-4 md:grid-cols-2">
+</div>
   </section>
+<script>
 
+const episodeList = document.getElementById("episodeList");
+
+/* =========================
+   SEASON ARRAYS
+========================= */
+
+const season1Episodes = [];
+const season2Episodes = [];
+const season3Episodes = [];
+const season4Episodes = [];
+const season5Episodes = [];
+/* =========================
+   SEASON 1 (25 Episodes)
+========================= */
+
+for (let i = 1; i <= 25; i++) {
+
+  season1Episodes.push({
+
+    ep: i,
+
+    title: `Attack on Titan S1 Episode ${i}`,
+
+    desc: `Watch Attack on Titan Season 1 Episode ${i}.`,
+
+    image: "https://cdn.myanimelist.net/images/anime/10/47347.jpg",
+
+    video: "YOUR_S1_VIDEO_LINK"
+
+  });
+
+}
+
+/* =========================
+   SEASON 2 (12 Episodes)
+========================= */
+
+for (let i = 1; i <= 12; i++) {
+
+  season2Episodes.push({
+
+    ep: i,
+
+    title: `Attack on Titan S2 Episode ${i}`,
+
+    desc: `Watch Attack on Titan Season 2 Episode ${i}.`,
+
+    image: "https://i.pinimg.com/1200x/7d/d7/9e/7dd79edb14ff2e627d0df3804affaba7.jpg",
+
+    video: "YOUR_S2_VIDEO_LINK"
+
+  });
+
+}
+
+/* =========================
+   SEASON 3 (22 Episodes)
+========================= */
+
+for (let i = 1; i <= 22; i++) {
+
+  season3Episodes.push({
+
+    ep: i,
+
+    title: `Attack on Titan S3 Episode ${i}`,
+
+    desc: `Watch Attack on Titan Season 3 Episode ${i}.`,
+
+    image: "https://i.pinimg.com/1200x/fe/7d/13/fe7d1312ba8be6b51e160a1e7720c27c.jpg",
+
+    video: "YOUR_S3_VIDEO_LINK"
+
+  });
+
+}
+
+/* =========================
+   FINAL SEASON (28 Episodes)
+========================= */
+
+for (let i = 1; i <= 28; i++) {
+
+  season4Episodes.push({
+
+    ep: i,
+
+    title: `Attack on Titan Final Season Episode ${i}`,
+
+    desc: `Watch Attack on Titan Final Season Episode ${i}.`,
+
+    image: "https://i.pinimg.com/1200x/ac/fe/54/acfe547e53070234de4c158878ea9e9e.jpg",
+
+    video: "https://drive.google.com/file/d/1Bljox6hd-iJLU9q-215wJXGOZKEyiEFd/preview"
+
+  });
+
+}
+/* =========================
+   FINALE SPECIALS
+========================= */
+
+for (let i = 1; i <= 2; i++) {
+
+  season5Episodes.push({
+
+    ep: i,
+
+    title: `Attack on Titan Finale Special ${i}`,
+
+    desc: `Watch Attack on Titan Finale Special ${i}.`,
+
+    image: "https://i.pinimg.com/1200x/af/14/f7/af14f71445c720dc6acd1528ddec397d.jpg",
+
+    video: "YOUR_SPECIAL_VIDEO_LINK"
+
+  });
+
+}
+/* =========================
+   SHOW SEASON
+========================= */
+
+function showSeason(season) {
+
+  episodeList.innerHTML = "";
+
+  let selectedSeason = [];
+
+  if (season == 1) {
+    selectedSeason = season1Episodes;
+  }
+
+  if (season == 2) {
+    selectedSeason = season2Episodes;
+  }
+
+  if (season == 3) {
+    selectedSeason = season3Episodes;
+  }
+
+  if (season == 4) {
+    selectedSeason = season4Episodes;
+  }
+  if (season == 5) {
+  selectedSeason = season5Episodes;
+}
+  selectedSeason.forEach(ep => {
+
+    episodeList.innerHTML += `
+
+      <a href="watch.html?anime=Attack%20on%20Titan&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&desc=${encodeURIComponent(ep.desc)}&video=${encodeURIComponent(ep.video)}">
+
+        <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300 hover:bg-white/5">
+
+          <img
+            src="${ep.image}"
+            class="h-24 w-40 rounded-xl object-cover"
+          />
+
+          <div>
+
+            <p class="text-sm text-red-400">
+              Episode ${ep.ep}
+            </p>
+
+            <h3 class="mt-1 text-lg font-semibold">
+              ${ep.title}
+            </h3>
+
+            <p class="mt-2 text-sm text-slate-400">
+              ${ep.desc}
+            </p>
+
+          </div>
+
+        </div>
+
+      </a>
+
+    `;
+
+  });
+
+}
+
+/* =========================
+   AUTO LOAD FINAL SEASON
+========================= */
+
+showSeason(4);
+
+</script>
 </body>
 </html>

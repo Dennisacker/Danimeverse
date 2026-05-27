@@ -117,58 +117,146 @@
       </h2>
 
       <span class="text-slate-400">
-        47 Episodes
-      </span>
+  Seasons 1 - 2
+</span>
     </div>
+<!-- SEASON BUTTONS -->
+<div class="mb-8 flex gap-3 flex-wrap">
 
-    <div class="grid gap-4 md:grid-cols-2">
+  <button onclick="showSeason(1)"
+    class="rounded-full bg-yellow-500 text-black px-5 py-2 hover:bg-yellow-400 transition">
+    Season 1
+  </button>
 
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  <button onclick="showSeason(2)"
+    class="rounded-full bg-red-500 px-5 py-2 hover:bg-red-400 transition">
+    Season 2
+  </button>
 
-        <img
-          src="https://i.ytimg.com/vi/kgNkGohA20k/maxresdefault.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+</div>
+  <div
+  id="episodeList"
+  class="grid gap-4 md:grid-cols-2">
+</div>
 
-        <div>
-          <p class="text-sm text-yellow-400">
-            Episode 1
-          </p>
+<script>
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Assassination Time
-          </h3>
+const episodeList = document.getElementById("episodeList");
 
-          <p class="mt-2 text-sm text-slate-400">
-            Class 3-E meets their strange new teacher, Koro Sensei.
-          </p>
+/* =========================
+   SEASON ARRAYS
+========================= */
+
+const season1Episodes = [];
+const season2Episodes = [];
+
+/* =========================
+   SEASON 1 (24 Episodes)
+========================= */
+
+for (let i = 1; i <= 24; i++) {
+
+  season1Episodes.push({
+
+    ep: i,
+
+    title: `Assassination Classroom S1 Episode ${i}`,
+
+    desc: `Watch Assassination Classroom Season 1 Episode ${i}.`,
+
+    image: "https://cdn.myanimelist.net/images/anime/5/75639.jpg",
+
+    video: "YOUR_S1_VIDEO_LINK"
+
+  });
+
+}
+
+/* =========================
+   SEASON 2 (24 Episodes)
+========================= */
+
+for (let i = 1; i <= 24; i++) {
+
+  season2Episodes.push({
+
+    ep: i,
+
+    title: `Assassination Classroom S2 Episode ${i}`,
+
+    desc: `Watch Assassination Classroom Season 2 Episode ${i}.`,
+
+    image: "https://i.pinimg.com/1200x/6a/2c/f9/6a2cf9336df7593f850a080eafd0366e.jpg",
+
+    video: "YOUR_S2_VIDEO_LINK"
+
+  });
+
+}
+
+/* =========================
+   SHOW SEASON
+========================= */
+
+function showSeason(season) {
+
+  episodeList.innerHTML = "";
+
+  let selectedSeason = [];
+
+  if (season == 1) {
+    selectedSeason = season1Episodes;
+  }
+
+  if (season == 2) {
+    selectedSeason = season2Episodes;
+  }
+
+  selectedSeason.forEach(ep => {
+
+    episodeList.innerHTML += `
+
+      <a href="watch.html?anime=Assassination%20Classroom&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&desc=${encodeURIComponent(ep.desc)}&video=${encodeURIComponent(ep.video)}">
+
+        <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300 hover:bg-white/5">
+
+          <img
+            src="${ep.image}"
+            class="h-24 w-40 rounded-xl object-cover"
+          />
+
+          <div>
+
+            <p class="text-sm text-yellow-400">
+              Episode ${ep.ep}
+            </p>
+
+            <h3 class="mt-1 text-lg font-semibold">
+              ${ep.title}
+            </h3>
+
+            <p class="mt-2 text-sm text-slate-400">
+              ${ep.desc}
+            </p>
+
+          </div>
+
         </div>
-      </div>
 
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+      </a>
 
-        <img
-          src="https://i.ytimg.com/vi/0KZ8H6C6N28/maxresdefault.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+    `;
 
-        <div>
-          <p class="text-sm text-yellow-400">
-            Episode 2
-          </p>
+  });
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Baseball Time
-          </h3>
+}
 
-          <p class="mt-2 text-sm text-slate-400">
-            Karma and the class begin adapting to assassination lessons.
-          </p>
-        </div>
-      </div>
+/* =========================
+   AUTO LOAD SEASON 1
+========================= */
 
-    </div>
-  </section>
+showSeason(1);
 
+</script>
 </body>
 </html>

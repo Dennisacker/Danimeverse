@@ -113,77 +113,105 @@
   </section>
 
   <!-- EPISODES -->
-  <section class="mx-auto max-w-7xl px-6 py-16">
+<section class="mx-auto max-w-7xl px-6 py-16">
 
-    <div class="mb-8 flex items-center justify-between">
+  <div class="mb-8 flex items-center justify-between">
+    <h2 class="text-3xl font-bold">Episodes</h2>
+    <span class="text-slate-400">Season 1-2</span>
+  </div>
 
-      <h2 class="text-3xl font-bold">
-        Episodes
-      </h2>
+  <!-- SEASON BUTTONS -->
+  <div class="mb-8 flex gap-3 flex-wrap">
 
-      <span class="text-slate-400">
-        Season 3
-      </span>
+    <button onclick="showSeason(1)"
+      class="rounded-full bg-pink-600 px-5 py-2 hover:bg-pink-500 transition">
+      Season 1
+    </button>
 
-    </div>
+    <button onclick="showSeason(2)"
+      class="rounded-full bg-purple-600 px-5 py-2 hover:bg-purple-500 transition">
+      Season 2
+    </button>
 
-    <div class="grid gap-4 md:grid-cols-2">
+  </div>
 
-      <!-- Episode 1 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  <!-- EPISODES LIST -->
+  <div id="episodeList" class="grid gap-4 md:grid-cols-2"></div>
 
-        <img
-          src="https://static1.cbrimages.com/wordpress/wp-content/uploads/2023/06/oshi-no-ko-ai.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+</section>
+<script>
 
-        <div>
+document.addEventListener("DOMContentLoaded", () => {
 
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
+  const episodeList = document.getElementById("episodeList");
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Behind the Spotlight
-          </h3>
+  const season1 = [];
+  const season2 = [];
 
-          <p class="mt-2 text-sm text-slate-400">
-            Aqua investigates hidden truths while Ruby steps deeper into idol stardom.
-          </p>
+  // =====================
+  // SEASON 1 (11 EPISODES)
+  // =====================
+  for (let i = 1; i <= 11; i++) {
+    season1.push({
+      ep: i,
+      title: `Oshi no Ko S1 Episode ${i}`,
+      desc: `Watch Oshi no Ko Season 1 Episode ${i}.`,
+      image: "https://i.pinimg.com/1200x/d5/5f/dd/d55fdddacf4f37b5744af0e44b907cd0.jpg",
+      video: "YOUR_S1_VIDEO_LINK"
+    });
+  }
 
-        </div>
+  // =====================
+  // SEASON 2 (12 EPISODES)
+  // =====================
+  for (let i = 1; i <= 12; i++) {
+    season2.push({
+      ep: i,
+      title: `Oshi no Ko S2 Episode ${i}`,
+      desc: `Watch Oshi no Ko Season 2 Episode ${i}.`,
+      image: "https://cdn.myanimelist.net/images/anime/1812/134736.jpg",
+      video: "YOUR_S2_VIDEO_LINK"
+    });
+  }
 
-      </div>
+  // =====================
+  // RENDER FUNCTION
+  // =====================
+  window.showSeason = function(season) {
 
-      <!-- Episode 2 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+    episodeList.innerHTML = "";
 
-        <img
-          src="https://animecorner.me/wp-content/uploads/2023/05/oshi-no-ko.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+    let data = season === 1 ? season1 : season2;
 
-        <div>
+    data.forEach(ep => {
 
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
+      episodeList.innerHTML += `
+        <a href="watch.html?anime=Oshi%20no%20Ko&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&desc=${encodeURIComponent(ep.desc)}&video=${encodeURIComponent(ep.video)}">
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Lies and Dreams
-          </h3>
+          <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300 hover:bg-white/5">
 
-          <p class="mt-2 text-sm text-slate-400">
-            The entertainment world reveals darker ambitions hidden beneath dazzling performances.
-          </p>
+            <img src="${ep.image}" class="h-24 w-40 rounded-xl object-cover"/>
 
-        </div>
+            <div>
+              <p class="text-sm text-pink-400">Episode ${ep.ep}</p>
+              <h3 class="mt-1 text-lg font-semibold">${ep.title}</h3>
+              <p class="mt-2 text-sm text-slate-400">${ep.desc}</p>
+            </div>
 
-      </div>
+          </div>
 
-    </div>
+        </a>
+      `;
 
-  </section>
+    });
 
+  };
+
+// DEFAULT LOAD (season 2)
+  showSeason(2);
+
+});
+
+</script>
 </body>
 </html>

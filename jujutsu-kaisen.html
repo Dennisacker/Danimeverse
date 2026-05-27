@@ -125,63 +125,178 @@
 
     </div>
 
-    <div class="grid gap-4 md:grid-cols-2">
+    <!-- SEASON BUTTONS -->
+<div class="mb-8 flex gap-3 flex-wrap">
 
-      <!-- EPISODE 1 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  <button onclick="showSeason(1)"
+    class="rounded-full bg-pink-600 px-5 py-2 hover:bg-pink-500 transition">
+    Season 1
+  </button>
 
-        <img
-          src="https://static1.cbrimages.com/wordpress/wp-content/uploads/2023/08/yuji-itadori.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+  <button onclick="showSeason(2)"
+    class="rounded-full bg-purple-600 px-5 py-2 hover:bg-purple-500 transition">
+    Season 2
+  </button>
 
-        <div>
+  <button onclick="showSeason(3)"
+    class="rounded-full bg-indigo-600 px-5 py-2 hover:bg-indigo-500 transition">
+    Season 3
+  </button>
 
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
+</div>
 
-          <h3 class="mt-1 text-lg font-semibold">
-            The Culling Game Begins
-          </h3>
+<!-- EPISODE LIST -->
+<div
+  id="episodeList"
+  class="grid gap-4 md:grid-cols-2">
+</div>
 
-          <p class="mt-2 text-sm text-slate-400">
-            Yuji enters the deadly Culling Game where survival means fighting powerful sorcerers.
-          </p>
+</section>
+<script>
+
+const episodeList = document.getElementById("episodeList");
+
+/* =========================
+   SEASON ARRAYS
+========================= */
+
+const season1Episodes = [];
+const season2Episodes = [];
+const season3Episodes = [];
+
+/* =========================
+   SEASON 1
+========================= */
+
+for (let i = 1; i <= 24; i++) {
+
+  season1Episodes.push({
+
+    ep: i,
+
+    title: `Jujutsu Kaisen S1 Episode ${i}`,
+
+    desc: `Watch Jujutsu Kaisen Season 1 Episode ${i}.`,
+
+    image: "https://cdn.myanimelist.net/images/anime/1171/109222.jpg",
+
+    video: "YOUR_S1_VIDEO_LINK"
+
+  });
+
+}
+
+/* =========================
+   SEASON 2
+========================= */
+
+for (let i = 1; i <= 24; i++) {
+
+  season2Episodes.push({
+
+    ep: i,
+
+    title: `Jujutsu Kaisen S2 Episode ${i}`,
+
+    desc: `Watch Jujutsu Kaisen Season 2 Episode ${i}.`,
+
+   image: "https://i.pinimg.com/1200x/71/58/21/7158211d2c8ce9f46a323de125993910.jpg",
+
+    video: "YOUR_S2_VIDEO_LINK"
+
+  });
+
+}
+
+/* =========================
+   SEASON 3
+========================= */
+
+for (let i = 1; i <= 12; i++) {
+
+  season3Episodes.push({
+
+    ep: i,
+
+    title: `Jujutsu Kaisen S3 Episode ${i}`,
+
+    desc: `Watch Jujutsu Kaisen Season 3 Episode ${i}.`,
+
+    image: "https://i.pinimg.com/736x/cf/01/81/cf0181a515d6e53165dffd942f7bb9b8.jpg",
+
+    video: "YOUR_S3_VIDEO_LINK"
+
+  });
+
+}
+
+/* =========================
+   SHOW SEASON
+========================= */
+
+function showSeason(season) {
+
+  episodeList.innerHTML = "";
+
+  let selectedSeason = [];
+
+  if (season == 1) {
+    selectedSeason = season1Episodes;
+  }
+
+  if (season == 2) {
+    selectedSeason = season2Episodes;
+  }
+
+  if (season == 3) {
+    selectedSeason = season3Episodes;
+  }
+
+  selectedSeason.forEach(ep => {
+
+    episodeList.innerHTML += `
+
+      <a href="watch.html?anime=Jujutsu%20Kaisen&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&desc=${encodeURIComponent(ep.desc)}&video=${encodeURIComponent(ep.video)}">
+
+        <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300 hover:bg-white/5">
+
+          <img
+            src="${ep.image}"
+            class="h-24 w-40 rounded-xl object-cover"
+          />
+
+          <div>
+
+            <p class="text-sm text-pink-400">
+              Episode ${ep.ep}
+            </p>
+
+            <h3 class="mt-1 text-lg font-semibold">
+              ${ep.title}
+            </h3>
+
+            <p class="mt-2 text-sm text-slate-400">
+              ${ep.desc}
+            </p>
+
+          </div>
 
         </div>
 
-      </div>
+      </a>
 
-      <!-- EPISODE 2 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+    `;
 
-        <img
-          src="https://staticg.sportskeeda.com/editor/2023/10/f2db1-16981491936583-1920.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+  });
 
-        <div>
+}
 
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
+/* =========================
+   AUTO LOAD SEASON 3
+========================= */
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Sukuna Awakens
-          </h3>
+showSeason(3);
 
-          <p class="mt-2 text-sm text-slate-400">
-            The King of Curses reveals terrifying new power during battle.
-          </p>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
+</script>
 </body>
 </html>

@@ -109,79 +109,125 @@
     </div>
 
   </section>
-
+<div class="mb-8 flex gap-3 flex-wrap">
+</div>
   <!-- EPISODES -->
   <section class="mx-auto max-w-7xl px-6 py-16">
 
     <div class="mb-8 flex items-center justify-between">
 
-      <h2 class="text-3xl font-bold">
-        Episodes
-      </h2>
-
-      <span class="text-slate-400">
-        28 Episodes
-      </span>
-
     </div>
 
-    <div class="grid gap-4 md:grid-cols-2">
+   <div class="mb-8 flex items-center justify-between">
+  <h2 class="text-3xl font-bold">Episodes</h2>
 
-      <!-- Episode 1 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  <span class="text-slate-400">Seasons 1 - 2</span>
+</div>
 
-        <img
-          src="https://static1.cbrimages.com/wordpress/wp-content/uploads/2023/09/frieren-beyond-journey-s-end.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+<div class="mb-8 flex gap-3 flex-wrap">
 
-        <div>
+  <button onclick="showSeason(1)"
+    class="rounded-full bg-blue-600 px-5 py-2 hover:bg-blue-500 transition">
+    Season 1
+  </button>
 
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
+  <button onclick="showSeason(2)"
+    class="rounded-full bg-purple-600 px-5 py-2 hover:bg-purple-500 transition">
+    Season 2
+  </button>
 
-          <h3 class="mt-1 text-lg font-semibold">
-            The Journey’s End
-          </h3>
+</div>
 
-          <p class="mt-2 text-sm text-slate-400">
-            Frieren reflects on the fleeting lives of humans after her old companions begin to age.
-          </p>
+<!-- 🔥 THIS IS THE IMPORTANT PART -->
+<div id="episodeList" class="grid gap-4 md:grid-cols-2"></div>
+<script>
+
+const episodeList = document.getElementById("episodeList");
+
+/* =========================
+   SEASON 1 (28 EPISODES)
+========================= */
+
+const season1Episodes = [];
+
+for (let i = 1; i <= 28; i++) {
+
+  season1Episodes.push({
+
+    ep: i,
+    title: `Frieren Episode ${i}`,
+    desc: `Watch Frieren Episode ${i}.`,
+    image: "https://cdn.myanimelist.net/images/anime/1015/138006.jpg",
+    video: "YOUR_VIDEO_LINK"
+
+  });
+
+}
+
+/* =========================
+   SEASON 2 (10 EPISODES)
+========================= */
+
+const season2Episodes = [];
+
+for (let i = 1; i <= 10; i++) {
+
+  season2Episodes.push({
+
+    ep: i,
+    title: `Frieren Season 2 Episode ${i}`,
+    desc: `Watch Frieren Season 2 Episode ${i}.`,
+    image: "https://i.pinimg.com/736x/63/8c/0e/638c0eb4a354ec9bc97b11c6d1cfa7e7.jpg",
+    video: "YOUR_VIDEO_LINK"
+
+  });
+
+}
+
+/* =========================
+   SWITCH SEASONS
+========================= */
+
+function showSeason(season) {
+
+  episodeList.innerHTML = "";
+
+  let selected = [];
+
+  if (season == 1) selected = season1Episodes;
+  if (season == 2) selected = season2Episodes;
+
+  selected.forEach(ep => {
+
+    episodeList.innerHTML += `
+      <a href="watch.html?anime=Frieren&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&desc=${encodeURIComponent(ep.desc)}&video=${encodeURIComponent(ep.video)}">
+
+        <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300 hover:bg-white/5">
+
+          <img src="${ep.image}" class="h-24 w-40 rounded-xl object-cover"/>
+
+          <div>
+
+            <p class="text-sm text-blue-300">Episode ${ep.ep}</p>
+
+            <h3 class="mt-1 text-lg font-semibold">${ep.title}</h3>
+
+            <p class="mt-2 text-sm text-slate-400">${ep.desc}</p>
+
+          </div>
 
         </div>
 
-      </div>
+      </a>
+    `;
 
-      <!-- Episode 2 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  });
 
-        <img
-          src="https://animecorner.me/wp-content/uploads/2023/09/frieren-episode-2-preview.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+}
 
-        <div>
+/* DEFAULT LOAD */
+showSeason(1);
 
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
-
-          <h3 class="mt-1 text-lg font-semibold">
-            A New Beginning
-          </h3>
-
-          <p class="mt-2 text-sm text-slate-400">
-            Frieren takes on a new apprentice and starts another emotional adventure.
-          </p>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
+</script>
 </body>
 </html>

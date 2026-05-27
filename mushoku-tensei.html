@@ -112,78 +112,131 @@
 
   </section>
 
+ <section class="mx-auto max-w-7xl px-6 py-16">
+
+  <div class="mb-8 flex items-center justify-between">
+    <h2 class="text-3xl font-bold">Episodes</h2>
+    <span class="text-slate-400">Seasons 1-?</span>
+  </div>
+
+  <!-- SEASON BUTTONS -->
+  <div class="mb-8 flex gap-3 flex-wrap">
+
+    <button onclick="showSeason(1)"
+      class="rounded-full bg-pink-600 px-5 py-2 hover:bg-pink-500 transition">
+      Season 1
+    </button>
+
+    <button onclick="showSeason(2)"
+      class="rounded-full bg-purple-600 px-5 py-2 hover:bg-purple-500 transition">
+      Season 2
+    </button>
+
+    <button onclick="showSeason(3)"
+      class="rounded-full bg-gray-600 px-5 py-2 hover:bg-gray-500 transition">
+      Season 3 (Soon)
+    </button>
+
+  </div>
+
   <!-- EPISODES -->
-  <section class="mx-auto max-w-7xl px-6 py-16">
+  <div id="episodeList" class="grid gap-4 md:grid-cols-2"></div>
 
-    <div class="mb-8 flex items-center justify-between">
+</section>
+<script>
 
-      <h2 class="text-3xl font-bold">
-        Episodes
-      </h2>
+document.addEventListener("DOMContentLoaded", () => {
 
-      <span class="text-slate-400">
-        Season 3
-      </span>
+  const episodeList = document.getElementById("episodeList");
 
-    </div>
+  const season1 = [];
+  const season2 = [];
+  const season3 = []; // empty (not out)
 
-    <div class="grid gap-4 md:grid-cols-2">
+  // =====================
+  // SEASON 1 (23 EPS + OVA)
+  // =====================
+  for (let i = 1; i <= 23; i++) {
+    season1.push({
+      ep: i,
+      title: `Mushoku Tensei S1 Episode ${i}`,
+      desc: `Watch Mushoku Tensei Season 1 Episode ${i}.`,
+      image: "https://cdn.myanimelist.net/images/anime/1530/117776.jpg",
+      video: "YOUR_S1_VIDEO"
+    });
+  }
 
-      <!-- Episode 1 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  // OVA episode
+  season1.push({
+    ep: "OVA",
+    title: "Mushoku Tensei OVA",
+    desc: "Special episode of Mushoku Tensei Season 1.",
+    image: "https://i.pinimg.com/736x/49/80/1d/49801d32a470ab5ca311ede7d3a22775.jpg",
+    video: "YOUR_OVA_VIDEO"
+  });
 
-        <img
-          src="https://static1.cbrimages.com/wordpress/wp-content/uploads/2023/07/mushoku-tensei-rudeus.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+  // =====================
+  // SEASON 2 (25 EPS)
+  // =====================
+  for (let i = 1; i <= 25; i++) {
+    season2.push({
+      ep: i,
+      title: `Mushoku Tensei S2 Episode ${i}`,
+      desc: `Watch Mushoku Tensei Season 2 Episode ${i}.`,
+      image: "https://i.pinimg.com/736x/d1/5a/c5/d15ac5923165a7deb0eeadee9b202950.jpg",
+      video: "YOUR_S2_VIDEO"
+    });
+  }
 
-        <div>
+  // =====================
+  // RENDER FUNCTION
+  // =====================
+  window.showSeason = function(season) {
 
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
+    episodeList.innerHTML = "";
 
-          <h3 class="mt-1 text-lg font-semibold">
-            A New Journey
-          </h3>
+    let data = [];
 
-          <p class="mt-2 text-sm text-slate-400">
-            Rudeus begins another adventure while confronting the weight of his growing responsibilities.
-          </p>
+    if (season === 1) data = season1;
+    if (season === 2) data = season2;
+    if (season === 3) data = season3; // empty
 
-        </div>
+    if (data.length === 0) {
+      episodeList.innerHTML = `
+        <p class="text-slate-400">Season 3 is not out yet.</p>
+      `;
+      return;
+    }
 
-      </div>
+    data.forEach(ep => {
 
-      <!-- Episode 2 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+      episodeList.innerHTML += `
+        <a href="watch.html?anime=Mushoku%20Tensei&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&desc=${encodeURIComponent(ep.desc)}&video=${encodeURIComponent(ep.video)}">
 
-        <img
-          src="https://animecorner.me/wp-content/uploads/2023/08/mushoku-tensei-season-2.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+          <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300 hover:bg-white/5">
 
-        <div>
+            <img src="${ep.image}" class="h-24 w-40 rounded-xl object-cover"/>
 
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
+            <div>
+              <p class="text-sm text-pink-400">Episode ${ep.ep}</p>
+              <h3 class="mt-1 text-lg font-semibold">${ep.title}</h3>
+              <p class="mt-2 text-sm text-slate-400">${ep.desc}</p>
+            </div>
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Magic and Memories
-          </h3>
+          </div>
 
-          <p class="mt-2 text-sm text-slate-400">
-            Rudeus reflects on his past while strengthening bonds with his companions.
-          </p>
+        </a>
+      `;
 
-        </div>
+    });
 
-      </div>
+  };
 
-    </div>
+  // default load
+  showSeason(1);
 
-  </section>
+});
 
+</script>
 </body>
 </html>

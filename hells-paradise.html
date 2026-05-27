@@ -113,77 +113,111 @@
   </section>
 
   <!-- EPISODES -->
-  <section class="mx-auto max-w-7xl px-6 py-16">
+<section class="mx-auto max-w-7xl px-6 py-16">
 
-    <div class="mb-8 flex items-center justify-between">
+  <div class="mb-8 flex items-center justify-between">
+    <h2 class="text-3xl font-bold">Episodes</h2>
+    <span class="text-slate-400">Season 1-2</span>
+  </div>
 
-      <h2 class="text-3xl font-bold">
-        Episodes
-      </h2>
+  <!-- SEASON BUTTONS -->
+  <div class="mb-8 flex gap-3 flex-wrap">
 
-      <span class="text-slate-400">
-        Season 2
-      </span>
+    <button onclick="showSeason(1)"
+      class="rounded-full bg-pink-600 px-5 py-2 hover:bg-pink-500 transition">
+      Season 1
+    </button>
 
-    </div>
+    <button onclick="showSeason(2)"
+      class="rounded-full bg-purple-600 px-5 py-2 hover:bg-purple-500 transition">
+      Season 2
+    </button>
 
-    <div class="grid gap-4 md:grid-cols-2">
+  </div>
 
-      <!-- Episode 1 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  <!-- EPISODE LIST -->
+  <div id="episodeList" class="grid gap-4 md:grid-cols-2"></div>
 
-        <img
-          src="https://static1.cbrimages.com/wordpress/wp-content/uploads/2023/04/hells-paradise-gabimaru.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+</section>
+<script>
 
-        <div>
+const episodeList = document.getElementById("episodeList");
 
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
+/* =========================
+   SEASON DATA
+========================= */
 
-          <h3 class="mt-1 text-lg font-semibold">
-            The Island of Death
-          </h3>
+const season1Episodes = [];
+const season2Episodes = [];
 
-          <p class="mt-2 text-sm text-slate-400">
-            Gabimaru and the others arrive on the mysterious island where terrifying creatures await.
-          </p>
+/* =========================
+   SEASON 1 (12 EPS)
+========================= */
+
+for (let i = 1; i <= 12; i++) {
+  season1Episodes.push({
+    ep: i,
+    title: `Hell’s Paradise S1 Episode ${i}`,
+    desc: `Watch Hell’s Paradise Season 1 Episode ${i}.`,
+    image: "https://cdn.myanimelist.net/images/anime/1075/131925.jpg",
+    video: "YOUR_SEASON1_VIDEO_LINK"
+  });
+}
+
+/* =========================
+   SEASON 2 (12 EPS)
+========================= */
+
+for (let i = 1; i <= 12; i++) {
+  season2Episodes.push({
+    ep: i,
+    title: `Hell’s Paradise S2 Episode ${i}`,
+    desc: `Watch Hell’s Paradise Season 2 Episode ${i}.`,
+    image: "https://i.pinimg.com/736x/44/00/32/440032cc9a7ca65ecae1b904be577207.jpg",
+    video: "YOUR_SEASON2_VIDEO_LINK"
+  });
+}
+
+/* =========================
+   SWITCH FUNCTION
+========================= */
+
+function showSeason(season) {
+
+  episodeList.innerHTML = "";
+
+  let selected = [];
+
+  if (season == 1) selected = season1Episodes;
+  if (season == 2) selected = season2Episodes;
+
+  selected.forEach(ep => {
+
+    episodeList.innerHTML += `
+      <a href="watch.html?anime=Hells%20Paradise&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&desc=${encodeURIComponent(ep.desc)}&video=${encodeURIComponent(ep.video)}">
+
+        <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300 hover:bg-white/5">
+
+          <img src="${ep.image}" class="h-24 w-40 rounded-xl object-cover"/>
+
+          <div>
+            <p class="text-sm text-pink-400">Episode ${ep.ep}</p>
+            <h3 class="mt-1 text-lg font-semibold">${ep.title}</h3>
+            <p class="mt-2 text-sm text-slate-400">${ep.desc}</p>
+          </div>
 
         </div>
 
-      </div>
+      </a>
+    `;
 
-      <!-- Episode 2 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  });
 
-        <img
-          src="https://animecorner.me/wp-content/uploads/2023/05/hells-paradise-episode.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+}
 
-        <div>
+/* AUTO LOAD SEASON 2 */
+showSeason(2);
 
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
-
-          <h3 class="mt-1 text-lg font-semibold">
-            Immortal Beings
-          </h3>
-
-          <p class="mt-2 text-sm text-slate-400">
-            The group encounters mysterious divine entities guarding the island’s secrets.
-          </p>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
+</script>
 </body>
 </html>

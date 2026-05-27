@@ -54,7 +54,7 @@
 
         <!-- POSTER -->
         <img
-          src="https://cdn.myanimelist.net/images/anime/1398/144461.jpg"
+          src="https://i.pinimg.com/736x/7c/aa/da/7caadaa4335536d2ff5344f8ccf96606.jpg"
           class="w-44 rounded-2xl shadow-2xl"
         />
 
@@ -112,78 +112,68 @@
 
   </section>
 
-  <!-- EPISODES -->
-  <section class="mx-auto max-w-7xl px-6 py-16">
+ <section class="mx-auto max-w-7xl px-6 py-16">
 
-    <div class="mb-8 flex items-center justify-between">
+  <div class="mb-8 flex items-center justify-between">
 
-      <h2 class="text-3xl font-bold">
-        Episodes
-      </h2>
+    <h2 class="text-3xl font-bold">Episodes</h2>
 
-      <span class="text-slate-400">
-        New Series
-      </span>
+    <span class="text-slate-400">1 Season</span>
 
-    </div>
+  </div>
 
-    <div class="grid gap-4 md:grid-cols-2">
+  <!-- EPISODE LIST -->
+  <div id="episodeList" class="grid gap-4 md:grid-cols-2"></div>
 
-      <!-- Episode 1 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+</section>
+<script>
 
-        <img
-          src="https://static1.cbrimages.com/wordpress/wp-content/uploads/2024/07/witch-hat-atelier-anime.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+const episodeList = document.getElementById("episodeList");
+
+const episodes = [];
+
+for (let i = 1; i <= 12; i++) {
+
+  episodes.push({
+
+    ep: i,
+    title: `Witch Hat Atelier Episode ${i}`,
+    desc: `Watch Witch Hat Atelier Episode ${i}.`,
+    image: "https://i.pinimg.com/736x/36/75/97/367597f1c006f219913125c358fb73c8.jpg",
+    video: "YOUR_VIDEO_LINK"
+
+  });
+
+}
+
+episodes.forEach(ep => {
+
+  episodeList.innerHTML += `
+
+    <a href="watch.html?anime=Witch%20Hat%20Atelier&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&desc=${encodeURIComponent(ep.desc)}&video=${encodeURIComponent(ep.video)}">
+
+      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300 hover:bg-white/5">
+
+        <img src="${ep.image}" class="h-24 w-40 rounded-xl object-cover"/>
 
         <div>
 
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
+          <p class="text-sm text-pink-400">Episode ${ep.ep}</p>
 
-          <h3 class="mt-1 text-lg font-semibold">
-            The Secret of Magic
-          </h3>
+          <h3 class="mt-1 text-lg font-semibold">${ep.title}</h3>
 
-          <p class="mt-2 text-sm text-slate-400">
-            Coco discovers the hidden truth behind magic and accidentally changes her life forever.
-          </p>
+          <p class="mt-2 text-sm text-slate-400">${ep.desc}</p>
 
         </div>
 
       </div>
 
-      <!-- Episode 2 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+    </a>
 
-        <img
-          src="https://animecorner.me/wp-content/uploads/2024/07/witch-hat-atelier-key-visual.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+  `;
 
-        <div>
+});
 
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
-
-          <h3 class="mt-1 text-lg font-semibold">
-            Apprentice Witch
-          </h3>
-
-          <p class="mt-2 text-sm text-slate-400">
-            Coco begins training under a mysterious witch while learning the dangers of forbidden magic.
-          </p>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
+</script>
 </body>
 </html>
