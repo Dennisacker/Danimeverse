@@ -420,52 +420,42 @@ animeList.push({
 /* =========================
    SEARCH SYSTEM
 ========================= */
+document.addEventListener("DOMContentLoaded", () => {
 
-const searchInput = document.getElementById("searchInput");
-const searchResults = document.getElementById("searchResults");
+  const searchInput = document.getElementById("searchInput");
+  const searchResults = document.getElementById("searchResults");
 
-searchInput.addEventListener("input", () => {
+  if (!searchInput || !searchResults) return;
 
-  const query = searchInput.value.toLowerCase();
+  searchInput.addEventListener("input", () => {
 
-  if (query === "") {
+    const query = searchInput.value.toLowerCase().trim();
 
-    searchResults.classList.add("hidden");
-    return;
+    if (!query) {
+      searchResults.classList.add("hidden");
+      searchResults.innerHTML = "";
+      return;
+    }
 
-  }
+    const filtered = animeList.filter(anime =>
+      anime.title.toLowerCase().includes(query)
+    );
 
-  const filtered = animeList.filter(anime =>
-    anime.title.toLowerCase().includes(query)
-  );
+    searchResults.classList.remove("hidden");
 
-  searchResults.innerHTML = "";
+    if (filtered.length === 0) {
+      searchResults.innerHTML = `<p class="p-3 text-gray-200">No results found</p>`;
+      return;
+    }
 
-  if (filtered.length === 0) {
+    searchResults.innerHTML = filtered.slice(0, 8).map(anime => `
+      <a href="${anime.url}"
+         class="block px-4 py-3 rounded-xl text-white
+                hover:bg-pink-500/20 hover:text-pink-300 transition">
+        ${anime.title}
+      </a>
+    `).join("");
 
-    searchResults.innerHTML = `
-      <p class="p-3 text-slate-400">
-        No results found
-      </p>
-    `;
-
-  } else {
-
-    filtered.slice(0, 8).forEach(anime => {
-
-      searchResults.innerHTML += `
-        <a
-          href="${anime.url}"
-          class="block rounded-xl px-4 py-3 hover:bg-white/10 transition"
-        >
-          ${anime.title}
-        </a>
-      `;
-
-    });
-
-  }
-
-  searchResults.classList.remove("hidden");
+  });
 
 });

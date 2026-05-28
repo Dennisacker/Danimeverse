@@ -12,6 +12,7 @@
       background: #050816;
       color: white;
       font-family: Arial, sans-serif;
+      overflow-x: hidden;
     }
 
     .glass {
@@ -22,159 +23,191 @@
   </style>
 </head>
 
-<body class="p-4 md:p-8">
+<body class="bg-[#050816] text-white font-sans overflow-x-hidden">
 
-  <!-- VIDEO PLAYER -->
-  <div class="glass rounded-2xl overflow-hidden">
+  <div class="w-full max-w-4xl mx-auto px-2 sm:px-4 py-3 md:py-8">
+
+   <!-- VIDEO PLAYER -->
+<div class="glass rounded-2xl overflow-hidden w-full">
+
+  <div class="relative w-full pt-[56.25%]">
 
     <iframe
-      id="videoPlayer"
-      class="w-full aspect-video"
-      src=""
-      allow="autoplay"
-      allowfullscreen>
-    </iframe>
-
+  id="videoPlayer"
+  class="absolute top-0 left-0 w-full h-full"
+  src=""
+  frameborder="0"
+  scrolling="no"
+  allow="autoplay; encrypted-media"
+  allowfullscreen>
+</iframe>
   </div>
-
-  <!-- EPISODE INFO -->
-<div class="mt-6 glass rounded-2xl p-6 space-y-3">
-<h2 class="text-sm text-white/50 mb-2">Now Playing</h2>
-  <!-- Anime Name -->
-  <p id="animeName"
-     class="text-pink-400 uppercase tracking-widest text-sm font-semibold">
-  </p>
-
-  <!-- Episode Title -->
-  <h1 id="episodeTitle"
-      class="text-2xl md:text-3xl font-bold leading-tight">
-  </h1>
-
-  <!-- Divider -->
-  <div class="w-full h-px bg-white/10"></div>
-
-  
-
-  <!-- Description -->
-  <p id="episodeDesc"
-     class="text-gray-300 leading-6 text-sm md:text-base">
-  </p>
 
 </div>
 
-  <!-- BUTTONS -->
-  <div class="mt-6 flex gap-4">
-    
-    <button class="border border-white/20 px-6 py-3 rounded-full hover:bg-white/10 transition">
-      Download
-    </button>
-    <!-- PREVIOUS -->
-  <button id="prevBtn"
-    class="px-6 py-3 rounded-full border border-purple-500 text-purple-400 hover:bg-purple-500/10 transition">
-    ◀ Previous
+    <!-- EPISODE INFO -->
+    <div class="mt-5 glass rounded-2xl p-4 md:p-6 space-y-3">
+
+      <!-- NOW PLAYING -->
+      <h2 class="text-sm text-white/50 mb-2">
+        Now Playing
+      </h2>
+
+      <!-- Anime Name -->
+      <p id="animeName"
+        class="text-pink-400 uppercase tracking-widest text-sm font-semibold">
+      </p>
+
+      <!-- Episode Title -->
+      <h1 id="episodeTitle"
+        class="text-2xl md:text-4xl font-black leading-tight">
+      </h1>
+
+      <!-- Divider -->
+      <div class="w-full h-px bg-white/10"></div>
+
+      <!-- Description -->
+      <p id="episodeDesc"
+        class="text-gray-300 leading-6 text-sm md:text-base">
+      </p>
+
+    </div>
+
+ <!-- BUTTONS -->
+<div class="mt-5 flex items-center gap-2">
+
+  <!-- DOWNLOAD -->
+  <button class="flex-1 border border-white/20 px-3 py-2 rounded-full hover:bg-white/10 transition text-xs md:text-sm">
+    ⬇ Download
   </button>
-<button id="nextBtn" class="bg-pink-600 px-6 py-3 rounded-full hover:bg-pink-500 transition">
-  Next Episode ▶
-</button>
+
+  <!-- PREVIOUS -->
+  <button id="prevBtn"
+    class="flex-1 px-3 py-2 rounded-full border border-purple-500 text-purple-400 hover:bg-purple-500/10 transition text-xs md:text-sm">
+    ◀ Prev
+  </button>
+
+  <!-- NEXT -->
+  <button id="nextBtn"
+    class="flex-1 bg-pink-600 px-3 py-2 rounded-full hover:bg-pink-500 transition text-xs md:text-sm">
+    Next ▶
+  </button>
+
+</div>
   </div>
 
   <script>
 
     // GET URL DATA
-   console.log("🎥 Watch page loaded");
+    console.log("🎥 Watch page loaded");
 
-const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(window.location.search);
 
-const anime = params.get("anime");
-const video = params.get("video");
-const ep = params.get("ep");
-const title = params.get("title");
-const desc = params.get("desc");
+    const anime = params.get("anime");
+    const video = params.get("video");
+    const ep = params.get("ep");
+    const title = params.get("title");
+    const desc = params.get("desc");
 
-const player = document.getElementById("videoPlayer");
-const animeName = document.getElementById("animeName");
-const episodeTitle = document.getElementById("episodeTitle");
-const episodeDesc = document.getElementById("episodeDesc");
+    const player = document.getElementById("videoPlayer");
+    const animeName = document.getElementById("animeName");
+    const episodeTitle = document.getElementById("episodeTitle");
+    const episodeDesc = document.getElementById("episodeDesc");
 
-/* =========================
-   VIDEO SAFETY CHECK
-========================= */
+    /* =========================
+       VIDEO SAFETY CHECK
+    ========================= */
 
-if (video) {
-  player.src = video;
+  if (video) {
+
+  let fileId = "";
+
+  // Extract Google Drive File ID
+  const match = video.match(/\/d\/(.*?)\//);
+
+  if (match && match[1]) {
+    fileId = match[1];
+  }
+
+  // Cleaner embed link
+  player.src =
+    `https://drive.google.com/file/d/${fileId}/preview`;
+
 } else {
-  console.log("❌ No video found in URL");
-  player.src = "";
 
-  // optional fallback message
-  player.insertAdjacentHTML(
-    "afterend",
-    "<p style='color:red;text-align:center;margin-top:10px;'>No video provided</p>"
-  );
+  console.log("❌ No video found");
+
 }
+    /* =========================
+       TEXT INFO
+    ========================= */
 
-/* =========================
-   TEXT INFO
-========================= */
+    if (animeName)
+      animeName.textContent = anime || "Anime";
 
-if (animeName) animeName.textContent = anime || "Anime";
+    if (episodeTitle)
+      episodeTitle.textContent =
+      title || `Episode ${ep || "?"}`;
 
-if (episodeTitle)
- episodeTitle.textContent =
-  title || `Episode ${ep || "?"}`;
+    if (episodeDesc)
+      episodeDesc.textContent =
+      desc || "No description available.";
 
-if (episodeDesc)
-  episodeDesc.textContent = desc || "No description available.";
-document.addEventListener("DOMContentLoaded", () => {
-  const prevBtn = document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
+    /* =========================
+       BUTTON LOGIC
+    ========================= */
 
-  const params = new URLSearchParams(window.location.search);
+    document.addEventListener("DOMContentLoaded", () => {
 
-  const anime = params.get("anime") || "";
-  const video = params.get("video") || "";
-  const desc = params.get("desc") || "";
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
 
-  let ep = parseInt(params.get("ep")) || 1;
+      let ep = parseInt(params.get("ep")) || 1;
 
-  /* =========================
-     NEXT EPISODE
-  ========================= */
-  if (nextBtn) {
-    nextBtn.addEventListener("click", () => {
-      const nextEp = ep + 1;
+      /* NEXT EPISODE */
+      if (nextBtn) {
 
-      const url =
-        `watch.html?anime=${encodeURIComponent(anime)}` +
-        `&ep=${nextEp}` +
-        `&title=${encodeURIComponent("Episode " + nextEp)}` +
-        `&desc=${encodeURIComponent(desc)}` +
-        `&video=${encodeURIComponent(video)}`;
+        nextBtn.addEventListener("click", () => {
 
-      window.location.href = url;
+          const nextEp = ep + 1;
+
+          const url =
+            `watch.html?anime=${encodeURIComponent(anime)}` +
+            `&ep=${nextEp}` +
+            `&title=${encodeURIComponent("Episode " + nextEp)}` +
+            `&desc=${encodeURIComponent(desc || "")}` +
+            `&video=${encodeURIComponent(video || "")}`;
+
+          window.location.href = url;
+
+        });
+
+      }
+
+      /* PREVIOUS EPISODE */
+      if (prevBtn) {
+
+        prevBtn.addEventListener("click", () => {
+
+          const prevEp = ep - 1;
+
+          if (prevEp < 1) return;
+
+          const url =
+            `watch.html?anime=${encodeURIComponent(anime)}` +
+            `&ep=${prevEp}` +
+            `&title=${encodeURIComponent("Episode " + prevEp)}` +
+            `&desc=${encodeURIComponent(desc || "")}` +
+            `&video=${encodeURIComponent(video || "")}`;
+
+          window.location.href = url;
+
+        });
+
+      }
+
     });
-  }
 
-  /* =========================
-     PREVIOUS EPISODE
-  ========================= */
-  if (prevBtn) {
-    prevBtn.addEventListener("click", () => {
-      const prevEp = ep - 1;
-
-      if (prevEp < 1) return;
-
-      const url =
-        `watch.html?anime=${encodeURIComponent(anime)}` +
-        `&ep=${prevEp}` +
-        `&title=${encodeURIComponent("Episode " + prevEp)}` +
-        `&desc=${encodeURIComponent(desc)}` +
-        `&video=${encodeURIComponent(video)}`;
-
-      window.location.href = url;
-    });
-  }
-});
   </script>
 
 </body>

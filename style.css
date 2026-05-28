@@ -201,3 +201,58 @@ body::before {
     rgba(243,244,246,0.2)
   );
 }
+/* NAV LINKS (Netflix underline animation) */
+.nav-link {
+  position: relative;
+  padding: 6px 0;
+  transition: color 0.3s ease;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0%;
+  height: 2px;
+  background: #ff2e63;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #ff2e63;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* MOBILE MENU */
+.mobile-link {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  transition: 0.3s;
+  color: white;
+}
+
+.mobile-link:hover {
+  background: rgba(255, 46, 99, 0.15);
+  color: #ff2e63;
+}
+
+/* HAMBURGER */
+.bar {
+  width: 22px;
+  height: 2px;
+  background: white;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+/* SCROLL EFFECT */
+.scrolled {
+  padding: 6px 0;
+  background: rgba(5, 7, 15, 0.92) !important;
+  backdrop-filter: blur(20px);
+}
