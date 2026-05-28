@@ -174,3 +174,30 @@ body::before {
   color: white;
   border-radius: 999px;
 }
+/* LIGHT MODE */
+.light-mode {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+/* LIGHT MODE GLASS */
+.light-mode .glass {
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+/* TEXT FIXES */
+.light-mode .text-slate-300,
+.light-mode .text-slate-400 {
+  color: #374151 !important;
+}
+
+/* HERO OVERLAY */
+.light-mode .hero-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(243,244,246,1),
+    rgba(243,244,246,0.7),
+    rgba(243,244,246,0.2)
+  );
+}
