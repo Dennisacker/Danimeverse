@@ -192,12 +192,27 @@ class="flex items-center justify-between px-6 py-4 bg-softblack text-white">
     <a href="#genres" class="hover:text-neonpurple">Genres</a>
   </div>
 
-  <!-- Search Bar -->
- <div class="hidden md:flex items-center space-x-2 ml-8">
-  <input type="text" placeholder="Search anime..." 
-         class="px-2 md:px-3 py-2 rounded-full bg-softblack border border-neonpurple text-white focus:outline-none focus:ring-2 focus:ring-neonblue">
-  <button class="bg-neonpurple px-4 py-2 rounded-full hover:bg-neonblue">Search</button>
- </div>
+ <!-- Search Bar -->
+<div class="hidden md:flex items-center space-x-2 ml-8 relative">
+
+  <input
+    type="text"
+    id="searchInput"
+    placeholder="Search anime..."
+    class="px-2 md:px-3 py-2 rounded-full bg-softblack border border-neonpurple text-white focus:outline-none focus:ring-2 focus:ring-neonblue"
+  >
+
+  <button class="bg-neonpurple px-4 py-2 rounded-full hover:bg-neonblue">
+    Search
+  </button>
+
+  <!-- SEARCH RESULTS -->
+  <div
+    id="searchResults"
+    class="absolute top-14 left-0 w-80 rounded-2xl bg-[#0b1023] border border-white/10 p-2 hidden z-50 shadow-2xl">
+  </div>
+
+</div>
 
 
  
@@ -1845,6 +1860,7 @@ document.addEventListener("click", (e) => {
 
   </div>
 </div>
+<script src="search.js"></script>
   </body>
   
 
