@@ -127,63 +127,52 @@
 
     </div>
 
-    <div class="grid gap-4 md:grid-cols-2">
+    <div id="episodeList" class="grid gap-4 md:grid-cols-2"></div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
 
-      <!-- Episode 1 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  const episodeList = document.getElementById("episodeList");
 
-        <img
-          src="https://static1.cbrimages.com/wordpress/wp-content/uploads/2023/07/fate-strange-fake.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+  const episodes = [];
 
-        <div>
+  // Episode 0 + 13 episodes total (0–12)
+  for (let i = 0; i <= 12; i++) {
+    episodes.push({
+      ep: i,
+      title: i === 0 ? "False Grail War (Prologue)" : `Episode ${i}`,
+      desc: `Watch Fate/strange Fake Episode ${i}.`,
+      image: "https://i.pinimg.com/736x/9e/ad/05/9ead05f9a228d1e73cae1f3eddbe0e41.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
+  function render() {
+    episodeList.innerHTML = "";
 
-          <h3 class="mt-1 text-lg font-semibold">
-            False Grail War
-          </h3>
+    episodes.forEach(ep => {
+      episodeList.innerHTML += `
+        <a href="watch.html?anime=FateStrangeFake&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&desc=${encodeURIComponent(ep.desc)}&video=${encodeURIComponent(ep.video)}">
 
-          <p class="mt-2 text-sm text-slate-400">
-            A new Holy Grail War erupts in America, bringing together mysterious Masters and Servants.
-          </p>
+          <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300 hover:bg-white/5">
 
-        </div>
+            <img src="${ep.image}" class="h-24 w-40 rounded-xl object-cover"/>
 
-      </div>
+            <div>
+              <p class="text-sm text-pink-400">Episode ${ep.ep}</p>
+              <h3 class="mt-1 text-lg font-semibold">${ep.title}</h3>
+              <p class="mt-2 text-sm text-slate-400">${ep.desc}</p>
+            </div>
 
-      <!-- Episode 2 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+          </div>
 
-        <img
-          src="https://animecorner.me/wp-content/uploads/2023/07/fate-strange-fake-whispers-of-dawn.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+        </a>
+      `;
+    });
+  }
 
-        <div>
+  render();
 
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
-
-          <h3 class="mt-1 text-lg font-semibold">
-            Heroes and Deception
-          </h3>
-
-          <p class="mt-2 text-sm text-slate-400">
-            Hidden motives and fake summons begin to distort the fate of the war.
-          </p>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
+});
+</script>
 </body>
 </html>

@@ -112,78 +112,162 @@
 
   </section>
 
-  <!-- EPISODES -->
-  <section class="mx-auto max-w-7xl px-6 py-16">
+<!-- EPISODES -->
+<section class="mx-auto max-w-7xl px-6 py-16">
 
-    <div class="mb-8 flex items-center justify-between">
+  <div class="mb-8 flex items-center justify-between">
+    <h2 class="text-3xl font-bold">Episodes</h2>
+    <span class="text-slate-400">Season 1-4</span>
+  </div>
+<!-- SEASON BUTTONS -->
+<div class="mb-8 flex gap-3 flex-wrap">
 
-      <h2 class="text-3xl font-bold">
-        Episodes
-      </h2>
+  <button onclick="showSeason(1)" class="rounded-full bg-cyan-600 px-5 py-2 hover:bg-cyan-500 transition">
+    Season 1
+  </button>
 
-      <span class="text-slate-400">
-        Season 3
-      </span>
+  <button onclick="showSeason(2)" class="rounded-full bg-green-600 px-5 py-2 hover:bg-green-500 transition">
+    Season 2
+  </button>
 
-    </div>
+  <button onclick="showSeason(3)" class="rounded-full bg-yellow-600 px-5 py-2 hover:bg-yellow-500 transition">
+    Season 3
+  </button>
 
-    <div class="grid gap-4 md:grid-cols-2">
+  <button onclick="showSeason(4)" class="rounded-full bg-slate-600 px-5 py-2 hover:bg-slate-500 transition">
+    Season 4
+  </button>
 
-      <!-- Episode 1 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  <button onclick="showSeason('special')" class="rounded-full bg-pink-600 px-5 py-2 hover:bg-pink-500 transition">
+    Special
+  </button>
 
-        <img
-          src="https://static1.cbrimages.com/wordpress/wp-content/uploads/2021/05/dr-stone-senku.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+</div>
+  </div>
+ <!-- EPISODES LIST -->
+  <div id="episodeList" class="grid gap-4 md:grid-cols-2"></div>
 
-        <div>
+</section>
 
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
 
-          <h3 class="mt-1 text-lg font-semibold">
-            The Future of Science
-          </h3>
+</section>
 
-          <p class="mt-2 text-sm text-slate-400">
-            Senku begins a bold new mission to advance humanity through groundbreaking inventions.
-          </p>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
 
-        </div>
+  const episodeList = document.getElementById("episodeList");
 
-      </div>
+  const season1 = [];
+  const season2 = [];
+  const season3 = [];
+  const season4 = [];
+  const special = []; // 👈 NEW
 
-      <!-- Episode 2 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  /* =========================
+     SEASON 1 (24)
+  ========================= */
+  for (let i = 1; i <= 24; i++) {
+    season1.push({
+      ep: i,
+      title: `Dr. Stone S1 Episode ${i}`,
+      desc: `Watch Dr. Stone Season 1 Episode ${i}.`,
+      image: "https://i.pinimg.com/736x/21/47/ed/2147ed6979caf6ea49a57d74fb0bb6c8.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-        <img
-          src="https://animecorner.me/wp-content/uploads/2023/04/dr-stone-new-world.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+  /* =========================
+     SEASON 2 (11)
+  ========================= */
+  for (let i = 1; i <= 11; i++) {
+    season2.push({
+      ep: i,
+      title: `Dr. Stone S2 Episode ${i}`,
+      desc: `Watch Dr. Stone Season 2 Episode ${i}.`,
+      image: "https://i.pinimg.com/736x/35/d4/94/35d49432ea01ca3295c523fed577e745.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-        <div>
+  /* =========================
+     SEASON 3 (22)
+  ========================= */
+  for (let i = 1; i <= 22; i++) {
+    season3.push({
+      ep: i,
+      title: `Dr. Stone S3 Episode ${i}`,
+      desc: `Watch Dr. Stone New World Episode ${i}.`,
+      image: "https://i.pinimg.com/1200x/01/d6/85/01d685a66cf1ea0b35747f389408a745.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
+  /* =========================
+     SEASON 4 (33)
+  ========================= */
+  for (let i = 1; i <= 33; i++) {
+    season4.push({
+      ep: i,
+      title: `Dr. Stone S4 Episode ${i}`,
+      desc: `Watch Dr. Stone Science Future Episode ${i}.`,
+      image: "https://i.pinimg.com/1200x/98/a6/c9/98a6c97611d7859c4037cd875bf91008.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Kingdom of Discovery
-          </h3>
+  /* =========================
+     SPECIAL (1 EPISODE)
+  ========================= */
+  special.push({
+    ep: "Special",
+    title: "Dr. Stone Canon Special Episode",
+    desc: "Official canon special episode.",
+    image: "https://i.pinimg.com/736x/27/e0/3e/27e03e285885daaf8da8ccd25fd2202f.jpg",
+    video: "YOUR_LINK"
+  });
 
-          <p class="mt-2 text-sm text-slate-400">
-            The team races against time as new scientific breakthroughs reshape the stone world.
-          </p>
+  /* =========================
+     RENDER
+  ========================= */
+  function render(data) {
+    episodeList.innerHTML = "";
 
-        </div>
+    data.forEach(ep => {
+      episodeList.innerHTML += `
+        <a href="watch.html?anime=DrStone&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&desc=${encodeURIComponent(ep.desc)}&video=${encodeURIComponent(ep.video)}">
 
-      </div>
+          <div class="episode-card glass flex gap-4 rounded-2xl p-4 hover:bg-white/5 transition">
 
-    </div>
+            <img src="${ep.image}" class="h-24 w-40 rounded-xl object-cover"/>
 
-  </section>
+            <div>
+              <p class="text-sm text-cyan-400">Episode ${ep.ep}</p>
+              <h3 class="mt-1 text-lg font-semibold">${ep.title}</h3>
+              <p class="mt-2 text-sm text-slate-400">${ep.desc}</p>
+            </div>
 
+          </div>
+
+        </a>
+      `;
+    });
+  }
+
+  /* =========================
+     GLOBAL SWITCH
+  ========================= */
+  window.showSeason = function(season) {
+    if (season === 1) render(season1);
+    if (season === 2) render(season2);
+    if (season === 3) render(season3);
+    if (season === 4) render(season4);
+    if (season === "special") render(special); // 👈 NEW BUTTON TYPE
+  };
+
+  /* AUTO LOAD */
+  showSeason(1);
+
+});
+</script>
 </body>
 </html>

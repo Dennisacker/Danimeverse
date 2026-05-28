@@ -112,78 +112,91 @@
 
   </section>
 
-  <!-- EPISODES -->
-  <section class="mx-auto max-w-7xl px-6 py-16">
+ <!-- EPISODES -->
+<section class="mx-auto max-w-7xl px-6 py-16">
 
-    <div class="mb-8 flex items-center justify-between">
+  <div class="mb-8 flex items-center justify-between">
+    <h2 class="text-3xl font-bold">Episodes</h2>
+    <span class="text-slate-400">Chainsaw Man</span>
+  </div>
 
-      <h2 class="text-3xl font-bold">
-        Episodes
-      </h2>
+  <!-- BUTTONS -->
+  <div class="mb-8 flex gap-3 flex-wrap">
 
-      <span class="text-slate-400">
-        Continuation Arc
-      </span>
+    <button onclick="showSeason('s1')" class="rounded-full bg-pink-600 px-5 py-2 hover:bg-pink-500 transition">
+      Season 1
+    </button>
 
-    </div>
+    <button onclick="showSeason('movie')" class="rounded-full bg-orange-600 px-5 py-2 hover:bg-orange-500 transition">
+      Reze Arc (Movie)
+    </button>
 
-    <div class="grid gap-4 md:grid-cols-2">
+  </div>
 
-      <!-- Episode 1 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  <!-- EPISODE LIST -->
+  <div id="episodeList" class="grid gap-4 md:grid-cols-2"></div>
 
-        <img
-          src="https://images6.alphacoders.com/128/1289846.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+</section>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
 
-        <div>
+  const episodeList = document.getElementById("episodeList");
 
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
+  const season1 = [];
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Blood and Steel
-          </h3>
+  // Season 1 - 12 episodes
+  for (let i = 1; i <= 12; i++) {
+    season1.push({
+      ep: i,
+      title: `Chainsaw Man Episode ${i}`,
+      desc: `Watch Chainsaw Man Episode ${i}.`,
+      image: "https://i.pinimg.com/736x/93/94/c0/9394c0075ac3fbef70cfdd0bbbadfd11.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-          <p class="mt-2 text-sm text-slate-400">
-            Denji confronts terrifying new devils while the city descends deeper into chaos.
-          </p>
+  // Reze Arc Movie
+  const movie = [{
+    ep: "Movie",
+    title: "Chainsaw Man: Reze Arc",
+    desc: "Denji meets Reze in a dangerous love story that changes everything.",
+    image: "https://i.pinimg.com/736x/4b/67/21/4b672145fd8ecb4b71c4d959d19502ff.jpg",
+    video: "YOUR_LINK"
+  }];
 
-        </div>
+  function render(data) {
+    episodeList.innerHTML = "";
 
-      </div>
+    data.forEach(ep => {
+      episodeList.innerHTML += `
+        <a href="watch.html?anime=ChainsawMan&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&desc=${encodeURIComponent(ep.desc)}&video=${encodeURIComponent(ep.video)}">
 
-      <!-- Episode 2 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+          <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300 hover:bg-white/5">
 
-        <img
-          src="https://static1.cbrimages.com/wordpress/wp-content/uploads/2022/12/chainsaw-man-denji.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+            <img src="${ep.image}" class="h-24 w-40 rounded-xl object-cover"/>
 
-        <div>
+            <div>
+              <p class="text-sm text-pink-400">Episode ${ep.ep}</p>
+              <h3 class="mt-1 text-lg font-semibold">${ep.title}</h3>
+              <p class="mt-2 text-sm text-slate-400">${ep.desc}</p>
+            </div>
 
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
+          </div>
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Devil’s Contract
-          </h3>
+        </a>
+      `;
+    });
+  }
 
-          <p class="mt-2 text-sm text-slate-400">
-            Old enemies resurface as Denji struggles to protect the fragile life he’s built.
-          </p>
+  window.showSeason = function(type) {
+    if (type === "s1") render(season1);
+    if (type === "movie") render(movie);
+  };
 
-        </div>
+  // auto load season 1
+  showSeason("movie");
 
-      </div>
-
-    </div>
-
-  </section>
-
+});
+</script>
 </body>
 </html>

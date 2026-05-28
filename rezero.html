@@ -112,78 +112,167 @@
 
   </section>
 
-  <!-- EPISODES -->
-  <section class="mx-auto max-w-7xl px-6 py-16">
+ <!-- EPISODES -->
+<section class="mx-auto max-w-7xl px-6 py-16">
 
-    <div class="mb-8 flex items-center justify-between">
+  <div class="mb-8 flex items-center justify-between">
+    <h2 class="text-3xl font-bold">Episodes</h2>
+    <span class="text-slate-400">Season 1-?</span>
+  </div>
 
-      <h2 class="text-3xl font-bold">
-        Episodes
-      </h2>
+  <!-- SEASON BUTTONS -->
+  <div class="mb-8 flex gap-3 flex-wrap">
+    <button onclick="showSeason(1)" class="rounded-full bg-pink-600 px-5 py-2 hover:bg-pink-500 transition">
+      Season 1
+    </button>
 
-      <span class="text-slate-400">
-        Season 4
-      </span>
+    <button onclick="showSeason(2)" class="rounded-full bg-purple-600 px-5 py-2 hover:bg-purple-500 transition">
+      Season 2
+    </button>
 
-    </div>
+    <button onclick="showSeason(3)" class="rounded-full bg-indigo-600 px-5 py-2 hover:bg-indigo-500 transition">
+      Season 3
+    </button>
 
-    <div class="grid gap-4 md:grid-cols-2">
+    <button onclick="showSeason(4)" class="rounded-full bg-slate-600 px-5 py-2 hover:bg-slate-500 transition">
+      Season 4
+    </button>
+  </div>
 
-      <!-- Episode 1 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  <!-- EPISODE LIST (THIS IS THE IMPORTANT PART) -->
+  <div id="episodeList" class="grid gap-4 md:grid-cols-2"></div>
 
-        <img
-          src="https://static1.cbrimages.com/wordpress/wp-content/uploads/2021/01/ReZero-Subaru.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+</section>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
 
-        <div>
+  const episodeList = document.getElementById("episodeList");
 
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
+  const season1 = [];
+  const season2 = [];
+  const season3 = [];
+  const season4 = [];
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Return by Death
-          </h3>
+  /* =========================
+     SEASON 1 (25 EPS)
+  ========================= */
+  for (let i = 1; i <= 25; i++) {
+    season1.push({
+      ep: i,
+      title: `Re:Zero S1 Episode ${i}`,
+      desc: `Watch Re:Zero Season 1 Episode ${i}.`,
+      image: "https://i.pinimg.com/1200x/8c/bb/26/8cbb26aae043f63eb248caeb67d5b612.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-          <p class="mt-2 text-sm text-slate-400">
-            Subaru awakens once again in a twisted timeline filled with impossible choices.
-          </p>
+  /* =========================
+     SEASON 2 (25 EPS + OVAs)
+  ========================= */
+  for (let i = 1; i <= 25; i++) {
+    season2.push({
+      ep: i,
+      title: `Re:Zero S2 Episode ${i}`,
+      desc: `Watch Re:Zero Season 2 Episode ${i}.`,
+      image: "https://i.pinimg.com/736x/d8/9b/36/d89b36b73582a9f4cfa2098cbbd80977.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-        </div>
+  season2.push(
+    {
+      ep: "OVA 1",
+      title: "Memory Snow",
+      desc: "Special Episode",
+      image: "https://i.pinimg.com/736x/d1/80/cd/d180cd7a4116638a047942b7bb98b745.jpg",
+      video: "YOUR_LINK"
+    },
+    {
+      ep: "OVA 2",
+      title: "Frozen Bonds",
+      desc: "Special Episode",
+      image: "https://i.pinimg.com/736x/79/5f/22/795f227aafbbc6b32b0ad8620d433368.jpg",
+      video: "YOUR_LINK"
+    }
+  );
 
-      </div>
+  /* =========================
+     SEASON 3 (16 EPS)
+  ========================= */
+  for (let i = 1; i <= 16; i++) {
+    season3.push({
+      ep: i,
+      title: `Re:Zero S3 Episode ${i}`,
+      desc: `Watch Re:Zero Season 3 Episode ${i}.`,
+      image: "https://i.pinimg.com/736x/d1/80/cd/d180cd7a4116638a047942b7bb98b745.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-      <!-- Episode 2 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  /* =========================
+     SEASON 4 (ONGOING - 8 EPS)
+  ========================= */
+  for (let i = 1; i <= 8; i++) {
+    season4.push({
+      ep: i,
+      title: `Re:Zero S4 Episode ${i}`,
+      desc: `Watch Re:Zero Season 4 Episode ${i}.`,
+      image: "https://i.pinimg.com/736x/a0/bb/a5/a0bba59e5f3d52bb669bd1f95d946f96.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-        <img
-          src="https://animecorner.me/wp-content/uploads/2021/03/rezero.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+  /* =========================
+     RENDER FUNCTION
+  ========================= */
+  function render(data, isOngoing = false) {
+    episodeList.innerHTML = "";
 
-        <div>
+    if (!data.length) {
+      episodeList.innerHTML = `
+        <p class="text-slate-400 col-span-2 text-center">
+          Season is not out yet.
+        </p>`;
+      return;
+    }
 
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
+    data.forEach(ep => {
+      episodeList.innerHTML += `
+        <a href="watch.html?anime=ReZero&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&desc=${encodeURIComponent(ep.desc)}&video=${encodeURIComponent(ep.video)}">
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Shifting Fate
-          </h3>
+          <div class="episode-card glass flex gap-4 rounded-2xl p-4 hover:bg-white/5 transition">
 
-          <p class="mt-2 text-sm text-slate-400">
-            As danger closes in, Subaru must rely on trust and determination to survive another cycle.
-          </p>
+            <img src="${ep.image}" class="h-24 w-40 rounded-xl object-cover"/>
 
-        </div>
+            <div>
+              <p class="text-sm text-pink-400">
+                Episode ${ep.ep}
+                ${isOngoing ? `<span class="text-green-400 ml-2">(Ongoing)</span>` : ""}
+              </p>
+              <h3 class="mt-1 text-lg font-semibold">${ep.title}</h3>
+              <p class="mt-2 text-sm text-slate-400">${ep.desc}</p>
+            </div>
 
-      </div>
+          </div>
 
-    </div>
+        </a>`;
+    });
+  }
 
-  </section>
+  /* =========================
+     SWITCH SEASONS
+  ========================= */
+  window.showSeason = function(season) {
+    if (season === 1) render(season1);
+    if (season === 2) render(season2);
+    if (season === 3) render(season3);
+    if (season === 4) render(season4, true);
+  };
 
+  /* AUTO LOAD */
+  showSeason(1);
+
+});
+</script>
 </body>
 </html>

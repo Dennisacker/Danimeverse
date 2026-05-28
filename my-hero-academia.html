@@ -126,64 +126,106 @@
       </span>
 
     </div>
+<div class="mb-8 flex gap-3 flex-wrap">
 
-    <div class="grid gap-4 md:grid-cols-2">
+  <button onclick="showSeason('s1')" class="bg-red-600 px-4 py-2 rounded-full">S1</button>
+  <button onclick="showSeason('s2')" class="bg-blue-600 px-4 py-2 rounded-full">S2</button>
+  <button onclick="showSeason('s3')" class="bg-pink-600 px-4 py-2 rounded-full">S3</button>
+  <button onclick="showSeason('s4')" class="bg-yellow-600 px-4 py-2 rounded-full">S4</button>
+  <button onclick="showSeason('s5')" class="bg-green-600 px-4 py-2 rounded-full">S5</button>
+  <button onclick="showSeason('s6')" class="bg-purple-600 px-4 py-2 rounded-full">S6</button>
+  <button onclick="showSeason('s7')" class="bg-indigo-600 px-4 py-2 rounded-full">S7</button>
+  <button onclick="showSeason('s8')" class="bg-gray-600 px-4 py-2 rounded-full">Final S8</button>
 
-      <!-- EPISODE 1 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  <button onclick="showSeason('movies')" class="bg-orange-600 px-4 py-2 rounded-full">Movies</button>
+  <button onclick="showSeason('vigilantes1')" class="bg-teal-600 px-4 py-2 rounded-full">Vigilantes S1</button>
+  <button onclick="showSeason('vigilantes2')" class="bg-teal-800 px-4 py-2 rounded-full">Vigilantes S2</button>
 
-        <img
-          src="https://i.pinimg.com/736x/f4/90/e2/f490e2f13f2f1cce7f4d47d9f5f50b4f.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
-
-        <div>
-
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
-
-          <h3 class="mt-1 text-lg font-semibold">
-            The Final War Begins
-          </h3>
-
-          <p class="mt-2 text-sm text-slate-400">
-            Heroes across Japan mobilize for the decisive battle against evil.
-          </p>
-
-        </div>
-
-      </div>
-
-      <!-- EPISODE 2 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
-
-        <img
-          src="https://i.pinimg.com/736x/c2/22/e8/c222e8d8dc4f6d1bc85ff8fbc7cc8b1f.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
-
-        <div>
-
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
-
-          <h3 class="mt-1 text-lg font-semibold">
-            One For All
-          </h3>
-
-          <p class="mt-2 text-sm text-slate-400">
-            Deku confronts overwhelming power while protecting those closest to him.
-          </p>
-
-        </div>
-
-      </div>
-
-    </div>
-
+</div>
+    <div id="episodeList" class="grid gap-4 md:grid-cols-2"></div>
   </section>
+<<script>
+const episodeList = document.getElementById("episodeList");
 
+// helper function
+function createEpisodes(count, seasonName, img) {
+  return Array.from({ length: count }, (_, i) => ({
+    ep: i + 1,
+    title: `${seasonName} Episode ${i + 1}`,
+    desc: `Watch ${seasonName} Episode ${i + 1}`,
+    image: img,
+    video: "YOUR_LINK"
+  }));
+}
+
+// ALL SEASONS
+const data = {
+  s1: createEpisodes(13, "Season 1", "https://i.pinimg.com/736x/94/ea/f3/94eaf36ebaef4a16cc0931b1dcdf2f27.jpg"),
+  s2: createEpisodes(25, "Season 2", "https://i.pinimg.com/736x/76/c9/90/76c990aee35309daeb2392830790bfa3.jpg"),
+  s3: createEpisodes(25, "Season 3", "https://i.pinimg.com/736x/c3/46/92/c34692b08a62c8ac225efb7c30e46f98.jpg"),
+  s4: createEpisodes(25, "Season 4", "https://i.pinimg.com/736x/5b/48/d0/5b48d09ad83961b0615a554bd249d729.jpg"),
+  s5: createEpisodes(25, "Season 5", "https://i.pinimg.com/736x/ea/68/03/ea680339d0cc13826e7ce698c3a693b1.jpg"),
+  s6: createEpisodes(25, "Season 6", "https://i.pinimg.com/1200x/30/8a/da/308adafe1a47f4f87ab6da6bbacd49ab.jpg"),
+  s7: createEpisodes(21, "Season 7", "https://i.pinimg.com/736x/c3/46/92/c34692b08a62c8ac225efb7c30e46f98.jpg"),
+  s8: createEpisodes(11, "Final Season", "https://i.pinimg.com/736x/d3/d6/cb/d3d6cb9e3c63bb63096b5cbfc7b72c46.jpg"),
+
+  movies: [
+    {
+      ep: "Movie 1",
+      title: "My Hero Academia: Two Heroes",
+      desc: "Movie story",
+      image: "https://i.pinimg.com/1200x/3f/3a/f1/3f3af1d3c1017df7d3064650a6bbebe4.jpg",
+      video: "YOUR_LINK"
+    },
+    {
+      ep: "Movie 2",
+      title: "Heroes Rising",
+      desc: "Movie story",
+      image: "https://i.pinimg.com/736x/c5/f3/dd/c5f3ddcb2ab6d8e0169bfb0b65dd21e6.jpg",
+      video: "YOUR_LINK"
+    },
+    {
+      ep: "Movie 3",
+      title: "World Heroes Mission",
+      desc: "Movie story",
+      image: "https://i.pinimg.com/736x/1d/ed/1f/1ded1f8ac5f932d48ad35ca5a15efd45.jpg",
+      video: "YOUR_LINK"
+    },
+    {
+      ep: "Movie 4",
+      title: "You’re Next",
+      desc: "Movie story",
+      image: "https://i.pinimg.com/1200x/5d/9a/49/5d9a493ce14a3b8a36fc1b3a94ffcf88.jpg",
+      video: "YOUR_LINK"
+    }
+  ],
+
+  vigilantes1: createEpisodes(13, "Vigilantes S1", "https://i.pinimg.com/1200x/ef/69/de/ef69de5d10c1205ca455d8b689194c24.jpg"),
+  vigilantes2: createEpisodes(13, "Vigilantes S2", "https://i.pinimg.com/736x/d0/ef/03/d0ef03932ca4522113c89392a3fdc1c3.jpg"),
+};
+
+// render function
+function showSeason(key) {
+  episodeList.innerHTML = "";
+
+  data[key].forEach(ep => {
+    episodeList.innerHTML += `
+      <a href="watch.html?ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&video=${encodeURIComponent(ep.video)}">
+        <div class="episode-card glass flex gap-4 rounded-2xl p-4 hover:bg-white/5 transition">
+          <img src="${ep.image}" class="h-24 w-40 rounded-xl object-cover"/>
+          <div>
+            <p class="text-sm text-pink-400">Episode ${ep.ep}</p>
+            <h3 class="mt-1 text-lg font-semibold">${ep.title}</h3>
+            <p class="mt-2 text-sm text-slate-400">${ep.desc}</p>
+          </div>
+        </div>
+      </a>
+    `;
+  });
+}
+
+// default load
+showSeason("s1");
+</script>
 </body>
 </html>

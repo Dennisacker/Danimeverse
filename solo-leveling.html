@@ -113,78 +113,131 @@
 
   </section>
 
-  <!-- EPISODES -->
-  <section class="mx-auto max-w-7xl px-6 py-16">
+ <!-- EPISODES SECTION -->
+<section class="mx-auto max-w-7xl px-6 py-16">
 
-    <div class="mb-8 flex items-center justify-between">
+  <!-- TOP -->
+  <div class="mb-8 flex items-center justify-between">
 
-      <h2 class="text-3xl font-bold">
-        Episodes
-      </h2>
+    <h2 class="text-3xl font-bold">
+      Episodes
+    </h2>
 
-      <span class="text-slate-400">
-        Season 2
-      </span>
+    <span class="text-slate-400">
+      Solo Leveling
+    </span>
 
-    </div>
+  </div>
 
-    <div class="grid gap-4 md:grid-cols-2">
+  <!-- BUTTONS -->
+  <div class="mb-8 flex gap-3 flex-wrap">
 
-      <!-- EPISODE 1 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+    <button onclick="showSeason(1)"
+      class="rounded-full bg-purple-600 px-5 py-2 hover:bg-purple-500 transition">
+      Season 1
+    </button>
 
-        <img
-          src="https://i.pinimg.com/736x/1c/5d/2f/1c5d2f7c8c9b1d3e7f1a3a9f7c2a9b2d.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+    <button onclick="showSeason(2)"
+      class="rounded-full bg-pink-600 px-5 py-2 hover:bg-pink-500 transition">
+      Season 2
+    </button>
 
-        <div>
+  </div>
 
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
+  <!-- EPISODE LIST -->
+  <div id="episodeList" class="grid gap-4 md:grid-cols-2"></div>
 
-          <h3 class="mt-1 text-lg font-semibold">
-            The Weakest Hunter
-          </h3>
+</section>
 
-          <p class="mt-2 text-sm text-slate-400">
-            Jinwoo enters a deadly dungeon that changes his fate forever.
-          </p>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
 
-        </div>
+  const episodeList = document.getElementById("episodeList");
 
-      </div>
+  const s1 = [];
+  const s2 = [];
 
-      <!-- EPISODE 2 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  /* SEASON 1 - 12 Episodes */
+  for (let i = 1; i <= 12; i++) {
 
-        <img
-          src="https://i.pinimg.com/736x/3d/2a/9b/3d2a9b5c1a8f7c6d9e2a1b7f4c9d0e11.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+    s1.push({
+      ep: i,
+      title: `Solo Leveling S1 Episode ${i}`,
+      desc: `Watch Solo Leveling Season 1 Episode ${i}.`,
+      image: "https://i.pinimg.com/736x/a7/72/2f/a7722f910928752d8fc105ff00f67b5f.jpg",
+      video: "YOUR_LINK"
+    });
 
-        <div>
+  }
 
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
+  /* SEASON 2 - 13 Episodes */
+  for (let i = 1; i <= 13; i++) {
 
-          <h3 class="mt-1 text-lg font-semibold">
-            System Awakening
-          </h3>
+    s2.push({
+      ep: i,
+      title: `Solo Leveling S2 Episode ${i}`,
+      desc: `Watch Solo Leveling Season 2 Episode ${i}.`,
+      image: "https://i.pinimg.com/736x/95/04/2a/95042aaa5a9511bbecbc7f3177cbfd40.jpg",
+      video: "YOUR_LINK"
+    });
 
-          <p class="mt-2 text-sm text-slate-400">
-            A mysterious system appears, granting Jinwoo impossible power.
-          </p>
+  }
 
-        </div>
+  function render(data) {
 
-      </div>
+    episodeList.innerHTML = "";
 
-    </div>
+    data.forEach(ep => {
 
-  </section>
+      episodeList.innerHTML += `
+
+        <a href="watch.html?anime=SoloLeveling&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&video=${encodeURIComponent(ep.video)}">
+
+          <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300 hover:bg-white/5">
+
+            <img
+              src="${ep.image}"
+              class="h-24 w-40 rounded-xl object-cover"
+            />
+
+            <div>
+
+              <p class="text-sm text-pink-400">
+                Episode ${ep.ep}
+              </p>
+
+              <h3 class="mt-1 text-lg font-semibold">
+                ${ep.title}
+              </h3>
+
+              <p class="mt-2 text-sm text-slate-400">
+                ${ep.desc}
+              </p>
+
+            </div>
+
+          </div>
+
+        </a>
+
+      `;
+
+    });
+
+  }
+
+  window.showSeason = function(season) {
+
+    if (season === 1) render(s1);
+    if (season === 2) render(s2);
+
+  };
+
+  /* AUTO LOAD SEASON 1 */
+  showSeason(1);
+
+});
+</script>
 
 </body>
 </html>

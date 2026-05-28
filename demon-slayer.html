@@ -113,77 +113,142 @@
   </section>
 
   <!-- EPISODES -->
-  <section class="mx-auto max-w-7xl px-6 py-16">
+<section class="mx-auto max-w-7xl px-6 py-16">
 
-    <div class="mb-8 flex items-center justify-between">
+  <div class="mb-8 flex items-center justify-between">
+    <h2 class="text-3xl font-bold">Episodes</h2>
+    <span class="text-slate-400">Infinity Castle Arc</span>
+  </div>
 
-      <h2 class="text-3xl font-bold">
-        Episodes
-      </h2>
+  <!-- BUTTONS -->
+  <div class="mb-8 flex gap-3 flex-wrap">
 
-      <span class="text-slate-400">
-        Infinity Castle Arc
-      </span>
+    <button onclick="showSeason(1)" class="rounded-full bg-red-600 px-5 py-2">
+      Season 1
+    </button>
 
-    </div>
+    <button onclick="showSeason(2)" class="rounded-full bg-orange-600 px-5 py-2">
+      Season 2
+    </button>
 
-    <div class="grid gap-4 md:grid-cols-2">
+    <button onclick="showSeason(3)" class="rounded-full bg-pink-600 px-5 py-2">
+      Season 3
+    </button>
 
-      <!-- EPISODE 1 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+    <button onclick="showSeason(4)" class="rounded-full bg-blue-600 px-5 py-2">
+      Season 4
+    </button>
 
-        <img
-          src="https://i.pinimg.com/736x/e2/4d/39/e24d39b7ff42f87f62d15c79e6c5b42f.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+    <button onclick="showSeason('movie')" class="rounded-full bg-yellow-600 px-5 py-2">
+      Infinity Castle (Movie)
+    </button>
 
-        <div>
+  </div>
 
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
+  <!-- EPISODES LIST -->
+  <div id="episodeList" class="grid gap-4 md:grid-cols-2"></div>
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Into the Infinity Castle
-          </h3>
+</section>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
 
-          <p class="mt-2 text-sm text-slate-400">
-            The Demon Slayer Corps launches its final mission against Muzan.
-          </p>
+  const episodeList = document.getElementById("episodeList");
 
-        </div>
+  const s1 = [];
+  const s2 = [];
+  const s3 = [];
+  const s4 = [];
 
-      </div>
+  /* SEASON 1 - 26 */
+  for (let i = 1; i <= 26; i++) {
+    s1.push({
+      ep: i,
+      title: `Demon Slayer S1 Episode ${i}`,
+      desc: `Watch Season 1 Episode ${i}`,
+      image: "https://i.pinimg.com/736x/23/ce/c3/23cec31c918eee058ab6543a926b9227.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-      <!-- EPISODE 2 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  /* SEASON 2 - 18 */
+  for (let i = 1; i <= 18; i++) {
+    s2.push({
+      ep: i,
+      title: `Demon Slayer S2 Episode ${i}`,
+      desc: `Watch Season 2 Episode ${i}`,
+      image: "https://i.pinimg.com/736x/e1/47/ae/e147ae7dbc5682695d0ec95760312144.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-        <img
-          src="https://i.pinimg.com/736x/6f/2e/75/6f2e7561d0e4fbe4b4bbfbfa45fd74fc.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+  /* SEASON 3 - 11 */
+  for (let i = 1; i <= 11; i++) {
+    s3.push({
+      ep: i,
+      title: `Demon Slayer S3 Episode ${i}`,
+      desc: `Watch Season 3 Episode ${i}`,
+      image: "https://i.pinimg.com/736x/a0/df/11/a0df11ddb71cfcaa565a91156224e0aa.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-        <div>
+  /* SEASON 4 - 8 */
+  for (let i = 1; i <= 8; i++) {
+    s4.push({
+      ep: i,
+      title: `Demon Slayer S4 Episode ${i}`,
+      desc: `Watch Season 4 Episode ${i}`,
+      image: "https://i.pinimg.com/736x/f6/1d/07/f61d076f3faba22ebb84cdf636d098b8.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
+  const movie = [
+    {
+      ep: "Movie",
+      title: "Infinity Castle Arc",
+      desc: "Final battle against Muzan Kibutsuji begins.",
+      image: "https://i.pinimg.com/736x/4b/ee/47/4bee47c20cc720e02f983ee22c57c8bf.jpg",
+      video: "YOUR_LINK"
+    }
+  ];
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Flames of Resolve
-          </h3>
+  function render(data) {
+    episodeList.innerHTML = "";
 
-          <p class="mt-2 text-sm text-slate-400">
-            The Hashira confront terrifying Upper Rank demons in brutal battles.
-          </p>
+    data.forEach(ep => {
+      episodeList.innerHTML += `
+        <a href="watch.html?ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&video=${encodeURIComponent(ep.video)}">
 
-        </div>
+          <div class="episode-card glass flex gap-4 rounded-2xl p-4 hover:bg-white/5 transition">
 
-      </div>
+            <img src="${ep.image}" class="h-24 w-40 rounded-xl object-cover"/>
 
-    </div>
+            <div>
+              <p class="text-sm text-pink-400">Episode ${ep.ep}</p>
+              <h3 class="mt-1 text-lg font-semibold">${ep.title}</h3>
+              <p class="mt-2 text-sm text-slate-400">${ep.desc}</p>
+            </div>
 
-  </section>
+          </div>
 
+        </a>
+      `;
+    });
+  }
+
+  window.showSeason = function(season) {
+    if (season === 1) render(s1);
+    if (season === 2) render(s2);
+    if (season === 3) render(s3);
+    if (season === 4) render(s4);
+    if (season === "movie") render(movie);
+  };
+
+  // auto load
+  showSeason(1);
+
+});
+</script>
 </body>
 </html>

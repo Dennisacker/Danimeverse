@@ -54,7 +54,7 @@
 
         <!-- Poster -->
         <img
-          src="https://cdn.myanimelist.net/images/anime/1465/97346.jpg"
+          src="https://i.pinimg.com/736x/3d/cc/92/3dcc922e4572551a846c4a9323b006fb.jpg"
           class="w-44 rounded-2xl shadow-2xl"
         />
 
@@ -112,78 +112,128 @@
 
   </section>
 
-  <!-- Episodes -->
-  <section class="mx-auto max-w-7xl px-6 py-16">
+  <!-- EPISODES SECTION -->
+<section class="mx-auto max-w-7xl px-6 py-16">
 
-    <div class="mb-8 flex items-center justify-between">
+  <div class="mb-8 flex items-center justify-between">
+    <h2 class="text-3xl font-bold">Episodes</h2>
+    <span class="text-slate-400">Season Hub</span>
+  </div>
 
-      <h2 class="text-3xl font-bold">
-        Episodes
-      </h2>
+  <!-- BUTTONS (NOT inside grid) -->
+  <div class="mb-8 flex gap-3 flex-wrap">
 
-      <span class="text-slate-400">
-        Season 3
-      </span>
+    <button onclick="showSeason(1)" class="rounded-full bg-red-600 px-5 py-2 hover:bg-red-500 transition">
+      Season 1
+    </button>
 
-    </div>
+    <button onclick="showSeason(2)" class="rounded-full bg-orange-600 px-5 py-2 hover:bg-orange-500 transition">
+      Season 2
+    </button>
 
-    <div class="grid gap-4 md:grid-cols-2">
+    <button onclick="showSeason('s3p1')" class="rounded-full bg-yellow-600 px-5 py-2 hover:bg-yellow-500 transition">
+      Season 3 Part 1
+    </button>
 
-      <!-- Episode 1 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+    <button onclick="showSeason('s3p2')" class="rounded-full bg-purple-600 px-5 py-2 hover:bg-purple-500 transition">
+      Season 3 Part 2
+    </button>
 
-        <img
-          src="https://static1.cbrimages.com/wordpress/wp-content/uploads/2020/07/Fire-Force-Shinra.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+  </div>
 
-        <div>
+  <!-- EPISODES LIST -->
+  <div id="episodeList" class="grid gap-4 md:grid-cols-2"></div>
 
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
+</section>
+      <script>
+document.addEventListener("DOMContentLoaded", () => {
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Flames of Determination
-          </h3>
+  const episodeList = document.getElementById("episodeList");
 
-          <p class="mt-2 text-sm text-slate-400">
-            Shinra faces a powerful new infernal while Company 8 investigates mysterious fire outbreaks.
-          </p>
+  const season1 = [];
+  const season2 = [];
+  const s3p1 = [];
+  const s3p2 = [];
 
-        </div>
+  /* SEASON 1 - 24 EP */
+  for (let i = 1; i <= 24; i++) {
+    season1.push({
+      ep: i,
+      title: `Fire Force S1 Episode ${i}`,
+      desc: `Watch Fire Force Season 1 Episode ${i}`,
+      image: "https://i.pinimg.com/236x/12/6f/43/126f435923ebdc2c11d66415866c7e19.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-      </div>
+  /* SEASON 2 - 24 EP */
+  for (let i = 1; i <= 24; i++) {
+    season2.push({
+      ep: i,
+      title: `Fire Force S2 Episode ${i}`,
+      desc: `Watch Fire Force Season 2 Episode ${i}`,
+      image: "https://i.pinimg.com/1200x/cf/1b/06/cf1b06b4184885fbe00375c00e427965.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-      <!-- Episode 2 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  /* SEASON 3 PART 1 - 12 EP */
+  for (let i = 1; i <= 12; i++) {
+    s3p1.push({
+      ep: i,
+      title: `Fire Force S3 Part 1 Episode ${i}`,
+      desc: `Watch Fire Force Season 3 Part 1 Episode ${i}`,
+      image: "https://i.pinimg.com/736x/94/7c/ca/947ccac3aad2d9a72a5ad7bb115b9544.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-        <img
-          src="https://images.alphacoders.com/109/thumb-1920-1094082.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+  /* SEASON 3 PART 2 - 13 EP */
+  for (let i = 1; i <= 13; i++) {
+    s3p2.push({
+      ep: i,
+      title: `Fire Force S3 Part 2 Episode ${i}`,
+      desc: `Watch Fire Force Season 3 Part 2 Episode ${i}`,
+      image: "https://i.pinimg.com/736x/6d/e7/ce/6de7ce1e24c93ae5759704725dcc6086.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-        <div>
+  function render(data) {
+    episodeList.innerHTML = "";
 
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
+    data.forEach(ep => {
+      episodeList.innerHTML += `
+        <a href="watch.html?anime=FireForce&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&desc=${encodeURIComponent(ep.desc)}&video=${encodeURIComponent(ep.video)}">
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Adolla Awakening
-          </h3>
+          <div class="episode-card glass flex gap-4 rounded-2xl p-4 hover:bg-white/5 transition">
 
-          <p class="mt-2 text-sm text-slate-400">
-            Hidden secrets surrounding Adolla Bursts begin to surface as enemies close in.
-          </p>
+            <img src="${ep.image}" class="h-24 w-40 rounded-xl object-cover"/>
 
-        </div>
+            <div>
+              <p class="text-sm text-red-400">Episode ${ep.ep}</p>
+              <h3 class="mt-1 text-lg font-semibold">${ep.title}</h3>
+              <p class="mt-2 text-sm text-slate-400">${ep.desc}</p>
+            </div>
 
-      </div>
+          </div>
 
-    </div>
+        </a>
+      `;
+    });
+  }
 
-  </section>
+  window.showSeason = function(season) {
+    if (season === 1) render(season1);
+    if (season === 2) render(season2);
+    if (season === "s3p1") render(s3p1);
+    if (season === "s3p2") render(s3p2);
+  };
 
+  /* AUTO LOAD */
+  showSeason(1);
+
+});
+</script>
 </body>
 </html>

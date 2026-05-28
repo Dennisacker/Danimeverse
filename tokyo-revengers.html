@@ -112,78 +112,109 @@
 
   </section>
 
-  <!-- EPISODES -->
-  <section class="mx-auto max-w-7xl px-6 py-16">
+  <!-- EPISODES SECTION -->
+<section class="mx-auto max-w-7xl px-6 py-16">
 
-    <div class="mb-8 flex items-center justify-between">
+  <div class="mb-8 flex items-center justify-between">
+    <h2 class="text-3xl font-bold">Episodes</h2>
+    <span class="text-slate-400">New Arc</span>
+  </div>
 
-      <h2 class="text-3xl font-bold">
-        Episodes
-      </h2>
+  <!-- BUTTONS -->
+  <div class="mb-8 flex gap-3 flex-wrap">
 
-      <span class="text-slate-400">
-        New Arc
-      </span>
+    <button onclick="showSeason(1)" class="rounded-full bg-red-600 px-5 py-2 hover:bg-red-500 transition">
+      Season 1
+    </button>
 
-    </div>
+    <button onclick="showSeason(2)" class="rounded-full bg-blue-600 px-5 py-2 hover:bg-blue-500 transition">
+      Season 2
+    </button>
 
-    <div class="grid gap-4 md:grid-cols-2">
+    <button onclick="showSeason(3)" class="rounded-full bg-pink-600 px-5 py-2 hover:bg-pink-500 transition">
+      Season 3
+    </button>
 
-      <!-- EPISODE 1 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  </div>
 
-        <img
-          src="https://i.pinimg.com/736x/9d/37/99/9d379914e08a2ef7f0b0a4ff0d2bde0e.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+  <!-- EPISODE LIST -->
+  <div id="episodeList" class="grid gap-4 md:grid-cols-2"></div>
 
-        <div>
+</section>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
 
-          <p class="text-sm text-pink-400">
-            Episode 1
-          </p>
+  const episodeList = document.getElementById("episodeList");
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Back to the Past
-          </h3>
+  const season1 = [];
+  const season2 = [];
+  const season3 = [];
 
-          <p class="mt-2 text-sm text-slate-400">
-            Takemichi returns to the past to prevent another tragedy.
-          </p>
+  // Season 1 - 24 eps
+  for (let i = 1; i <= 24; i++) {
+    season1.push({
+      ep: i,
+      title: `Season 1 Episode ${i}`,
+      desc: `Watch Episode ${i}`,
+      image: "https://i.pinimg.com/1200x/5b/99/d2/5b99d298703e16ff2ade46059b95e0cc.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-        </div>
+  // Season 2 - 13 eps
+  for (let i = 1; i <= 13; i++) {
+    season2.push({
+      ep: i,
+      title: `Season 2 Episode ${i}`,
+      desc: `Watch Episode ${i}`,
+      image: "https://i.pinimg.com/736x/9c/f5/06/9cf50681ac283a4ebc0737f5306193b8.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-      </div>
+  // Season 3 - 13 eps
+  for (let i = 1; i <= 13; i++) {
+    season3.push({
+      ep: i,
+      title: `Season 3 Episode ${i}`,
+      desc: `Watch Episode ${i}`,
+      image: "https://i.pinimg.com/736x/67/94/09/6794098cfeddb82c6d3f6c51a1e658c2.jpg",
+      video: "YOUR_LINK"
+    });
+  }
 
-      <!-- EPISODE 2 -->
-      <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300">
+  function render(data) {
+    episodeList.innerHTML = "";
 
-        <img
-          src="https://i.pinimg.com/736x/73/f4/0d/73f40d95e5b6ecdb1fdbb78a1579d85e.jpg"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
+    data.forEach(ep => {
+      episodeList.innerHTML += `
+        <a href="watch.html?ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&video=${encodeURIComponent(ep.video)}">
+          <div class="episode-card glass flex gap-4 rounded-2xl p-4 hover:bg-white/5 transition">
 
-        <div>
+            <img src="${ep.image}" class="h-24 w-40 rounded-xl object-cover"/>
 
-          <p class="text-sm text-pink-400">
-            Episode 2
-          </p>
+            <div>
+              <p class="text-sm text-pink-400">Episode ${ep.ep}</p>
+              <h3 class="mt-1 text-lg font-semibold">${ep.title}</h3>
+              <p class="mt-2 text-sm text-slate-400">${ep.desc}</p>
+            </div>
 
-          <h3 class="mt-1 text-lg font-semibold">
-            Tokyo Manji Gang
-          </h3>
+          </div>
+        </a>
+      `;
+    });
+  }
 
-          <p class="mt-2 text-sm text-slate-400">
-            A clash between rival gangs changes Takemichi’s destiny forever.
-          </p>
+  window.showSeason = function(season) {
+    if (season === 1) render(season1);
+    if (season === 2) render(season2);
+    if (season === 3) render(season3);
+  };
 
-        </div>
+  // AUTO LOAD SEASON 1
+  showSeason(1);
 
-      </div>
-
-    </div>
-
-  </section>
-
+});
+</script>
 </body>
 </html>
