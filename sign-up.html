@@ -42,65 +42,69 @@
       Create your anime universe account.
     </p>
 
-    <!-- USERNAME -->
-    <div class="mb-5">
+    <form id="signUpForm">
 
-      <label class="text-sm text-slate-300 mb-2 block">
-        Username
-      </label>
+      <!-- USERNAME -->
+      <div class="mb-5">
 
-      <input
-        type="text"
-        id="signupUsername"
-        placeholder="Choose a username"
-        class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
-               text-white outline-none focus:border-pink-500"
-      />
+        <label class="text-sm text-slate-300 mb-2 block">
+          Username
+        </label>
 
-    </div>
+        <input
+          type="text"
+          id="signupUsername"
+          placeholder="Choose a username"
+          class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
+                 text-white outline-none focus:border-pink-500"
+        />
 
-    <!-- EMAIL -->
-    <div class="mb-5">
+      </div>
 
-      <label class="text-sm text-slate-300 mb-2 block">
-        Email Address
-      </label>
+      <!-- EMAIL -->
+      <div class="mb-5">
 
-      <input
-        type="email"
-        id="signupEmail"
-        placeholder="Enter your email"
-        class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
-               text-white outline-none focus:border-pink-500"
-      />
+        <label class="text-sm text-slate-300 mb-2 block">
+          Email Address
+        </label>
 
-    </div>
+        <input
+          type="email"
+          id="email"
+          placeholder="Enter your email"
+          class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
+                 text-white outline-none focus:border-pink-500"
+        />
 
-    <!-- PASSWORD -->
-    <div class="mb-6">
+      </div>
 
-      <label class="text-sm text-slate-300 mb-2 block">
-        Password
-      </label>
+      <!-- PASSWORD -->
+      <div class="mb-6">
 
-      <input
-        type="password"
-        id="signupPassword"
-        placeholder="Create a password"
-        class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
-               text-white outline-none focus:border-pink-500"
-      />
+        <label class="text-sm text-slate-300 mb-2 block">
+          Password
+        </label>
 
-    </div>
+        <input
+          type="password"
+          id="password"
+          placeholder="Create a password"
+          class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
+                 text-white outline-none focus:border-pink-500"
+        />
 
-    <!-- BUTTON -->
-    <button
-      id="signupBtn"
-      class="w-full bg-pink-600 hover:bg-pink-700 transition
-             text-white font-bold py-4 rounded-xl"
-    >
-      Create Account
-    </button>
+      </div>
+
+      <!-- BUTTON -->
+      <button
+        type="submit"
+        class="w-full bg-pink-600 hover:bg-pink-700 transition
+               text-white font-bold py-4 rounded-xl"
+      >
+        Create Account
+      </button>
+
+    </form>
 
     <!-- EXTRA -->
     <div class="flex justify-between text-sm text-slate-400 mt-5">

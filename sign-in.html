@@ -42,66 +42,71 @@
       Welcome back, otaku.
     </p>
 
-    <!-- EMAIL -->
-    <div class="mb-5">
+    <form id="signInForm">
 
-      <label class="text-sm text-slate-300 mb-2 block">
-        Email Address
-      </label>
+      <!-- EMAIL -->
+      <div class="mb-5">
 
-      <input
-        type="email"
-        id="loginEmail"
-        placeholder="Enter your email"
-        class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
-               text-white outline-none focus:border-pink-500"
-      />
+        <label class="text-sm text-slate-300 mb-2 block">
+          Email Address
+        </label>
 
-    </div>
+        <input
+          type="email"
+          id="loginEmail"
+          placeholder="Enter your email"
+          class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
+                 text-white outline-none focus:border-pink-500"
+        />
 
-    <!-- PASSWORD -->
-    <div class="mb-6">
+      </div>
 
-      <label class="text-sm text-slate-300 mb-2 block">
-        Password
-      </label>
-<div class="flex items-center justify-between mb-5 text-sm text-slate-300">
+      <!-- PASSWORD -->
+      <div class="mb-4">
 
-  <label class="flex items-center gap-2">
-    <input type="checkbox" id="rememberMe" class="accent-pink-500">
-    Remember me
-  </label>
+        <label class="text-sm text-slate-300 mb-2 block">
+          Password
+        </label>
 
-</div>
-      <input
-        type="password"
-        id="loginPassword"
-        placeholder="Enter your password"
-        class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
-               text-white outline-none focus:border-pink-500"
-      />
+        <input
+          type="password"
+          id="loginPassword"
+          placeholder="Enter your password"
+          class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
+                 text-white outline-none focus:border-pink-500"
+        />
 
-    </div>
+      </div>
 
-    <!-- BUTTON -->
-    <button
-      id="loginBtn"
-      class="w-full bg-pink-600 hover:bg-pink-700 transition
-             text-white font-bold py-4 rounded-xl"
-    >
-      Sign In
-    </button>
+      <!-- REMEMBER ME -->
+      <div class="flex items-center mb-6 text-sm text-slate-300">
+        <label class="flex items-center gap-2">
+          <input type="checkbox" id="rememberMe" class="accent-pink-500">
+          Remember me
+        </label>
+      </div>
+
+      <!-- BUTTON -->
+      <button
+        type="submit"
+        class="w-full bg-pink-600 hover:bg-pink-700 transition
+               text-white font-bold py-4 rounded-xl"
+      >
+        Sign In
+      </button>
+
+    </form>
 
     <!-- EXTRA -->
     <div class="flex justify-between text-sm text-slate-400 mt-5">
 
       <a
-  href="#"
-  id="forgotPassword"
-  class="hover:text-pink-400 transition"
->
-  Forgot Password?
-</a>
+        href="#"
+        id="forgotPassword"
+        class="hover:text-pink-400 transition"
+      >
+        Forgot Password?
+      </a>
 
       <a href="sign-up.html" class="hover:text-pink-400 transition">
         Create Account
