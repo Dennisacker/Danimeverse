@@ -1716,9 +1716,11 @@ body::before {
 <script>
   const themeToggle = document.getElementById('themeToggle');
 
-  themeToggle.addEventListener('click', () => {
-    document.documentElement.classList.toggle('dark');
-  });
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+    });
+  }
 
   // 👉 body styling should be INSIDE JS block
   document.body.classList.add("bg-black");
