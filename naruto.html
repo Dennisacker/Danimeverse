@@ -130,67 +130,39 @@
   </section>
 <script>
 
+const STREAMTAPE_EMBED = "https://streamtape.com/e/GAgGMmwRlXi1k3D/";
+
 const narutoEpisodes = [];
 
 for (let i = 1; i <= 220; i++) {
-
   narutoEpisodes.push({
-
     ep: i,
-
     title: `Naruto Episode ${i}`,
-
     desc: `Watch Naruto Episode ${i} on Danimeverse.`,
-
     image: "https://cdn.myanimelist.net/images/anime/13/17405.jpg",
-
-  <iframe
-  src="https://streamtape.com/e/GAgGMmwRlXi1k3D"
-  width="100%"
-  height="500"
-  allowfullscreen>
-</iframe>
-
+    video: STREAMTAPE_EMBED
+  });
 }
+
 /* =========================
    GENERATE EPISODES
 ========================= */
 
+const episodeList = document.getElementById("episodeList");
+
 narutoEpisodes.forEach(ep => {
-
   episodeList.innerHTML += `
-
     <a href="watch.html?anime=Naruto&ep=${ep.ep}&title=${encodeURIComponent(ep.title)}&desc=${encodeURIComponent(ep.desc)}&video=${encodeURIComponent(ep.video)}">
-
       <div class="episode-card glass flex gap-4 rounded-2xl p-4 transition duration-300 hover:bg-white/5">
-
-        <img
-          src="${ep.image}"
-          class="h-24 w-40 rounded-xl object-cover"
-        />
-
+        <img src="${ep.image}" class="h-24 w-40 rounded-xl object-cover" />
         <div>
-
-          <p class="text-sm text-pink-400">
-            Episode ${ep.ep}
-          </p>
-
-          <h3 class="mt-1 text-lg font-semibold">
-            ${ep.title}
-          </h3>
-
-          <p class="mt-2 text-sm text-slate-400">
-            ${ep.desc}
-          </p>
-
+          <p class="text-sm text-pink-400">Episode ${ep.ep}</p>
+          <h3 class="mt-1 text-lg font-semibold">${ep.title}</h3>
+          <p class="mt-2 text-sm text-slate-400">${ep.desc}</p>
         </div>
-
       </div>
-
     </a>
-
   `;
-
 });
 
 </script>

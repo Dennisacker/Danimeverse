@@ -120,24 +120,30 @@
 
   if (video) {
 
-  let fileId = "";
+    // StreamTape embed URL (already /e/ format)
+    if (video.includes("streamtape.com/e/")) {
+      player.src = video;
 
-  // Extract Google Drive File ID
-  const match = video.match(/\/d\/(.*?)\//);
+    // StreamTape view URL — convert /v/ to /e/
+    } else if (video.includes("streamtape.com/v/")) {
+      const stId = video.split("/v/")[1].split("/")[0];
+      player.src = `https://streamtape.com/e/${stId}/`;
 
-  if (match && match[1]) {
-    fileId = match[1];
+    // Google Drive
+    } else if (video.includes("drive.google.com")) {
+      const match = video.match(/\/d\/(.*?)\//);
+      if (match && match[1]) {
+        player.src = `https://drive.google.com/file/d/${match[1]}/preview`;
+      }
+
+    // Any other direct embed URL (filemoon, etc.)
+    } else {
+      player.src = video;
+    }
+
+  } else {
+    console.log("❌ No video found");
   }
-
-  // Cleaner embed link
-  player.src =
-    `https://drive.google.com/file/d/${fileId}/preview`;
-
-} else {
-
-  console.log("❌ No video found");
-
-}
     /* =========================
        TEXT INFO
     ========================= */
