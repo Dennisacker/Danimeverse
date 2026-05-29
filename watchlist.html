@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Danimeverse | My List</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { background: #141414; color: white; font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; }
+
+    /* NAVBAR */
+    .wl-nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 48px;
+      background: linear-gradient(to bottom, rgba(20,20,20,0.98), transparent);
+      backdrop-filter: blur(8px);
+    }
+    .wl-nav-logo {
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      color: #ec4899;
+      text-decoration: none;
+    }
+    .wl-nav-links { display: flex; gap: 24px; align-items: center; }
+    .wl-nav-links a {
+      color: #ccc;
+      font-size: 14px;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .wl-nav-links a:hover { color: white; }
+
+    /* HERO BAND */
+    .wl-hero {
+      padding: 60px 48px 24px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+    }
+    .wl-hero h1 {
+      font-size: 2.8rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .wl-hero-sub {
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    /* GRID */
+    .wl-main { padding: 8px 48px 80px; }
+    #watchlist-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+    @media (max-width: 1280px) { #watchlist-grid { grid-template-columns: repeat(5, 1fr); } }
+    @media (max-width: 1024px) { #watchlist-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 768px)  { #watchlist-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 480px)  { #watchlist-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+      .wl-hero, .wl-main, .wl-nav { padding-left: 16px; padding-right: 16px; }
+    }
+
+    /* CARD */
+    .wl-card {
+      position: relative;
+      border-radius: 6px;
+      overflow: hidden;
+      aspect-ratio: 2/3;
+      background: #1c1c2e;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, z-index 0s 0.25s;
+    }
+    .wl-card:hover {
+      transform: scale(1.06);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.85);
+      z-index: 10;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .wl-card.removing {
+      opacity: 0;
+      transform: scale(0.88);
+      transition: all 0.35s ease;
+    }
+    .wl-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .wl-card-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.75) 55%, transparent 100%);
+      padding: 40px 10px 10px;
+      transform: translateY(35%);
+      transition: transform 0.3s ease;
+    }
+    .wl-card:hover .wl-card-overlay { transform: translateY(0); }
+    .wl-card-genres {
+      color: #10b981;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 3px;
+    }
+    .wl-card-title {
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    .wl-card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .wl-watch-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: white;
+      color: black;
+      padding: 5px 11px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .wl-watch-btn:hover { background: rgba(255,255,255,0.85); }
+    .wl-remove-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.12);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.25);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .wl-remove-btn:hover { background: rgba(229,9,20,0.85); border-color: transparent; }
+    .wl-remove-icon {
+      position: absolute;
+      top: 7px; right: 7px;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.75);
+      border: 1.5px solid rgba(255,255,255,0.45);
+      color: white;
+      font-size: 11px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s, background 0.15s;
+    }
+    .wl-card:hover .wl-remove-icon { opacity: 1; }
+    .wl-remove-icon:hover { background: #e50914; border-color: transparent; }
+
+    /* SKELETON LOADING */
+    .wl-skeleton {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+    @media (max-width: 1280px) { .wl-skeleton { grid-template-columns: repeat(5, 1fr); } }
+    @media (max-width: 1024px) { .wl-skeleton { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 768px)  { .wl-skeleton { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 480px)  { .wl-skeleton { grid-template-columns: repeat(2, 1fr); } }
+    .wl-skel-card {
+      aspect-ratio: 2/3;
+      border-radius: 6px;
+      background: #2a2a3a;
+      animation: wl-pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes wl-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* EMPTY STATE */
+    #watchlist-empty {
+      text-align: center;
+      padding: 100px 20px;
+    }
+    .wl-empty-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+    #watchlist-empty h2 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: #eee;
+    }
+    #watchlist-empty p {
+      color: #888;
+      font-size: 15px;
+      margin-bottom: 32px;
+    }
+    .wl-browse-btn {
+      display: inline-block;
+      background: #ec4899;
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 13px 36px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .wl-browse-btn:hover { background: #db2777; transform: scale(1.03); }
+
+    /* NOT SIGNED IN STATE */
+    #watchlist-not-signed-in {
+      text-align: center;
+      padding: 100px 20px;
+    }
+    #watchlist-not-signed-in h2 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    #watchlist-not-signed-in p { color: #888; margin-bottom: 32px; }
+    .wl-signin-btn {
+      display: inline-block;
+      background: white;
+      color: black;
+      font-weight: 800;
+      padding: 13px 36px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .wl-signin-btn:hover { background: #ddd; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="wl-nav">
+    <a href="index.html" class="wl-nav-logo">DANIMEVERSE</a>
+    <div class="wl-nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#trending">Trending</a>
+      <a href="index.html#popular">Popular</a>
+      <div id="userProfile" class="flex items-center gap-2 text-sm"></div>
+    </div>
+  </nav>
+
+  <!-- HERO BAND -->
+  <div class="wl-hero">
+    <h1>My List</h1>
+    <p class="wl-hero-sub" id="watchlist-count"></p>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="wl-main">
+
+    <!-- LOADING SKELETONS -->
+    <div id="watchlist-loading" class="wl-skeleton">
+      <div class="wl-skel-card"></div>
+      <div class="wl-skel-card"></div>
+      <div class="wl-skel-card"></div>
+      <div class="wl-skel-card"></div>
+      <div class="wl-skel-card"></div>
+      <div class="wl-skel-card"></div>
+    </div>
+
+    <!-- GRID (filled by watchlist.js) -->
+    <div id="watchlist-grid"></div>
+
+    <!-- EMPTY STATE -->
+    <div id="watchlist-empty" class="hidden">
+      <div class="wl-empty-icon">📋</div>
+      <h2>Your list is empty</h2>
+      <p>Add anime to your list by clicking the <strong>+</strong> button on any show.</p>
+      <a href="index.html" class="wl-browse-btn">Browse Anime</a>
+    </div>
+
+    <!-- NOT SIGNED IN -->
+    <div id="watchlist-not-signed-in" class="hidden">
+      <div class="wl-empty-icon">🔐</div>
+      <h2>Sign in to see your list</h2>
+      <p>Create an account or sign in to save anime to your personal watchlist.</p>
+      <a href="sign-in.html" class="wl-signin-btn">Sign In</a>
+    </div>
+
+  </div>
+
+  <script type="module" src="auth-state.js"></script>
+  <script type="module" src="watchlist.js"></script>
+
+</body>
+</html>

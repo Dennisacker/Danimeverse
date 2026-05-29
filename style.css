@@ -256,3 +256,76 @@ body::before {
   background: rgba(5, 7, 15, 0.92) !important;
   backdrop-filter: blur(20px);
 }
+
+/* =====================
+   WATCHLIST + BUTTON
+   ===================== */
+.wl-btn {
+  position: absolute;
+  bottom: 88px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.72);
+  border: 2px solid rgba(255,255,255,0.75);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.75);
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.15s ease, border-color 0.15s ease;
+  z-index: 10;
+}
+.wl-btn svg {
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+.glass-card:hover .wl-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+.wl-btn.in-list {
+  background: #ec4899;
+  border-color: #ec4899;
+}
+.wl-btn:hover:not(:disabled) {
+  transform: scale(1.15) !important;
+  background: rgba(255,255,255,0.2) !important;
+  border-color: white !important;
+}
+.wl-btn:disabled { cursor: wait; }
+
+/* =====================
+   TOAST NOTIFICATION
+   ===================== */
+#wl-toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(14px);
+  padding: 11px 22px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease, transform 0.28s ease;
+  z-index: 9999;
+}
+#wl-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+#wl-toast.wl-toast-success {
+  background: #ec4899;
+  color: white;
+}
+#wl-toast.wl-toast-remove {
+  background: #374151;
+  color: #e5e7eb;
+}
