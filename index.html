@@ -5,29 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Danimeverse | Stream Anime online</title>
      <link rel="icon" type="image/png" href="https://i.pinimg.com/736x/fc/8d/c0/fc8dc0a1f0db8842d9c58373acd655a8.jpg">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="tailwind.min.css">
     <link rel="stylesheet" href="style.css">
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              ink: '#070a14',
-              neonpurple: '#9c4bff',
-              neonblue: '#56d5ff',
-              softblack: '#05070f'
-            },
-            boxShadow: {
-              glow: '0 0 35px rgba(156, 75, 255, 0.18)',
-              soft: '0 20px 60px rgba(0,0,0,0.35)'
-            },
-            backgroundImage: {
-              'anime-dusk': 'radial-gradient(circle at top, rgba(156, 75, 255, 0.18), transparent 30%), radial-gradient(circle at bottom right, rgba(86, 213, 255, 0.12), transparent 28%), linear-gradient(180deg, #08101f 0%, #040608 100%)'
-            }
-          }
-        }
-      };
-    </script>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://api.jikan.moe">
+    <link rel="dns-prefetch" href="https://cdn.myanimelist.net">
     <style>
       :root {
   --bg: #ffffff;
@@ -1883,7 +1865,7 @@ document.addEventListener("click", (e) => {
   }
 });
 </script>
-<script src="script.js"></script>
+<script src="script.js" defer></script>
 <div id="animeModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 backdrop-blur-md z-50">
 
   <div class="w-[90%] max-w-2xl rounded-2xl overflow-hidden bg-gray-900 shadow-2xl transform transition duration-300">
@@ -1906,8 +1888,8 @@ document.addEventListener("click", (e) => {
 
   </div>
 </div>
-<script src="search.js"></script>
-<script src="api.js"></script>
+<script src="search.js" defer></script>
+<script src="api.js" defer></script>
 <script type="module" src="auth.js"></script>
 <script type="module" src="auth-state.js"></script>
 <script type="module" src="watchlist.js"></script>
