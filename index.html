@@ -308,15 +308,19 @@ body::before {
           <article class="glass-card group relative overflow-hidden rounded-[2rem] border border-white/10 p-5 shadow-soft transition duration-500 hover:-translate-y-1 hover:shadow-glow">
             <div class="anime-card cursor-pointer"></div>
             <div class="anime-card" data-genres="Action,Adventure,Martial-arts"></div>
-            <img src="https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg" alt="Anime character" class="class="w-full h-full https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-contain https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-center" />
-            <div class="space-y-3">
+           <img
+  src="https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg"
+  alt="Naruto"
+  class="w-full h-[320px] object-cover rounded-2xl"
+/>
+            <div class="space-y-3 mt-4">
              <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
        Action, Adventure, Martial arts
     </span>
               <h3 class="text-xl font-semibold text-white">Naruto</h3>
               <p class="text-xs md:text-sm leading-6 text-slate-300"> Naruto Uzumaki, a mischievous adolescent ninja,
             struggles as he searches for recognition and dreams
-            of becoming the Hokage — the village's strongest ninja.</p>
+            of becoming the Hokage...</p>
               <div class="flex flex-wrap gap-3 pt-3">
                <!-- WATCH button -->
 <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full 
@@ -338,9 +342,13 @@ body::before {
 
 <article class="glass-card group relative overflow-hidden rounded-[2rem] border border-white/10 p-5 shadow-soft transition duration-500 hover:-translate-y-1 hover:shadow-glow">
 <div class="anime-card" data-genres="Action,Dark"></div>
-  <img src="https://i.pinimg.com/736x/d8/34/91/d83491ac30d4c7a2b64b42c7ed67b7b8.jpg"/>
+  <img
+  src="https://i.pinimg.com/736x/d8/34/91/d83491ac30d4c7a2b64b42c7ed67b7b8.jpg"
+  alt="Attack on Titan"
+  class="w-full h-[320px] object-cover rounded-2xl"
+/>
 
-  <div class="space-y-3">
+  <div class="space-y-3 mt-4">
 
     <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
       Dark, Action, Post-Apocalyptic
@@ -352,7 +360,7 @@ body::before {
 
     <p class="text-xs md:text-sm leading-6 text-slate-300">
       After his hometown is destroyed and his mother is killed,
-      Eren Yeager vows to eliminate every Titan threatening humanity.
+      Eren Yeager vows to eliminate every Titan threatening huma...
     </p>
 
     <div class="flex flex-wrap gap-3 pt-3">
@@ -378,9 +386,13 @@ body::before {
 
 <article class="glass-card group relative overflow-hidden rounded-[2rem] border border-white/10 p-5 shadow-soft transition duration-500 hover:-translate-y-1 hover:shadow-glow">
 <div class="anime-card" data-genres="Action,sci-fi"></div>
-  <img src="https://i.pinimg.com/736x/fc/9f/08/fc9f0832e131423fb2b6aa326888ef9a.jpg" />
+ <img
+  src="https://i.pinimg.com/736x/fc/9f/08/fc9f0832e131423fb2b6aa326888ef9a.jpg"
+  alt="Assassination Classroom"
+  class="w-full h-[320px] object-cover rounded-2xl"
+/>
 
-  <div class="space-y-3">
+  <div class="space-y-3 mt-4">
 
     <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
       Action, School life, Sci-Fi
@@ -393,7 +405,7 @@ body::before {
     <p class="text-xs md:text-sm leading-6 text-slate-300">
       A powerful octopus-like teacher threatens Earth, but becomes
       the homeroom teacher of Class 3-E. His students must assassinate
-      him before graduation.
+      him bef...
     </p>
 
     <div class="flex flex-wrap gap-3 pt-3">
@@ -415,6 +427,8 @@ body::before {
 </article>
 
 </a>
+<!-- API ANIME CARDS -->
+<div id="animeContainer" class="contents"></div>
         </div>
       </section>
 <div id="topPicks"></div>
@@ -436,6 +450,7 @@ body::before {
           </div>
         </div>
         <div class="grid grid-cols-1 gap-3 md:p-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div id="topPicksAPI" class="contents"></div>
         <a href="jujutsu-kaisen.html" class="block no-underline">
 
   <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
@@ -606,6 +621,7 @@ body::before {
         </div>
       </section>
 <div class="grid grid-cols-1 gap-3 md:p-4 sm:grid-cols-2 xl:grid-cols-3">
+  <div id="topPicksAPI" class="contents"></div>
          <a href="hells-paradise.html" class="block no-underline">
 
   <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
@@ -776,6 +792,7 @@ body::before {
 </a>
         </div>
         <div class="grid grid-cols-1 gap-3 md:p-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div id="topPicksAPI" class="contents"></div>
          <a href="rezero.html" class="block no-underline">
 
   <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
@@ -944,6 +961,7 @@ body::before {
 </a>
         </div>
         <div class="grid grid-cols-1 gap-3 md:p-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div id="topPicksAPI" class="contents"></div>
         <a href="fate-strange-fake.html" class="block no-underline">
 
   <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
@@ -1111,6 +1129,7 @@ body::before {
 </a>
         </div>
          <div class="grid grid-cols-1 gap-3 md:p-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div id="topPicksAPI" class="contents"></div>
         <a href="demon-slayer.html" class="block no-underline">
 
   <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
@@ -1278,6 +1297,8 @@ body::before {
   </article>
 
 </a>
+<!-- TRENDING API -->
+<div id="trendingAnimeContainer" class="contents"></div>
         </div>
       <section id="episodes" class="mt-20 section-fade animated-fade">
         <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -1885,6 +1906,7 @@ document.addEventListener("click", (e) => {
   </div>
 </div>
 <script src="search.js"></script>
+<script src="api.js"></script>
   </body>
   
 
