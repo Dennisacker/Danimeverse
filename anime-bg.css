@@ -1,0 +1,22 @@
+/* Shared background for all anime detail pages — matches home page vibe */
+
+body {
+  background: #0a0a0f !important;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%,  rgba(255, 0, 80,   0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(120, 0, 255,  0.08) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Make sure content layers sit above the pseudo-element glow */
+body > * {
+  position: relative;
+  z-index: 1;
+}

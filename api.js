@@ -3,6 +3,7 @@
 ========================= */
 
 const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+const STREAMTAPE_EMBED = "https://streamtape.com/e/GAgGMmwRlXi1k3D/";
 
 function getCached(key) {
   try {
@@ -59,8 +60,7 @@ function renderTopAnime(data, container) {
           ${anime.synopsis ? anime.synopsis.substring(0, 120) + "..." : "No description available."}
         </p>
         <div class="flex flex-wrap gap-3 pt-3">
-          <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full hover:bg-black hover:text-white transition">WATCH</button>
-          <button class="bg-transparent border border-black text-black px-4 py-2 rounded-full hover:bg-white hover:text-black transition">DOWNLOAD</button>
+          <a href="watch.html?anime=${encodeURIComponent(anime.title)}&ep=1&title=${encodeURIComponent(anime.title + ' Episode 1')}&desc=${encodeURIComponent(anime.synopsis ? anime.synopsis.substring(0,120) : '')}&video=${encodeURIComponent(STREAMTAPE_EMBED)}" class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full hover:bg-black hover:text-white transition">▶ Watch</a>
         </div>
       </div>
     </article>`;
@@ -128,8 +128,7 @@ function renderTopPicks(data, container) {
             <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">${anime.genres?.slice(0,2).map(g => g.name).join(", ") || "Unknown"}</span>
           </div>
           <div class="flex space-x-4">
-            <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full hover:bg-black hover:text-white transition">WATCH</button>
-            <button class="bg-transparent border border-black text-black px-4 py-2 rounded-full hover:bg-white hover:text-black transition">DOWNLOAD</button>
+            <a href="watch.html?anime=${encodeURIComponent(anime.title_english || anime.title)}&ep=1&title=${encodeURIComponent((anime.title_english || anime.title) + ' Episode 1')}&desc=${encodeURIComponent(anime.synopsis ? anime.synopsis.substring(0,120) : '')}&video=${encodeURIComponent(STREAMTAPE_EMBED)}" class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full hover:bg-black hover:text-white transition">▶ Watch</a>
           </div>
         </div>
       </article>`;
