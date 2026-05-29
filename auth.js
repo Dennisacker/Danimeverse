@@ -1,14 +1,19 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
+  updateProfile,
   setPersistence,
   browserSessionPersistence,
   browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC9mOlwqobv6V8O50BWADbkhRNQpDRNYQ4",
@@ -20,8 +25,9 @@ const firebaseConfig = {
   measurementId: "G-ZQC0SFQR4Q"
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 /* =========================
    SIGN IN
@@ -30,9 +36,7 @@ const auth = getAuth(app);
 const signInForm = document.getElementById("signInForm");
 
 if (signInForm) {
-
   signInForm.addEventListener("submit", async (e) => {
-
     e.preventDefault();
 
     const email = document.getElementById("loginEmail").value;
@@ -40,27 +44,16 @@ if (signInForm) {
     const rememberMe = document.getElementById("rememberMe")?.checked;
 
     try {
-
-      // 🔐 Set persistence
       await setPersistence(
         auth,
         rememberMe ? browserLocalPersistence : browserSessionPersistence
       );
-
       await signInWithEmailAndPassword(auth, email, password);
-
-      alert("Signed in successfully!");
-
       window.location.href = "index.html";
-
     } catch (error) {
-
       alert(error.message);
-
     }
-
   });
-
 }
 
 /* =========================
@@ -70,30 +63,37 @@ if (signInForm) {
 const signUpForm = document.getElementById("signUpForm");
 
 if (signUpForm) {
-
   signUpForm.addEventListener("submit", async (e) => {
-
     e.preventDefault();
 
+    const username = document.getElementById("signupUsername").value.trim();
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
+    const genderInput = document.querySelector('input[name="gender"]:checked');
+    const gender = genderInput ? genderInput.value : "male";
 
-    try {
-
-      await createUserWithEmailAndPassword(auth, email, password);
-
-      alert("Account created successfully!");
-
-      window.location.href = "sign-in.html";
-
-    } catch (error) {
-
-      alert(error.message);
-
+    if (!username) {
+      alert("Please enter a username.");
+      return;
     }
 
-  });
+    try {
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
 
+      await updateProfile(user, { displayName: username });
+
+      await setDoc(doc(db, "users", user.uid), {
+        username,
+        gender,
+        email,
+        createdAt: Date.now()
+      });
+
+      window.location.href = "sign-in.html";
+    } catch (error) {
+      alert(error.message);
+    }
+  });
 }
 
 /* =========================
@@ -103,9 +103,7 @@ if (signUpForm) {
 const forgotPassword = document.getElementById("forgotPassword");
 
 if (forgotPassword) {
-
   forgotPassword.addEventListener("click", async (e) => {
-
     e.preventDefault();
 
     const email = document.getElementById("loginEmail").value;
@@ -116,17 +114,10 @@ if (forgotPassword) {
     }
 
     try {
-
       await sendPasswordResetEmail(auth, email);
-
       alert("Password reset email sent!");
-
     } catch (error) {
-
       alert(error.message);
-
     }
-
   });
-
 }
