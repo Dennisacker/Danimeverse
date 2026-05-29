@@ -199,21 +199,21 @@ body::before {
 
       </div>
 
-      <!-- AUTH BUTTONS -->
-      <div class="flex items-center gap-2">
+     <!-- AUTH / USER AREA -->
+<div id="userArea" class="flex items-center gap-2 text-white text-sm">
 
-        <a href="sign-in.html"
-          class="px-4 py-2 text-sm rounded-full border border-white/20 text-white hover:bg-white/10 transition">
-          Sign In
-        </a>
+  <!-- default (guest) -->
+  <a href="sign-in.html"
+    class="px-4 py-2 text-sm rounded-full border border-white/20 hover:bg-white/10 transition">
+    Sign In
+  </a>
 
-        <a href="sign-up.html"
-          class="px-4 py-2 text-sm rounded-full bg-pink-500 text-white hover:bg-pink-600 transition">
-          Sign up
-        </a>
+  <a href="sign-up.html"
+    class="px-4 py-2 text-sm rounded-full bg-pink-500 hover:bg-pink-600 transition">
+    Sign up
+  </a>
 
-      </div>
-
+       </div>
     </div>
 
   </div>
@@ -1905,6 +1905,7 @@ document.addEventListener("click", (e) => {
 </div>
 <script src="search.js"></script>
 <script src="api.js"></script>
+<script type="module" src="auth.js"></script>
   </body>
   
 
