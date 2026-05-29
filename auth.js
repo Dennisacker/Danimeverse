@@ -84,7 +84,7 @@ if (signUpForm) {
 
       alert("Account created successfully!");
 
-      window.location.href = "signin.html";
+      window.location.href = "sign-in.html";
 
     } catch (error) {
 

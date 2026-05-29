@@ -200,9 +200,9 @@ body::before {
       </div>
 
      <!-- AUTH / USER AREA -->
-<div id="userArea" class="flex items-center gap-2 text-white text-sm">
+<div id="userProfile" class="flex items-center gap-2 text-white text-sm">
 
-  <!-- default (guest) -->
+  <!-- default (guest) — replaced by auth-state.js when logged in -->
   <a href="sign-in.html"
     class="px-4 py-2 text-sm rounded-full border border-white/20 hover:bg-white/10 transition">
     Sign In
@@ -1908,6 +1908,7 @@ document.addEventListener("click", (e) => {
 <script src="search.js"></script>
 <script src="api.js"></script>
 <script type="module" src="auth.js"></script>
+<script type="module" src="auth-state.js"></script>
   </body>
   
 
