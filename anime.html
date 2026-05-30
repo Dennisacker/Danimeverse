@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/png" href="https://i.pinimg.com/736x/fc/8d/c0/fc8dc0a1f0db8842d9c58373acd655a8.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title id="pageTitle">Loading... | Danimeverse</title>
+  <link rel="stylesheet" href="tailwind.min.css">
+  <style>
+    body {
+      font-family: Inter, sans-serif;
+      background: #050816;
+      color: white;
+      overflow-x: hidden;
+    }
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .hero-overlay {
+      background: linear-gradient(to top, rgba(5,8,22,1), rgba(5,8,22,0.7), rgba(5,8,22,0.3));
+    }
+    .episode-card {
+      transition: transform 0.2s ease;
+    }
+    .episode-card:hover { transform: translateY(-4px); }
+    .season-btn { opacity: 0.65; transition: opacity 0.2s, transform 0.2s; }
+    .season-btn.active { opacity: 1; transform: scale(1.05); }
+    .skeleton {
+      background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 1rem;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  </style>
+</head>
+<body>
+
+  <!-- HERO SECTION -->
+  <section class="relative h-[70vh] overflow-hidden">
+    <img id="heroBg" src="" alt="" class="absolute inset-0 h-full w-full object-cover"/>
+    <div class="hero-overlay absolute inset-0"></div>
+    <div class="relative z-10 flex h-full items-end">
+      <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 pb-10 md:flex-row md:items-end">
+
+        <img id="poster" src="" alt="" class="w-36 md:w-44 rounded-2xl shadow-2xl" loading="lazy"/>
+
+        <div class="max-w-3xl">
+          <p class="mb-3 text-pink-500 font-semibold uppercase tracking-[0.3em]">Anime Series</p>
+          <h1 id="animeTitle" class="text-4xl md:text-6xl font-black">Loading…</h1>
+          <div id="genreTags" class="mt-4 flex flex-wrap gap-2"></div>
+          <p id="animeDesc" class="mt-5 max-w-2xl text-slate-300 leading-7 text-sm md:text-base"></p>
+          <div class="mt-6 flex flex-wrap gap-4">
+            <button id="watchFirstBtn"
+              class="rounded-full bg-pink-600 px-6 py-3 font-semibold hover:bg-pink-500 transition">
+              ▶ Watch Now
+            </button>
+            <button class="rounded-full border border-white/20 px-6 py-3 hover:bg-white/10 transition">
+              + My List
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- EPISODES SECTION -->
+  <section class="mx-auto max-w-7xl px-6 py-12">
+
+    <div class="mb-6 flex items-center justify-between">
+      <h2 class="text-3xl font-bold">Episodes</h2>
+      <span id="epCount" class="text-slate-400 text-sm"></span>
+    </div>
+
+    <!-- Page/season buttons -->
+    <div id="pageButtons" class="mb-8 flex gap-3 flex-wrap"></div>
+
+    <!-- Episode grid -->
+    <div id="episodeList" class="grid gap-4 md:grid-cols-2">
+      <!-- skeletons while loading -->
+      <div class="skeleton h-28"></div>
+      <div class="skeleton h-28"></div>
+      <div class="skeleton h-28"></div>
+      <div class="skeleton h-28"></div>
+    </div>
+
+  </section>
+
+  <script type="module" src="auth-state.js"></script>
+
+  <script>
+    const EMBED = "https://player.mediadelivery.net/embed/673018/35592cb4-0c78-4267-bab2-45d9723b8955";
+    const COLORS = ["bg-red-600","bg-blue-600","bg-pink-600","bg-yellow-600","bg-green-600","bg-purple-600","bg-indigo-600","bg-orange-600","bg-teal-600"];
+    const params  = new URLSearchParams(window.location.search);
+    const malId   = params.get("id");
+    const pTitle  = params.get("title")  || "Unknown Anime";
+    const pImage  = params.get("image")  || "";
+    const pBanner = params.get("banner") || pImage;
+    const pDesc   = params.get("desc")   || "";
+    const pGenres = params.get("genres") || "";
+
+    /* ── instant paint from URL params ── */
+    document.getElementById("pageTitle").textContent = pTitle + " | Danimeverse";
+    document.getElementById("animeTitle").textContent = pTitle;
+    document.getElementById("animeDesc").textContent  = pDesc;
+    if (pBanner) document.getElementById("heroBg").src  = pBanner;
+    if (pImage)  document.getElementById("poster").src  = pImage;
+
+    if (pGenres) {
+      const tagsEl = document.getElementById("genreTags");
+      pGenres.split(",").forEach((g, i) => {
+        const colors = ["bg-yellow-500/20 text-yellow-300","bg-red-500/20 text-red-300","bg-blue-500/20 text-blue-300",
+                        "bg-green-500/20 text-green-300","bg-purple-500/20 text-purple-300","bg-pink-500/20 text-pink-300"];
+        tagsEl.innerHTML += `<span class="rounded-full px-3 py-1 text-sm ${colors[i % colors.length]}">${g.trim()}</span>`;
+      });
+    }
+
+    /* ── all loaded episode pages cached here ── */
+    const allEpisodePages = {};
+    let totalEps = 0;
+    let firstEpLoaded = false;
+
+    /* ── render one page of episodes ── */
+    function renderEpisodes(episodes, posterSrc) {
+      const list = document.getElementById("episodeList");
+      list.innerHTML = "";
+
+      if (!episodes.length) {
+        list.innerHTML = `<p class="text-slate-400 col-span-2">No episodes found.</p>`;
+        return;
+      }
+
+      episodes.forEach(ep => {
+        const epNum   = ep.mal_id || ep.ep || "?";
+        const epTitle = ep.title  || ep.title_romanji || `Episode ${epNum}`;
+        const img     = ep.images?.jpg?.image_url || posterSrc || pImage;
+        const link    = `watch.html?anime=${encodeURIComponent(pTitle)}&ep=${epNum}&title=${encodeURIComponent(epTitle)}&desc=${encodeURIComponent(ep.synopsis || "")}&video=${encodeURIComponent(EMBED)}`;
+
+        if (!firstEpLoaded) {
+          firstEpLoaded = true;
+          document.getElementById("watchFirstBtn").onclick = () => window.location.href = link;
+        }
+
+        list.innerHTML += `
+          <a href="${link}">
+            <div class="episode-card glass flex gap-4 rounded-2xl p-4 hover:bg-white/5 transition">
+              <img src="${img}" loading="lazy"
+                   class="h-24 w-40 rounded-xl object-cover flex-shrink-0"
+                   onerror="this.src='${pImage}'"/>
+              <div>
+                <p class="text-sm text-pink-400 font-semibold">Episode ${epNum}</p>
+                <h3 class="mt-1 text-base md:text-lg font-semibold leading-snug">${epTitle}</h3>
+                <p class="mt-2 text-sm text-slate-400 line-clamp-2">${ep.synopsis || "Watch Episode " + epNum}</p>
+              </div>
+            </div>
+          </a>`;
+      });
+    }
+
+    /* ── build page-tab buttons ── */
+    function buildPageButtons(totalPages, activePage) {
+      const btns = document.getElementById("pageButtons");
+      btns.innerHTML = "";
+      for (let p = 1; p <= totalPages; p++) {
+        const color = COLORS[(p - 1) % COLORS.length];
+        btns.innerHTML += `
+          <button onclick="loadPage(${p})"
+            class="season-btn ${color} px-4 py-2 rounded-full font-semibold text-sm ${p === activePage ? "active" : ""}">
+            Page ${p}
+          </button>`;
+      }
+    }
+
+    /* ── fetch a page of episodes from Jikan ── */
+    async function loadPage(page) {
+      /* mark button active */
+      document.querySelectorAll("#pageButtons button").forEach((b, i) => {
+        b.classList.toggle("active", i + 1 === page);
+      });
+
+      if (allEpisodePages[page]) {
+        renderEpisodes(allEpisodePages[page], pImage);
+        return;
+      }
+
+      document.getElementById("episodeList").innerHTML = `<div class="skeleton h-28"></div><div class="skeleton h-28"></div><div class="skeleton h-28"></div><div class="skeleton h-28"></div>`;
+
+      try {
+        const res = await fetch(`https://api.jikan.moe/v4/anime/${malId}/episodes?page=${page}`);
+        if (!res.ok) throw new Error(res.status);
+        const data = await res.json();
+        allEpisodePages[page] = data.data || [];
+        renderEpisodes(allEpisodePages[page], pImage);
+      } catch (_) {
+        document.getElementById("episodeList").innerHTML =
+          `<p class="text-slate-400 col-span-2">Could not load episodes. Please try again.</p>`;
+      }
+    }
+
+    /* ── main init ── */
+    async function init() {
+      if (!malId) {
+        /* no ID — just show a single generic "Watch" link */
+        document.getElementById("episodeList").innerHTML =
+          `<a href="watch.html?anime=${encodeURIComponent(pTitle)}&ep=1&title=${encodeURIComponent(pTitle + " Episode 1")}&video=${encodeURIComponent(EMBED)}">
+            <div class="episode-card glass flex gap-4 rounded-2xl p-4 hover:bg-white/5 transition">
+              <div>
+                <p class="text-sm text-pink-400 font-semibold">Episode 1</p>
+                <h3 class="mt-1 text-lg font-semibold">${pTitle} Episode 1</h3>
+              </div>
+            </div>
+          </a>`;
+        return;
+      }
+
+      /* Fetch anime details + first episode page in parallel */
+      const [detailRes, epRes] = await Promise.all([
+        fetch(`https://api.jikan.moe/v4/anime/${malId}`).catch(() => null),
+        fetch(`https://api.jikan.moe/v4/anime/${malId}/episodes?page=1`).catch(() => null)
+      ]);
+
+      /* ── Anime detail ── */
+      if (detailRes && detailRes.ok) {
+        const detail = (await detailRes.json()).data;
+        const title  = detail.title_english || detail.title || pTitle;
+
+        document.getElementById("pageTitle").textContent  = title + " | Danimeverse";
+        document.getElementById("animeTitle").textContent = title;
+        document.getElementById("animeDesc").textContent  = detail.synopsis || pDesc;
+
+        const banner = detail.images?.jpg?.large_image_url || pBanner;
+        const poster = detail.images?.jpg?.large_image_url || pImage;
+        if (banner) document.getElementById("heroBg").src = banner;
+        if (poster) document.getElementById("poster").src = poster;
+
+        if (detail.genres?.length) {
+          const tagsEl = document.getElementById("genreTags");
+          tagsEl.innerHTML = "";
+          const colors = ["bg-yellow-500/20 text-yellow-300","bg-red-500/20 text-red-300","bg-blue-500/20 text-blue-300",
+                          "bg-green-500/20 text-green-300","bg-purple-500/20 text-purple-300","bg-pink-500/20 text-pink-300"];
+          detail.genres.forEach((g, i) => {
+            tagsEl.innerHTML += `<span class="rounded-full px-3 py-1 text-sm ${colors[i % colors.length]}">${g.name}</span>`;
+          });
+        }
+      }
+
+      /* ── Episodes page 1 ── */
+      if (epRes && epRes.ok) {
+        const epData = await epRes.json();
+        allEpisodePages[1] = epData.data || [];
+        totalEps = epData.pagination?.items?.total || allEpisodePages[1].length;
+        const totalPages = epData.pagination?.last_visible_page || 1;
+
+        document.getElementById("epCount").textContent =
+          totalEps ? `${totalEps} episodes` : "";
+
+        if (totalPages > 1) buildPageButtons(totalPages, 1);
+        renderEpisodes(allEpisodePages[1], pImage);
+      } else {
+        document.getElementById("episodeList").innerHTML =
+          `<p class="text-slate-400 col-span-2">Could not load episodes. Please try again.</p>`;
+      }
+    }
+
+    init();
+  </script>
+
+</body>
+</html>

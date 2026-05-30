@@ -48,8 +48,11 @@ function getWatchLink(anime) {
   const title = anime.title_english || anime.title;
   const sitePage = getSitePage(title) || getSitePage(anime.title);
   if (sitePage) return sitePage;
-  const desc  = anime.synopsis ? anime.synopsis.substring(0, 120) : "";
-  return `watch.html?anime=${encodeURIComponent(title)}&ep=1&title=${encodeURIComponent(title + " Episode 1")}&desc=${encodeURIComponent(desc)}&video=${encodeURIComponent(VIDEO_EMBED)}`;
+  /* Unknown anime → generic episode list page */
+  const image  = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || "";
+  const desc   = anime.synopsis ? anime.synopsis.substring(0, 200) : "";
+  const genres = anime.genres?.slice(0,4).map(g => g.name).join(",") || "";
+  return `anime.html?id=${anime.mal_id}&title=${encodeURIComponent(title)}&image=${encodeURIComponent(image)}&banner=${encodeURIComponent(image)}&desc=${encodeURIComponent(desc)}&genres=${encodeURIComponent(genres)}`;
 }
 
 /* ─── cache helpers ─── */
