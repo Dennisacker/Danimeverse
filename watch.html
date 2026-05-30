@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+     <link rel="icon" type="image/png" href="https://i.pinimg.com/736x/fc/8d/c0/fc8dc0a1f0db8842d9c58373acd655a8.jpg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Watch Episode</title>
 
@@ -38,7 +39,7 @@
   src=""
   frameborder="0"
   scrolling="no"
-  allow="autoplay; encrypted-media"
+  allow="autoplay; fullscreen; encrypted-media"
   allowfullscreen>
 </iframe>
   </div>
@@ -120,23 +121,14 @@
 
   if (video) {
 
-    // StreamTape embed URL (already /e/ format)
-    if (video.includes("streamtape.com/e/")) {
-      player.src = video;
-
-    // StreamTape view URL — convert /v/ to /e/
-    } else if (video.includes("streamtape.com/v/")) {
-      const stId = video.split("/v/")[1].split("/")[0];
-      player.src = `https://streamtape.com/e/${stId}/`;
-
-    // Google Drive
-    } else if (video.includes("drive.google.com")) {
+    // Google Drive — extract file ID and build preview URL
+    if (video.includes("drive.google.com")) {
       const match = video.match(/\/d\/(.*?)\//);
       if (match && match[1]) {
         player.src = `https://drive.google.com/file/d/${match[1]}/preview`;
       }
 
-    // Any other direct embed URL (filemoon, etc.)
+    // All other embed URLs (Bunny.net, StreamTape, Filemoon, etc.) — use directly
     } else {
       player.src = video;
     }

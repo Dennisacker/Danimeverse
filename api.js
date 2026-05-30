@@ -3,7 +3,7 @@
 ========================= */
 
 const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
-const STREAMTAPE_EMBED = "https://streamtape.com/e/GAgGMmwRlXi1k3D/";
+const STREAMTAPE_EMBED = "https://player.mediadelivery.net/embed/673018/35592cb4-0c78-4267-bab2-45d9723b8955";
 
 function getCached(key) {
   try {
