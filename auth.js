@@ -49,7 +49,9 @@ if (signInForm) {
         rememberMe ? browserLocalPersistence : browserSessionPersistence
       );
       await signInWithEmailAndPassword(auth, email, password);
-      window.location.href = "index.html";
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 800);
     } catch (error) {
       alert(error.message);
     }

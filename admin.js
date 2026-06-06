@@ -89,3 +89,13 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
   }
 
 });
+onAuthStateChanged(auth, user => {
+  console.log("USER:", user);
+
+  if (!user) {
+    location.href = "sign-in.html";
+    return;
+  }
+
+  console.log("EMAIL:", user.email);
+});
