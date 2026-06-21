@@ -15,173 +15,119 @@ body {
   height: 100vh;
 }
 
-/* SIDEBAR */
-.sidebar {
-  width: 260px;
-  background: rgba(255,255,255,0.04);
+/* LEFT PANEL */
+.left {
+  width: 35%;
+  background: rgba(255,255,255,0.03);
+  padding: 20px;
   border-right: 1px solid rgba(255,255,255,0.08);
-  padding: 15px;
   overflow-y: auto;
 }
 
-.sidebar h2 {
-  font-size: 16px;
-  margin-bottom: 10px;
+.title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 15px;
 }
 
-.sidebar input {
+/* INPUTS */
+input, button {
   width: 100%;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 10px;
   border: none;
-  background: #111;
-  color: white;
-  margin-bottom: 10px;
 }
 
-.anime-item {
-  padding: 10px;
-  margin-bottom: 6px;
-  background: rgba(255,255,255,0.05);
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.anime-item:hover {
-  background: rgba(236,72,153,0.3);
-}
-
-/* MAIN */
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 15px;
-}
-
-/* TOP BAR */
-.top {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.top input {
-  flex: 1;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
+input {
   background: #111;
   color: white;
 }
 
 button {
-  padding: 10px 15px;
-  border-radius: 8px;
-  border: none;
   background: #ec4899;
   color: white;
   font-weight: bold;
   cursor: pointer;
 }
 
-/* CONTENT AREA */
-.content {
-  display: flex;
-  gap: 15px;
-  flex: 1;
+button:hover {
+  background: #db2777;
 }
 
-/* EPISODES */
-.episodes {
-  width: 40%;
-  overflow-y: auto;
-  background: rgba(255,255,255,0.03);
-  border-radius: 10px;
-  padding: 10px;
-}
-
+/* EPISODE LIST */
 .ep {
   padding: 10px;
-  margin-bottom: 6px;
+  margin-top: 8px;
   background: rgba(255,255,255,0.05);
   border-radius: 8px;
   cursor: pointer;
 }
 
 .ep:hover {
-  background: rgba(236,72,153,0.3);
+  background: rgba(236,72,153,0.2);
 }
 
 /* RIGHT PANEL */
 .right {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  padding: 30px;
 }
 
-input {
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  background: #111;
-  color: white;
+.card {
+  background: rgba(255,255,255,0.04);
+  padding: 20px;
+  border-radius: 15px;
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
-.videoBox {
-  flex: 1;
-  background: black;
-  border-radius: 10px;
-  overflow: hidden;
+.animeTitle {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #ec4899;
 }
 
-iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
+.small {
+  opacity: 0.7;
+  font-size: 13px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <h2>Anime List</h2>
-  <input id="animeSearch" placeholder="Search anime..." />
-  <button id="loadAnime">Search</button>
-  <div id="animeList"></div>
+<!-- LEFT -->
+<div class="left">
+
+  <div class="title">🎬 Admin Panel</div>
+
+  <input id="animeSearch" placeholder="Anime name (Naruto...)" />
+  <button id="loadAnime">Load Anime</button>
+
+  <div id="episodeList"></div>
+
 </div>
 
-<!-- MAIN -->
-<div class="main">
+<!-- RIGHT -->
+<div class="right">
 
-  <div class="top">
-    <input id="video" placeholder="Video link..." />
-    <button id="uploadBtn">Upload</button>
-  </div>
+  <div class="card">
 
-  <div class="content">
+    <div class="animeTitle" id="animeTitle">No anime selected</div>
+    <div class="small" id="animeSlug"></div>
 
-    <!-- EPISODES -->
-    <div class="episodes" id="episodeList"></div>
+    <input id="episode" placeholder="Episode number" />
+    <input id="title" placeholder="Episode title" />
+    <input id="video" placeholder="Video link (Bunny / Febbox / Drive)" />
 
-    <!-- RIGHT PANEL -->
-    <div class="right">
-
-      <input id="selectedEpisode" placeholder="Next episode auto appears" disabled />
-
-      <div class="videoBox">
-        <iframe id="preview" src=""></iframe>
-      </div>
-
-    </div>
+    <button id="uploadBtn">Upload Episode</button>
 
   </div>
+
 </div>
 
-<script type="module" src="admin.js"></script>
+<script type="module" src="./admin.js"></script>
 
 </body>
 </html>

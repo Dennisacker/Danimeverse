@@ -9,163 +9,114 @@ import {
 
 /* FIREBASE */
 const firebaseConfig = {
-  ,
+  apiKey: "AIzaSyC9mOlwqobv6V8O50BWADbkhRNQ4",
   authDomain: "danimeverse-c1fa3.firebaseapp.com",
   projectId: "danimeverse-c1fa3",
   storageBucket: "danimeverse-c1fa3.firebasestorage.app",
   messagingSenderId: "626679123848",
-  appId: "1:626679123848:web:dec7eeffb63885fa48343d",
-  measurementId: "G-ZQC0SFQR4Q"
+  appId: "1:626679123848:web:dec7eeffb63885fa48343d"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 /* STATE */
-let animeTitle = "";
-let animeId = null;
-let currentPage = 1;
-let selectedEpisode = null;
+let currentAnime = "";
+let episodes = [];
 
-/* SEARCH ANIME */
+/* SLUG */
+const slug = (t) =>
+  t.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-");
+
+/* AUTO DETECT OR CREATE ANIME */
 document.getElementById("loadAnime").onclick = async () => {
 
-  const query = document.getElementById("animeSearch").value.trim();
+  const input = document.getElementById("animeSearch").value.trim();
+  if (!input) return alert("Type anime name");
 
-  if (!query) {
-    alert("Type anime name");
-    return;
-  }
+  currentAnime = slug(input);
 
-  document.getElementById("episodeList").innerHTML =
-    "Searching anime...";
+  document.getElementById("animeTitle").innerText = input;
+  document.getElementById("animeSlug").innerText = currentAnime;
 
-  try {
-
-    const res = await fetch(
-      `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=1`
-    );
-
-    const data = await res.json();
-
-    if (!data.data.length) {
-      document.getElementById("episodeList").innerHTML =
-        "Anime not found";
-      return;
-    }
-
-    const anime = data.data[0];
-
-    animeTitle = anime.title;
-    animeId = anime.mal_id;
-
-    currentPage = 1;
-
-    loadEpisodes();
-
-  } catch (err) {
-    console.log(err);
-    document.getElementById("episodeList").innerHTML =
-      "API error";
-  }
+  loadEpisodes();
 };
 
 /* LOAD EPISODES */
 async function loadEpisodes() {
 
   const box = document.getElementById("episodeList");
+  box.innerHTML = "Loading...";
 
-  box.innerHTML = "Loading episodes...";
+  const snap = await getDocs(collection(db, "videos"));
 
-  try {
+  episodes = [];
 
-    const res = await fetch(
-      `https://api.jikan.moe/v4/anime/${animeId}/episodes?page=${currentPage}`
-    );
+  snap.forEach(d => {
+    const data = d.data();
 
-    const data = await res.json();
-
-    box.innerHTML = "";
-
-    if (!data.data.length) {
-      box.innerHTML = "No episodes found.";
-      return;
+    if (data.anime === currentAnime) {
+      episodes.push(data);
     }
+  });
 
-    data.data.forEach(ep => {
+  episodes.sort((a, b) => a.episode - b.episode);
 
-      const div = document.createElement("div");
+  box.innerHTML = "";
 
-      div.className = "ep";
-
-      div.innerHTML =
-        `Episode ${ep.mal_id} — ${ep.title || "No title"}`;
-
-      div.onclick = () => {
-
-        selectedEpisode = {
-          number: ep.mal_id,
-          title: ep.title || `Episode ${ep.mal_id}`
-        };
-
-        document.getElementById(
-          "selectedEpisode"
-        ).value =
-          `Episode ${selectedEpisode.number} - ${selectedEpisode.title}`;
-      };
-
-      box.appendChild(div);
-
-    });
-
-    /* NEXT PAGE */
-    const nextBtn = document.createElement("button");
-
-    nextBtn.innerText = "Next Episodes →";
-
-    nextBtn.style.marginTop = "10px";
-
-    nextBtn.onclick = () => {
-      currentPage++;
-      loadEpisodes();
-    };
-
-    box.appendChild(nextBtn);
-
-  } catch (err) {
-    console.log(err);
-    box.innerHTML = "Failed to load episodes.";
-  }
-}
-
-/* UPLOAD */
-document.getElementById("uploadBtn").onclick = async () => {
-
-  const video =
-    document.getElementById("video").value.trim();
-
-  if (!animeTitle || !selectedEpisode || !video) {
-    alert("Choose an episode and paste video.");
+  if (!episodes.length) {
+    box.innerHTML = "No episodes yet";
     return;
   }
 
-  const docId =
-    `${animeTitle.toLowerCase()}_${selectedEpisode.number}`;
+  episodes.forEach(ep => {
 
-  await setDoc(
-    doc(db, "videos", docId),
-    {
-      anime: animeTitle,
-      episode: selectedEpisode.number,
-      title: selectedEpisode.title,
-      video: video,
-      createdAt: Date.now()
-    }
-  );
+    const div = document.createElement("div");
+    div.className = "ep";
+    div.innerText = `Ep ${ep.episode} — ${ep.title}`;
 
+    div.onclick = () => {
+      document.getElementById("episode").value = ep.episode;
+      document.getElementById("title").value = ep.title;
+      document.getElementById("video").value = ep.video;
+    };
+
+    box.appendChild(div);
+  });
+}
+
+/* AUTO EPISODE NUMBER */
+function getNextEpisode() {
+  if (!episodes.length) return 1;
+  return episodes[episodes.length - 1].episode + 1;
+}
+
+/* UPLOAD (NETFLIX STYLE AUTO) */
+document.getElementById("uploadBtn").onclick = async () => {
+
+  const title = document.getElementById("title").value.trim();
+  const video = document.getElementById("video").value.trim();
+
+  if (!currentAnime || !video) {
+    alert("Load anime + paste video");
+    return;
+  }
+
+  const nextEp = getNextEpisode();
+  const docId = `${currentAnime}_${nextEp}`;
+
+  await setDoc(doc(db, "videos", docId), {
+    anime: currentAnime,
+    episode: nextEp,
+    title: title || `Episode ${nextEp}`,
+    video,
+    createdAt: Date.now()
+  });
+
+  alert(`Episode ${nextEp} uploaded ✅`);
+
+  document.getElementById("title").value = "";
   document.getElementById("video").value = "";
 
-  alert(
-    `Episode ${selectedEpisode.number} uploaded successfully ✅`
-  );
+  loadEpisodes();
 };
