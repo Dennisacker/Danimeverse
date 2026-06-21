@@ -1,101 +1,171 @@
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore,
   doc,
-  setDoc
+  setDoc,
+  collection,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+/* FIREBASE */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_ID",
-  appId: "YOUR_APP_ID"
+  ,
+  authDomain: "danimeverse-c1fa3.firebaseapp.com",
+  projectId: "danimeverse-c1fa3",
+  storageBucket: "danimeverse-c1fa3.firebasestorage.app",
+  messagingSenderId: "626679123848",
+  appId: "1:626679123848:web:dec7eeffb63885fa48343d",
+  measurementId: "G-ZQC0SFQR4Q"
 };
 
-const app = getApps().length
-  ? getApps()[0]
-  : initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
+const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const ADMIN_EMAIL = "dennisckerman246@gmail.com";
+/* STATE */
+let animeTitle = "";
+let animeId = null;
+let currentPage = 1;
+let selectedEpisode = null;
 
-onAuthStateChanged(auth, user => {
+/* SEARCH ANIME */
+document.getElementById("loadAnime").onclick = async () => {
 
-  if (!user) {
-    location.href = "sign-in.html";
+  const query = document.getElementById("animeSearch").value.trim();
+
+  if (!query) {
+    alert("Type anime name");
     return;
   }
 
-  if (user.email !== ADMIN_EMAIL) {
-    document.body.innerHTML =
-      "<h1 style='color:white;text-align:center;margin-top:100px'>Access Denied</h1>";
+  document.getElementById("episodeList").innerHTML =
+    "Searching anime...";
+
+  try {
+
+    const res = await fetch(
+      `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=1`
+    );
+
+    const data = await res.json();
+
+    if (!data.data.length) {
+      document.getElementById("episodeList").innerHTML =
+        "Anime not found";
+      return;
+    }
+
+    const anime = data.data[0];
+
+    animeTitle = anime.title;
+    animeId = anime.mal_id;
+
+    currentPage = 1;
+
+    loadEpisodes();
+
+  } catch (err) {
+    console.log(err);
+    document.getElementById("episodeList").innerHTML =
+      "API error";
   }
+};
 
-});
+/* LOAD EPISODES */
+async function loadEpisodes() {
 
-document.getElementById("saveBtn").addEventListener("click", async () => {
+  const box = document.getElementById("episodeList");
 
-  const anime =
-    document.getElementById("anime").value.trim();
+  box.innerHTML = "Loading episodes...";
 
-  const episode =
-    document.getElementById("episode").value.trim();
+  try {
+
+    const res = await fetch(
+      `https://api.jikan.moe/v4/anime/${animeId}/episodes?page=${currentPage}`
+    );
+
+    const data = await res.json();
+
+    box.innerHTML = "";
+
+    if (!data.data.length) {
+      box.innerHTML = "No episodes found.";
+      return;
+    }
+
+    data.data.forEach(ep => {
+
+      const div = document.createElement("div");
+
+      div.className = "ep";
+
+      div.innerHTML =
+        `Episode ${ep.mal_id} — ${ep.title || "No title"}`;
+
+      div.onclick = () => {
+
+        selectedEpisode = {
+          number: ep.mal_id,
+          title: ep.title || `Episode ${ep.mal_id}`
+        };
+
+        document.getElementById(
+          "selectedEpisode"
+        ).value =
+          `Episode ${selectedEpisode.number} - ${selectedEpisode.title}`;
+      };
+
+      box.appendChild(div);
+
+    });
+
+    /* NEXT PAGE */
+    const nextBtn = document.createElement("button");
+
+    nextBtn.innerText = "Next Episodes →";
+
+    nextBtn.style.marginTop = "10px";
+
+    nextBtn.onclick = () => {
+      currentPage++;
+      loadEpisodes();
+    };
+
+    box.appendChild(nextBtn);
+
+  } catch (err) {
+    console.log(err);
+    box.innerHTML = "Failed to load episodes.";
+  }
+}
+
+/* UPLOAD */
+document.getElementById("uploadBtn").onclick = async () => {
 
   const video =
     document.getElementById("video").value.trim();
 
-  const status =
-    document.getElementById("status");
-
-  if (!anime || !episode || !video) {
-    status.textContent = "Fill all fields";
+  if (!animeTitle || !selectedEpisode || !video) {
+    alert("Choose an episode and paste video.");
     return;
   }
 
-  try {
+  const docId =
+    `${animeTitle.toLowerCase()}_${selectedEpisode.number}`;
 
-    const docId =
-      `${anime.toLowerCase()}_${episode}`;
+  await setDoc(
+    doc(db, "videos", docId),
+    {
+      anime: animeTitle,
+      episode: selectedEpisode.number,
+      title: selectedEpisode.title,
+      video: video,
+      createdAt: Date.now()
+    }
+  );
 
-    await setDoc(
-      doc(db, "videos", docId),
-      {
-        anime,
-        episode,
-        video,
-        createdAt: Date.now()
-      }
-    );
+  document.getElementById("video").value = "";
 
-    status.textContent = "✅ Saved successfully";
-
-    document.getElementById("episode").value = "";
-    document.getElementById("video").value = "";
-
-  } catch (err) {
-
-    console.error(err);
-
-    status.textContent =
-      "❌ Failed to save";
-
-  }
-
-});
-onAuthStateChanged(auth, user => {
-  console.log("USER:", user);
-
-  if (!user) {
-    location.href = "sign-in.html";
-    return;
-  }
-
-  console.log("EMAIL:", user.email);
-});
+  alert(
+    `Episode ${selectedEpisode.number} uploaded successfully ✅`
+  );
+};

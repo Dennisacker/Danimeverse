@@ -1,52 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Danimeverse Admin</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Dashboard</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #050816;
+  color: white;
+  display: flex;
+  height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  background: rgba(255,255,255,0.04);
+  border-right: 1px solid rgba(255,255,255,0.08);
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.sidebar h2 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.sidebar input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #111;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.anime-item {
+  padding: 10px;
+  margin-bottom: 6px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.anime-item:hover {
+  background: rgba(236,72,153,0.3);
+}
+
+/* MAIN */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+
+/* TOP BAR */
+.top {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.top input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #111;
+  color: white;
+}
+
+button {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  background: #ec4899;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* CONTENT AREA */
+.content {
+  display: flex;
+  gap: 15px;
+  flex: 1;
+}
+
+/* EPISODES */
+.episodes {
+  width: 40%;
+  overflow-y: auto;
+  background: rgba(255,255,255,0.03);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.ep {
+  padding: 10px;
+  margin-bottom: 6px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.ep:hover {
+  background: rgba(236,72,153,0.3);
+}
+
+/* RIGHT PANEL */
+.right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #111;
+  color: white;
+}
+
+.videoBox {
+  flex: 1;
+  background: black;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+</style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center">
 
-  <div class="w-full max-w-md bg-slate-800 p-6 rounded-xl">
+<body>
 
-    <h1 class="text-3xl font-bold mb-6 text-center">
-      Danimeverse Admin
-    </h1>
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>Anime List</h2>
+  <input id="animeSearch" placeholder="Search anime..." />
+  <button id="loadAnime">Search</button>
+  <div id="animeList"></div>
+</div>
 
-    <input
-      id="anime"
-      type="text"
-      placeholder="Anime Name"
-      class="w-full mb-4 p-3 rounded bg-slate-700"
-    >
+<!-- MAIN -->
+<div class="main">
 
-    <input
-      id="episode"
-      type="number"
-      placeholder="Episode Number"
-      class="w-full mb-4 p-3 rounded bg-slate-700"
-    >
-
-    <textarea
-      id="video"
-      placeholder="Bunny Embed URL"
-      class="w-full mb-4 p-3 rounded bg-slate-700 h-32"
-    ></textarea>
-
-    <button
-      id="saveBtn"
-      class="w-full bg-pink-600 p-3 rounded font-bold hover:bg-pink-500"
-    >
-      Save Episode
-    </button>
-
-    <p id="status" class="mt-4 text-center"></p>
-
+  <div class="top">
+    <input id="video" placeholder="Video link..." />
+    <button id="uploadBtn">Upload</button>
   </div>
 
-  <script type="module" src="admin.js"></script>
+  <div class="content">
+
+    <!-- EPISODES -->
+    <div class="episodes" id="episodeList"></div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right">
+
+      <input id="selectedEpisode" placeholder="Next episode auto appears" disabled />
+
+      <div class="videoBox">
+        <iframe id="preview" src=""></iframe>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script type="module" src="admin.js"></script>
 
 </body>
 </html>
