@@ -1,0 +1,315 @@
+I want you to upgrade and fix the existing anime streaming website in this Replit project. DO NOT rebuild the website from scratch. First inspect the existing project and understand how the current files work.
+
+My main goal is to build a working Netflix-style ADMIN DASHBOARD for uploading anime episodes and connecting those episodes to my existing WATCH PAGE.
+
+IMPORTANT:
+I already have a Firebase project and Firestore database. Find the existing Firebase configuration in my project and reuse it. Do NOT replace it with placeholder values such as YOUR_API_KEY, YOUR_PROJECT_ID, or YOUR_DOMAIN.
+
+Also, do not create multiple conflicting Firestore structures. Inspect my existing code and use one consistent structure throughout the admin page and watch page.
+
+CURRENT VIDEO HOSTING SYSTEM:
+I am using FEBBOX as the video hosting/destination service.
+
+I do NOT want to embed the Febbox player inside my website.
+
+Instead, the flow should be:
+
+Danimeverse → User clicks "Watch Episode" → User is redirected to the saved Febbox URL → User watches the episode on Febbox.
+
+Therefore, the Firestore episode document only needs to store the Febbox URL in the "video" field.
+
+Example:
+
+{
+anime: "Naruto",
+animeSlug: "naruto",
+episode: 1,
+title: "Enter: Naruto Uzumaki!",
+video: "THE_FEBBOX_URL",
+createdAt: timestamp
+}
+
+Do NOT add a "videoHost" field.
+
+==================================================
+ADMIN DASHBOARD
+===============
+
+Create a professional Netflix-style admin dashboard while preserving my current Danimeverse visual style:
+
+* Dark background
+* Glassmorphism cards
+* Pink/purple accents
+* Responsive design
+* Smooth hover effects
+* Clean modern layout
+
+The dashboard should have a sidebar/navigation area and a main content area.
+
+Include dashboard statistics such as:
+
+* Total anime
+* Total uploaded episodes
+* Recently uploaded episodes
+
+==================================================
+ANIME SEARCH
+============
+
+I want to be able to search for anime from my existing website's anime data.
+
+IMPORTANT:
+Do not rely entirely on Jikan API to generate episode lists.
+
+My website already has anime data. Inspect the existing project and find where the anime list/data is stored.
+
+When I search for an anime in the admin dashboard:
+
+1. Search the existing anime data from my website.
+2. Show matching anime results underneath the search bar.
+3. Display the anime title and poster/thumbnail if available.
+4. Allow me to click an anime to select it.
+5. Once selected, show the anime title, poster, and episode management section.
+
+If my existing anime data is stored in a JavaScript array, JSON file, Firestore collection, or another source, reuse that existing source instead of creating a duplicate anime database unnecessarily.
+
+==================================================
+EPISODE MANAGEMENT
+==================
+
+After selecting an anime, show all episodes that have already been uploaded for that anime.
+
+Each episode should display:
+
+* Episode number
+* Episode title
+* Upload status
+* Date uploaded
+
+Example:
+
+Episode 1 — Enter: Naruto Uzumaki!
+Episode 2 — My Name is Konohamaru!
+
+Clicking an existing episode should load its information into the editor so I can edit:
+
+* Episode number
+* Episode title
+* Febbox URL
+
+==================================================
+UPLOAD EPISODE
+==============
+
+Create an upload form containing:
+
+* Episode number
+* Episode title
+* Febbox video URL
+
+The system should automatically detect the next episode number based on the episodes already uploaded.
+
+Example:
+
+If Naruto episodes 1–10 are already uploaded:
+
+Next episode suggestion = 11
+
+I should still be able to manually change the episode number.
+
+When I click Upload Episode:
+
+1. Save the episode to Firestore.
+2. Save the anime name and anime slug.
+3. Save the episode number.
+4. Save the episode title.
+5. Save the Febbox URL in the "video" field.
+6. Update the admin dashboard immediately.
+7. Clear the video URL and title fields.
+8. Show a success message.
+
+==================================================
+FIRESTORE STRUCTURE
+===================
+
+Use one consistent structure.
+
+Prefer a "videos" collection with documents such as:
+
+videos/
+naruto_1
+naruto_2
+naruto_3
+bleach_1
+
+Each document should contain:
+
+{
+anime: "Naruto",
+animeSlug: "naruto",
+episode: 1,
+title: "Episode 1",
+video: "FEBBOX_URL",
+createdAt: timestamp
+}
+
+Use the anime slug and episode number to create a predictable document ID:
+
+naruto_1
+
+naruto_2
+
+bleach_1
+
+Do not create another conflicting "videos" structure if one already exists. Inspect my current Firestore implementation first and adapt it if necessary.
+
+==================================================
+WATCH PAGE
+==========
+
+Make sure the admin dashboard and watch.html use exactly the same Firestore structure.
+
+When a user opens an episode on Danimeverse, the watch page should retrieve:
+
+* Anime name
+* Episode number
+* Episode title
+* Febbox URL
+
+The watch page should display:
+
+Naruto
+
+Episode 1
+
+Enter: Naruto Uzumaki!
+
+Then provide a clear button:
+
+▶ WATCH EPISODE
+
+When the user clicks the button, redirect them to the saved Febbox URL.
+
+Use:
+
+window.location.href = videoUrl;
+
+or another safe redirect method.
+
+Do NOT attempt to embed Febbox inside an iframe.
+
+Do NOT convert the Febbox URL into a fake embed URL.
+
+Do NOT modify the Febbox URL unless absolutely necessary.
+
+The user should simply be taken to Febbox to watch the episode.
+
+==================================================
+PREVIOUS AND NEXT EPISODES
+==========================
+
+The watch page should have:
+
+◀ Previous Episode
+
+▶ Next Episode
+
+When the user clicks Next:
+
+* Increase the episode number by 1.
+* Load the next episode from Firestore.
+* Display its title.
+* Retrieve its Febbox URL.
+* Show the Watch Episode button.
+
+When the user clicks Previous:
+
+* Decrease the episode number by 1.
+* Load the previous episode from Firestore.
+
+If an episode has not been uploaded, clearly show:
+
+"Episode not available yet."
+
+Do not send the user to an empty or broken Febbox URL.
+
+==================================================
+RECENT UPLOADS
+==============
+
+Add a Recent Uploads section to the admin dashboard.
+
+Show:
+
+* Anime
+* Episode
+* Title
+* Date uploaded
+* Febbox link status
+
+Newest uploads should appear first.
+
+Clicking an uploaded episode should open it in the episode editor.
+
+==================================================
+VIDEO URL HISTORY
+=================
+
+Add a Recent Febbox Links section.
+
+When I paste a Febbox URL, save it locally in the browser.
+
+Keep the last 10 unique URLs.
+
+Do not save duplicate URLs.
+
+Allow me to click a previous URL to automatically put it into the Febbox URL input.
+
+==================================================
+IMPORTANT BUG FIXING
+====================
+
+Before finishing, inspect the entire project and check for:
+
+* Duplicate Firebase initialization
+* Duplicate Firebase imports
+* Incorrect Firebase configuration
+* Placeholder Firebase configuration
+* Conflicting Firestore structures
+* Incorrect collection names
+* Incorrect document IDs
+* Mismatched HTML element IDs
+* Broken admin.js selectors
+* Broken watch.html selectors
+* Broken buttons
+* JavaScript errors
+* Incorrect relative paths
+* Incorrect script paths
+* Problems when deployed to Vercel or Replit
+
+Make sure the admin dashboard works when accessed from the deployed website.
+
+Do not remove existing features from my website.
+
+Do not break the existing anime pages.
+
+Do not replace the entire project with a new template.
+
+Modify the existing project and preserve the current Danimeverse design.
+
+==================================================
+FINAL CHECK
+===========
+
+After making the changes, tell me:
+
+1. Which files you changed.
+2. What you changed in each file.
+3. Whether I need to change anything in Firebase.
+4. What Firestore structure the final system uses.
+5. How to upload Naruto Episode 1.
+6. How to upload Naruto Episode 2.
+7. How the user gets from Danimeverse to Febbox when clicking Watch Episode.
+8. How the Previous and Next buttons work.
+
+Before making destructive changes to my database or deleting existing data, explain what you intend to change and ask me first.
