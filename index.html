@@ -1293,108 +1293,14 @@ loading="lazy" />
           </div>
           <div class="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-slate-200 shadow-soft">New episodes every week</div>
         </div>
-        <div class="mt-8 grid gap-5 lg:grid-cols-2">
-          <article class="glass-card flex flex-col gap-5 rounded-[2rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
-            <div class="flex items-start gap-4">
-              <img src="https://i.pinimg.com/736x/ed/3a/17/ed3a17a531903144f29435fc754f6d2a.jpg" alt="Episode thumbnail" class="h-20 w-20 md:h-28 md:w-28 rounded-3xl https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-cover" loading="lazy" />
-              <div>
-                <p class="text-xs uppercase tracking-[0.3em] text-neonblue">Episode 6</p>
-                <h3 class="mt-2 text-xl md:text-2xl font-semibold text-white">Kill Blue</h3>
-                <p class="mt-2 text-sm text-slate-300">Neon assassins clash in deadly duels.</p>
-              </div>
-            </div>
-            <div class="flex flex-wrap gap-3">
-        <a href="watch.html?anime=Kill%20Blue&ep=6&title=Episode%206&desc=Kill%20Blue%20Episode%206&video=https://drive.google.com/file/d/1dGg9KR-p-ei8W3v01r7tktqm9PFDjANn/preview">
-
-  <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full">
-    WATCH
-  </button>
-
-</a>
-
-<!-- DOWNLOAD button -->
-<button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
-               hover:bg-white hover:text-black transition">
-  DOWNLOAD
-</button>
-            </div>
+        <!-- Dynamic Fresh Episodes — loaded from Firestore by fresh-episodes.js -->
+        <div id="freshEpisodesContainer" class="mt-8 grid gap-5 lg:grid-cols-2">
+          <!-- Loading skeletons shown while Firestore loads -->
+          <article class="glass-card rounded-[2rem] p-4" style="animation:pulse 1.5s ease-in-out infinite">
+            <div class="flex gap-4"><div style="width:112px;height:112px;border-radius:1.5rem;background:rgba(255,255,255,.08);flex-shrink:0"></div><div style="flex:1;padding-top:8px"><div style="height:12px;background:rgba(255,255,255,.08);border-radius:6px;width:60%;margin-bottom:10px"></div><div style="height:18px;background:rgba(255,255,255,.08);border-radius:6px;width:100%;margin-bottom:8px"></div><div style="height:12px;background:rgba(255,255,255,.08);border-radius:6px;width:40%"></div></div></div>
           </article>
-          <article class="glass-card flex flex-col gap-5 rounded-[2rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
-            <div class="flex items-start gap-4">
-              <img src="https://i1-c.pinimg.com/1200x/86/09/d9/8609d9333ffdbc7eb373fce2c2d2923f.jpg" alt="Episode thumbnail" class="h-20 w-20 md:h-28 md:w-28 rounded-3xl https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-cover" loading="lazy" />
-              <div>
-                <p class="text-xs uppercase tracking-[0.3em] text-neonpurple">Episode 7</p>
-                <h3 class="mt-2 text-xl md:text-2xl font-semibold text-white">Daemons of the Shadow Realm  </h3>
-                <p class="mt-2 text-sm text-slate-300">Spirits awaken, darkness spreads.</p>
-              </div>
-            </div>
-            <div class="flex flex-wrap gap-3">
-  <a href="watch.html?anime=Daemons%20of%20the%20Shadow%20Realm&ep=7&title=Episode%207&desc=Daemons%20of%20the%20Shadow%20Realm%20Episode%207&video=https://drive.google.com/file/d/1zMwUCwCuJgcu22_zQye4aUy6YPzXMQdg/preview">
-
-  <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full">
-    WATCH
-  </button>
-
-</a>
-
-<!-- DOWNLOAD button -->
-<button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
-               hover:bg-white hover:text-black transition">
-  DOWNLOAD
-</button>
-            </div>
-          </article>
-        </div>
-         <div class="mt-8 grid gap-5 lg:grid-cols-2">
-          <article class="glass-card flex flex-col gap-5 rounded-[2rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
-            <div class="flex items-start gap-4">
-              <img src="https://i.pinimg.com/736x/30/82/80/308280c8ce225c7fa91807a803bfa2b4.jpg" alt="Episode thumbnail" class="h-20 w-20 md:h-28 md:w-28 rounded-3xl https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-cover" loading="lazy" />
-              <div>
-                <p class="text-xs uppercase tracking-[0.3em] text-neonblue">Episode 7</p>
-                <h3 class="mt-2 text-xl md:text-2xl font-semibold text-white">The Regression of Great Sage Riddle </h3>
-                <p class="mt-2 text-sm text-slate-300">Sage rewinds time to rewrite fate.</p>
-              </div>
-            </div>
-            <div class="flex flex-wrap gap-3">
-          <a href="watch.html?anime=Regression%20of%20the%20Great%20Sage%20Riddle&ep=7&title=Episode%207&desc=Regression%20of%20the%20Great%20Sage%20Riddle%20Episode%207&video=https://drive.google.com/file/d/1LoJkq9kO0Cx5wnfB1iSKSZl8EWZaMmls/preview">
-
-  <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full">
-    WATCH
-  </button>
-
-</a>
-
-<!-- DOWNLOAD button -->
-<button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
-               hover:bg-white hover:text-black transition">
-  DOWNLOAD
-</button>
-            </div>
-          </article>
-          <article class="glass-card flex flex-col gap-5 rounded-[2rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
-            <div class="flex items-start gap-4">
-              <img src="https://i.pinimg.com/736x/d9/58/9d/d9589d44e87a840e6c3701272f7ad4e5.jpg" alt="Episode thumbnail" class="h-20 w-20 md:h-28 md:w-28 rounded-3xl https://i.pinimg.com/1200x/3a/8c/63/3a8c63737ae2d94f9d4f09f477e3df34.jpg-cover" loading="lazy" />
-              <div>
-                <p class="text-xs uppercase tracking-[0.3em] text-neonpurple">Episode 7</p>
-                <h3 class="mt-2 text-xl md:text-2xl font-semibold text-white">Snowball Earth</h3>
-                <p class="mt-2 text-sm text-slate-300">Humanity fights through frozen apocalypse.</p>
-              </div>
-            </div>
-            <div class="flex flex-wrap gap-3">
-              <div class="flex flex-wrap gap-3">
-     <a href="watch.html?anime=Snowball%20Earth&ep=7&title=Episode%207&desc=Snowball%20Earth%20Episode%207&video=https://drive.google.com/file/d/1p9Egj_bk1e5SlA6Re8JfWVtKTYZbfe2a/preview">
-
-  <button class="bg-pink-700 border border-black text-black px-4 py-2 rounded-full">
-    WATCH
-  </button>
-
-</a>
-<!-- DOWNLOAD button -->
-<button class="bg-transparent border border-black text-black px-4 py-2 rounded-full 
-               hover:bg-white hover:text-black transition">
-  DOWNLOAD
-</button>
-            </div>
+          <article class="glass-card rounded-[2rem] p-4" style="animation:pulse 1.5s ease-in-out infinite;animation-delay:.2s">
+            <div class="flex gap-4"><div style="width:112px;height:112px;border-radius:1.5rem;background:rgba(255,255,255,.08);flex-shrink:0"></div><div style="flex:1;padding-top:8px"><div style="height:12px;background:rgba(255,255,255,.08);border-radius:6px;width:60%;margin-bottom:10px"></div><div style="height:18px;background:rgba(255,255,255,.08);border-radius:6px;width:100%;margin-bottom:8px"></div><div style="height:12px;background:rgba(255,255,255,.08);border-radius:6px;width:40%"></div></div></div>
           </article>
         </div>
 
@@ -1895,6 +1801,7 @@ document.addEventListener("click", (e) => {
 <script type="module" src="auth.js"></script>
 <script type="module" src="auth-state.js"></script>
 <script type="module" src="watchlist.js"></script>
+<script type="module" src="fresh-episodes.js"></script>
   </body>
   
 

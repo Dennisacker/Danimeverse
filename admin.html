@@ -7,391 +7,130 @@
 <title>Danimeverse Admin</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #050816;
-    --surface: rgba(255,255,255,0.04);
-    --border: rgba(255,255,255,0.08);
-    --pink: #ec4899;
-    --pink-dark: #db2777;
-    --purple: #9333ea;
-    --text: #f1f5f9;
-    --muted: #94a3b8;
-    --sidebar-w: 260px;
+    --bg: #050816; --surface: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.08);
+    --pink: #ec4899; --purple: #9333ea; --text: #f1f5f9; --muted: #94a3b8;
   }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    min-height: 100vh;
-    display: flex;
-  }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; display: flex; }
 
   /* ── SIDEBAR ── */
-  .sidebar {
-    width: var(--sidebar-w);
-    background: rgba(255,255,255,0.025);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 24px 16px;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
-    flex-shrink: 0;
-  }
-
-  .logo {
-    font-size: 20px;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--pink), var(--purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 32px;
-    padding: 0 8px;
-    letter-spacing: -0.5px;
-  }
-
-  .nav-label {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: .1em;
-    color: var(--muted);
-    padding: 0 8px;
-    margin-bottom: 6px;
-  }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    color: var(--muted);
-    transition: all .2s;
-    text-decoration: none;
-    margin-bottom: 2px;
-  }
-  .nav-item:hover, .nav-item.active {
-    background: rgba(236,72,153,.15);
-    color: var(--pink);
-  }
-  .nav-item span { font-size: 16px; }
-
-  .sidebar-sep { height: 1px; background: var(--border); margin: 16px 0; }
+  .sidebar { width: 220px; background: rgba(255,255,255,.025); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 14px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
+  .logo { font-size: 18px; font-weight: 900; background: linear-gradient(135deg,var(--pink),var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 28px; }
+  .nav-label { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 6px; }
+  .nav-item { display: flex; align-items: center; gap: 8px; padding: 9px 10px; border-radius: 9px; cursor: pointer; font-size: 13px; color: var(--muted); transition: all .2s; text-decoration: none; margin-bottom: 2px; }
+  .nav-item:hover, .nav-item.active { background: rgba(236,72,153,.15); color: var(--pink); }
+  .sidebar-sep { height: 1px; background: var(--border); margin: 14px 0; }
+  .stat-mini-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; margin-top: 10px; }
+  .stat-mini-val { font-size: 20px; font-weight: 900; color: var(--pink); }
 
   /* ── MAIN ── */
-  .main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-  }
-
-  .topbar {
-    padding: 20px 28px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(255,255,255,0.02);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .topbar h1 { font-size: 18px; font-weight: 700; flex: 1; }
+  .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; min-width: 0; }
+  .topbar { padding: 16px 24px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,.02); display: flex; align-items: center; gap: 12px; }
+  .topbar h1 { font-size: 17px; font-weight: 700; flex: 1; }
   .topbar a { color: var(--muted); font-size: 13px; text-decoration: none; }
   .topbar a:hover { color: var(--pink); }
-
-  .content { padding: 28px; flex: 1; }
+  .content { padding: 22px; flex: 1; }
 
   /* ── STATS ── */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 16px;
-    margin-bottom: 28px;
-  }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); gap: 12px; margin-bottom: 22px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; text-align: center; }
+  .stat-num { font-size: 30px; font-weight: 900; background: linear-gradient(135deg,var(--pink),var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .stat-label { font-size: 11px; color: var(--muted); margin-top: 3px; }
 
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .stat-card::before {
-    content: "";
-    position: absolute;
-    top: -30px; right: -30px;
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(236,72,153,.2), transparent 70%);
-  }
-  .stat-num {
-    font-size: 36px;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--pink), var(--purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  /* ── PANELS ── */
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 20px; }
+  .section-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 12px; }
 
-  /* ── SECTIONS ── */
-  .section-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    margin-bottom: 14px;
-  }
-
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 24px;
-    margin-bottom: 24px;
-  }
+  /* ── LAYOUT ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 1024px) { .two-col { grid-template-columns: 1fr; } }
 
   /* ── SEARCH ── */
   .search-wrap { position: relative; }
-
-  .search-input {
-    width: 100%;
-    padding: 14px 16px 14px 44px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    color: var(--text);
-    font-size: 15px;
-    outline: none;
-    transition: border .2s;
-  }
+  .search-input { width: 100%; padding: 12px 14px 12px 40px; background: rgba(255,255,255,.06); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 14px; outline: none; transition: border .2s; }
   .search-input:focus { border-color: var(--pink); }
-  .search-icon {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 16px;
-    pointer-events: none;
-  }
-
-  .search-results {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0; right: 0;
-    background: #0f0f1e;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    max-height: 340px;
-    overflow-y: auto;
-    z-index: 100;
-    display: none;
-    padding: 6px;
-  }
-
-  .search-result-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background .15s;
-  }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; pointer-events: none; }
+  .search-results { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: #0f0f1e; border: 1px solid var(--border); border-radius: 12px; max-height: 320px; overflow-y: auto; z-index: 100; display: none; padding: 4px; }
+  .search-result-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; cursor: pointer; transition: background .15s; }
   .search-result-item:hover { background: rgba(236,72,153,.15); }
-  .search-result-item img {
-    width: 44px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 8px;
-    flex-shrink: 0;
-  }
-  .search-result-item .info h4 { font-size: 14px; font-weight: 600; }
-  .search-result-item .info p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .search-result-item img { width: 40px; height: 54px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+  .search-result-item .info h4 { font-size: 13px; font-weight: 600; }
+  .search-result-item .info p { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
-  /* ── SELECTED ANIME ── */
-  .selected-anime-card {
-    display: none;
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-  .selected-anime-card img {
-    width: 70px;
-    height: 96px;
-    object-fit: cover;
-    border-radius: 10px;
-    border: 2px solid var(--pink);
-  }
-  .selected-anime-card .meta h2 { font-size: 20px; font-weight: 800; }
-  .selected-anime-card .meta p { font-size: 12px; color: var(--muted); margin-top: 4px; }
-  .badge {
-    display: inline-block;
-    background: rgba(236,72,153,.2);
-    color: var(--pink);
-    border: 1px solid rgba(236,72,153,.3);
-    font-size: 11px;
-    padding: 2px 10px;
-    border-radius: 999px;
-    margin-top: 6px;
-  }
+  /* ── SELECTED ANIME CARD ── */
+  .selected-anime-card { display: none; gap: 12px; margin-top: 14px; padding: 14px; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 12px; }
+  .selected-anime-card img { width: 54px; height: 76px; object-fit: cover; border-radius: 8px; border: 2px solid var(--pink); flex-shrink: 0; }
+  .selected-anime-card .meta h2 { font-size: 16px; font-weight: 800; }
+  .selected-anime-card .meta p { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .badge { display: inline-block; background: rgba(236,72,153,.15); color: var(--pink); border: 1px solid rgba(236,72,153,.3); font-size: 10px; padding: 2px 8px; border-radius: 999px; margin-top: 5px; }
+
+  /* ── JIKAN EPISODE LIST ── */
+  #jikanEpSection { display: none; }
+  .ep-pagination { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .page-info { font-size: 11px; color: var(--muted); flex: 1; }
+  .jikan-ep-list { max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+  .jikan-ep-item { display: flex; align-items: center; gap: 8px; padding: 9px 10px; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all .15s; }
+  .jikan-ep-item:hover { border-color: rgba(236,72,153,.4); background: rgba(236,72,153,.08); }
+  .jikan-ep-item.active { border-color: var(--pink); background: rgba(236,72,153,.12); }
+  .jikan-ep-item.uploaded { border-color: rgba(34,197,94,.3); }
+  .jep-num { font-size: 11px; font-weight: 700; color: var(--pink); min-width: 52px; }
+  .jep-title { font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .jep-status { font-size: 10px; color: #22c55e; white-space: nowrap; }
+  .jep-status.empty-status { color: #475569; }
+
+  /* ── UPLOADED EPISODE LIST ── */
+  .ep-list { display: flex; flex-direction: column; gap: 6px; max-height: 280px; overflow-y: auto; }
+  .ep-item { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; transition: all .2s; }
+  .ep-item:hover { border-color: rgba(236,72,153,.4); background: rgba(236,72,153,.08); }
+  .ep-num { font-size: 11px; font-weight: 700; color: var(--pink); min-width: 52px; }
+  .ep-title { font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ep-date { font-size: 10px; color: var(--muted); }
+  .ep-link { font-size: 11px; color: #22c55e; }
+  .ep-link.missing { color: #ef4444; }
 
   /* ── FORM ── */
-  .form-row { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-bottom: 12px; }
-  @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
-
-  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-  .form-label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
-
-  .form-input {
-    padding: 12px 14px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font-size: 14px;
-    outline: none;
-    transition: border .2s;
-    width: 100%;
-  }
+  .form-row { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin-bottom: 10px; }
+  @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+  .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+  .form-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+  .form-input { padding: 11px 12px; background: rgba(255,255,255,.06); border: 1px solid var(--border); border-radius: 9px; color: var(--text); font-size: 13px; outline: none; transition: border .2s; width: 100%; }
   .form-input:focus { border-color: var(--pink); }
   .form-input::placeholder { color: #475569; }
 
-  .btn {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 700;
-    transition: all .2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .btn-primary {
-    background: linear-gradient(135deg, var(--pink), var(--purple));
-    color: white;
-  }
+  /* ── BUTTONS ── */
+  .btn { padding: 11px 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; transition: all .2s; display: inline-flex; align-items: center; gap: 7px; }
+  .btn-primary { background: linear-gradient(135deg,var(--pink),var(--purple)); color: white; }
   .btn-primary:hover { opacity: .85; transform: translateY(-1px); }
-  .btn-ghost {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-  }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
   .btn-ghost:hover { border-color: var(--pink); color: var(--pink); }
-  .btn-sm { padding: 8px 16px; font-size: 12px; border-radius: 8px; }
-
-  /* ── EPISODE LIST ── */
-  .ep-list { display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto; }
-  .ep-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all .2s;
-  }
-  .ep-item:hover { border-color: rgba(236,72,153,.4); background: rgba(236,72,153,.08); }
-  .ep-item.active { border-color: var(--pink); background: rgba(236,72,153,.12); }
-  .ep-item .ep-num { font-size: 12px; color: var(--pink); font-weight: 700; min-width: 60px; }
-  .ep-item .ep-title { font-size: 14px; flex: 1; }
-  .ep-item .ep-date { font-size: 11px; color: var(--muted); text-align: right; }
-  .ep-item .ep-link { font-size: 11px; color: #22c55e; }
-  .ep-item .ep-link.missing { color: #ef4444; }
+  .btn-sm { padding: 7px 14px; font-size: 11px; border-radius: 7px; }
+  .btn-page { padding: 6px 14px; font-size: 12px; border-radius: 7px; border: 1px solid var(--border); background: rgba(255,255,255,.04); color: var(--text); cursor: pointer; transition: all .2s; }
+  .btn-page:hover:not([disabled]) { border-color: var(--pink); color: var(--pink); }
+  .btn-page[disabled] { opacity: .3; cursor: not-allowed; }
 
   /* ── URL HISTORY ── */
-  .url-history { display: flex; flex-direction: column; gap: 6px; }
-  .url-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 8px 12px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background .15s;
-    font-size: 12px;
-  }
+  .url-history { display: flex; flex-direction: column; gap: 5px; }
+  .url-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; transition: background .15s; font-size: 11px; }
   .url-item:hover { background: rgba(236,72,153,.08); border-color: rgba(236,72,153,.3); }
-  .url-item .url-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
-  .url-item .url-use { color: var(--pink); font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .url-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+  .url-use { color: var(--pink); font-size: 10px; font-weight: 600; white-space: nowrap; }
 
-  /* ── TOAST ── */
-  #toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    padding: 14px 20px;
-    background: #1e1e2e;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    font-size: 14px;
-    transform: translateY(80px);
-    opacity: 0;
-    transition: all .3s cubic-bezier(.34,1.56,.64,1);
-    z-index: 1000;
-    max-width: 320px;
-  }
-  #toast.show { transform: translateY(0); opacity: 1; }
-  #toast.success { border-color: #22c55e; color: #22c55e; }
-  #toast.error { border-color: #ef4444; color: #ef4444; }
-
-  /* ── RECENT UPLOADS TABLE ── */
+  /* ── RECENT TABLE ── */
   .recent-table { width: 100%; border-collapse: collapse; }
-  .recent-table th {
-    text-align: left;
-    font-size: 11px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--border);
-  }
-  .recent-table td {
-    padding: 12px 12px;
-    font-size: 13px;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    vertical-align: middle;
-  }
+  .recent-table th { text-align: left; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; padding: 7px 10px; border-bottom: 1px solid var(--border); }
+  .recent-table td { padding: 10px 10px; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,.04); vertical-align: middle; }
   .recent-table tr:last-child td { border-bottom: none; }
-  .recent-table tr:hover td { background: rgba(255,255,255,0.02); cursor: pointer; }
+  .recent-table tr:hover td { background: rgba(255,255,255,.02); cursor: pointer; }
   .link-ok { color: #22c55e; font-size: 11px; }
   .link-miss { color: #ef4444; font-size: 11px; }
 
-  /* ── LAYOUT GRID ── */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-  @media (max-width: 960px) { .two-col { grid-template-columns: 1fr; } }
-
   /* ── MISC ── */
-  .empty { color: var(--muted); font-size: 13px; text-align: center; padding: 20px; }
-  .success-banner {
-    display: none;
-    background: rgba(34,197,94,.12);
-    border: 1px solid rgba(34,197,94,.3);
-    border-radius: 10px;
-    color: #22c55e;
-    padding: 12px 16px;
-    font-size: 13px;
-    margin-top: 12px;
-    align-items: center;
-    gap: 8px;
-  }
-  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+  .empty { color: var(--muted); font-size: 12px; text-align: center; padding: 16px; }
+  .success-banner { display: none; background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.3); border-radius: 9px; color: #22c55e; padding: 10px 14px; font-size: 13px; margin-top: 10px; align-items: center; gap: 8px; }
+  #toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 18px; background: #1e1e2e; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; transform: translateY(80px); opacity: 0; transition: all .3s cubic-bezier(.34,1.56,.64,1); z-index: 1000; max-width: 300px; }
+  #toast.show { transform: translateY(0); opacity: 1; }
+  #toast.success { border-color: #22c55e; color: #22c55e; }
+  #toast.error { border-color: #ef4444; color: #ef4444; }
 </style>
 </head>
 <body>
@@ -400,22 +139,19 @@
 <aside class="sidebar">
   <div class="logo">🎬 Danimeverse</div>
   <div class="nav-label">Menu</div>
-  <a class="nav-item active" href="admin.html"><span>📊</span> Dashboard</a>
-  <a class="nav-item" href="index.html"><span>🏠</span> Home</a>
-  <a class="nav-item" href="watchlist.html"><span>📋</span> Watchlist</a>
+  <a class="nav-item active" href="admin.html">📊 Dashboard</a>
+  <a class="nav-item" href="index.html">🏠 Home</a>
+  <a class="nav-item" href="watchlist.html">📋 Watchlist</a>
   <div class="sidebar-sep"></div>
-  <div class="nav-label">Stats</div>
-  <div style="padding:0 8px">
-    <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Total Anime</div>
-    <div id="sidebarTotalAnime" style="font-size:22px;font-weight:900;color:var(--pink)">—</div>
-    <div style="font-size:12px;color:var(--muted);margin-top:12px;margin-bottom:6px">Total Episodes</div>
-    <div id="sidebarTotalEps" style="font-size:22px;font-weight:900;color:var(--purple)">—</div>
-  </div>
+  <div class="nav-label">Live Stats</div>
+  <div class="stat-mini-label">Anime Uploaded</div>
+  <div id="sidebarTotalAnime" class="stat-mini-val">—</div>
+  <div class="stat-mini-label">Total Episodes</div>
+  <div id="sidebarTotalEps" class="stat-mini-val" style="color:var(--purple)">—</div>
 </aside>
 
 <!-- ═══ MAIN ═══ -->
 <div class="main">
-
   <div class="topbar">
     <h1>Admin Dashboard</h1>
     <a href="index.html">← Back to site</a>
@@ -425,59 +161,63 @@
 
     <!-- STATS -->
     <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-num" id="statTotalAnime">—</div>
-        <div class="stat-label">Anime on Site</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="statTotalEps">—</div>
-        <div class="stat-label">Total Episodes</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="statRecent">—</div>
-        <div class="stat-label">Added Today</div>
-      </div>
+      <div class="stat-card"><div class="stat-num" id="statTotalAnime">—</div><div class="stat-label">Anime Uploaded</div></div>
+      <div class="stat-card"><div class="stat-num" id="statTotalEps">—</div><div class="stat-label">Total Episodes</div></div>
+      <div class="stat-card"><div class="stat-num" id="statRecent">—</div><div class="stat-label">Added Today</div></div>
     </div>
 
     <div class="two-col">
 
-      <!-- LEFT COLUMN -->
+      <!-- ─── LEFT COLUMN ─── -->
       <div>
 
         <!-- SEARCH -->
         <div class="panel">
-          <div class="section-title">Select Anime</div>
+          <div class="section-title">Search Anime (Jikan)</div>
           <div class="search-wrap">
             <span class="search-icon">🔍</span>
-            <input id="animeSearch" class="search-input" type="text" placeholder="Search your anime catalogue…" autocomplete="off" />
+            <input id="animeSearch" class="search-input" type="text" placeholder="Search any anime…" autocomplete="off"/>
             <div id="searchResults" class="search-results"></div>
           </div>
 
           <!-- SELECTED ANIME -->
-          <div id="selectedAnimeCard" class="selected-anime-card" style="display:none;margin-top:16px;">
-            <img id="selectedPoster" src="" alt="" />
+          <div id="selectedAnimeCard" class="selected-anime-card">
+            <img id="selectedPoster" src="" alt=""/>
             <div class="meta">
               <h2 id="selectedTitle">—</h2>
-              <p id="selectedGenres"></p>
+              <p id="selectedMeta"></p>
               <span class="badge" id="selectedSlug"></span>
             </div>
           </div>
         </div>
 
-        <!-- EPISODE LIST -->
-        <div class="panel">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-            <div class="section-title" style="margin:0">Uploaded Episodes</div>
-            <span id="epCount" style="font-size:12px;color:var(--muted)">No anime selected</span>
+        <!-- JIKAN EPISODES -->
+        <div class="panel" id="jikanEpSection">
+          <div class="section-title">Episodes from Jikan — click to auto-fill form</div>
+          <div class="ep-pagination">
+            <button id="prevEpPage" class="btn-page" disabled>◀ Prev 100</button>
+            <span id="epPageInfo" class="page-info">—</span>
+            <button id="nextEpPage" class="btn-page" disabled>Next 100 ▶</button>
           </div>
-          <div id="episodeList" class="ep-list">
-            <div class="empty">Select an anime to see its episodes.</div>
+          <div id="jikanEpList" class="jikan-ep-list">
+            <div class="empty">Select an anime to load episodes.</div>
+          </div>
+        </div>
+
+        <!-- UPLOADED EPISODES -->
+        <div class="panel">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div class="section-title" style="margin:0">Uploaded Episodes</div>
+            <span id="uploadedCount" style="font-size:11px;color:var(--muted)">—</span>
+          </div>
+          <div id="uploadedEpList" class="ep-list">
+            <div class="empty">Select an anime to see uploaded episodes.</div>
           </div>
         </div>
 
       </div>
 
-      <!-- RIGHT COLUMN -->
+      <!-- ─── RIGHT COLUMN ─── -->
       <div>
 
         <!-- UPLOAD FORM -->
@@ -487,20 +227,20 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Episode #</label>
-              <input id="epNumber" class="form-input" type="number" min="1" placeholder="1" />
+              <input id="epNumber" class="form-input" type="number" min="1" placeholder="1"/>
             </div>
             <div class="form-group">
               <label class="form-label">Episode Title</label>
-              <input id="epTitle" class="form-input" type="text" placeholder="Enter: Naruto Uzumaki!" />
+              <input id="epTitle" class="form-input" type="text" placeholder="Enter: Naruto Uzumaki!"/>
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label">Febbox URL</label>
-            <input id="epVideo" class="form-input" type="url" placeholder="https://www.febbox.com/…" />
+            <input id="epVideo" class="form-input" type="url" placeholder="https://www.febbox.com/…"/>
           </div>
 
-          <div style="display:flex;gap:10px;margin-top:4px">
+          <div style="display:flex;gap:8px;margin-top:4px">
             <button id="uploadBtn" class="btn btn-primary">▶ Upload Episode</button>
             <button id="clearBtn" class="btn btn-ghost btn-sm">Clear</button>
           </div>
@@ -512,7 +252,7 @@
 
         <!-- FEBBOX URL HISTORY -->
         <div class="panel">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
             <div class="section-title" style="margin:0">Recent Febbox Links</div>
             <button id="clearHistoryBtn" class="btn btn-ghost btn-sm">Clear</button>
           </div>
@@ -549,7 +289,6 @@
 </div>
 
 <div id="toast"></div>
-
 <script type="module" src="./admin.js"></script>
 </body>
 </html>

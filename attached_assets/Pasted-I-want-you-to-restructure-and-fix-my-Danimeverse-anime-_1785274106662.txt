@@ -1,0 +1,467 @@
+I want you to restructure and fix my Danimeverse anime streaming website's entire anime data system.
+
+IMPORTANT ARCHITECTURE:
+
+* Use the Jikan API (MyAnimeList unofficial API) as the primary source for ALL anime metadata.
+* Do NOT rely on my manually hardcoded anime HTML pages as the main anime database.
+* Firebase Firestore should only store my uploaded streaming episodes and related admin data.
+* Keep my existing Firebase project and configuration. Do NOT create a new Firebase project.
+* Do not break my existing authentication or admin access control.
+* Keep my existing Netflix-style dark UI and design.
+
+JIKAN API:
+Use:
+
+https://api.jikan.moe/v4
+
+Use Jikan API for:
+
+* Anime search
+* Anime title
+* Anime ID / MAL ID
+* Anime poster/image
+* Anime synopsis/description
+* Anime genres
+* Anime type
+* Anime status
+* Number of episodes when available
+* Airing information
+* Episode titles
+* Latest anime information
+* Anime details pages
+* Search results throughout the website
+
+The public website should be able to search for ANY anime available through Jikan, not only anime that I manually created as HTML pages.
+
+==================================================
+ADMIN DASHBOARD
+===============
+
+Upgrade my existing Netflix-style admin dashboard.
+
+When I search for an anime in the admin search box:
+
+1. Search Jikan API.
+
+2. Show matching anime results with:
+
+   * Poster
+   * Anime title
+   * Year
+   * Type
+   * Number of episodes if available
+
+3. Let me click an anime to select it.
+
+4. After selecting an anime, show its episode list from the Jikan API.
+
+5. For long-running anime such as Naruto, One Piece, and Bleach, load episodes in batches of 100.
+
+6. Add:
+
+   * Previous 100 Episodes
+   * Next 100 Episodes
+
+7. Do NOT use the episode's MAL ID as the episode number. Use the actual episode number from Jikan's episode data.
+
+8. Show the actual episode title from Jikan.
+
+9. When I click an episode, automatically fill the episode number and episode title into the upload form.
+
+10. I should only need to paste my external Febbox/video URL.
+
+11. When I upload, save the episode to Firestore using the Jikan MAL ID as the anime identifier.
+
+==================================================
+FEBBOX VIDEO SYSTEM
+===================
+
+My external video hosting/destination is Febbox.
+
+IMPORTANT:
+
+* Do NOT replace Febbox with another video host.
+* Do NOT create a new video hosting system.
+* Do NOT upload actual video files to Firebase Storage.
+* Firebase Firestore should only store the external Febbox URL associated with each uploaded episode.
+
+The admin upload form should have a field such as:
+
+"Febbox URL"
+
+or
+
+"Streaming URL"
+
+where I can paste the URL for the specific episode.
+
+When I upload an episode:
+
+* Save the Febbox URL in the episode's Firestore document.
+* The Febbox URL must remain associated with the correct anime MAL ID and episode number.
+* Do not overwrite or modify the Febbox URL using Jikan API data.
+
+For example:
+
+Anime:
+Naruto
+
+MAL ID:
+20
+
+Episode:
+1
+
+Episode title:
+Enter: The Hidden Leaf Village
+
+Febbox URL:
+[my external Febbox URL]
+
+The Jikan API provides the anime and episode metadata.
+
+I manually provide the Febbox URL.
+
+Firebase stores the connection between them.
+
+The data flow should be:
+
+Jikan API
+↓
+Anime metadata + episode metadata
+↓
+Admin selects anime and episode
+↓
+Admin pastes Febbox URL
+↓
+Firebase Firestore stores episode metadata + Febbox URL
+↓
+Public anime page displays uploaded episode
+↓
+User clicks Watch Episode
+↓
+Website uses the saved Febbox URL
+↓
+User is taken to the correct Febbox destination
+
+IMPORTANT:
+
+Keep the existing Febbox behavior already implemented in my project.
+
+If my current watch page redirects users to the saved Febbox URL using window.location.href or another existing method, preserve that behavior.
+
+Do NOT replace the existing Febbox redirect behavior with an iframe player unless Febbox officially supports embedding and the current project already uses it.
+
+The "Watch Episode" button should open the exact saved Febbox URL for that episode.
+
+If the existing project already has a Febbox URL field, reuse it instead of creating a duplicate field.
+
+==================================================
+FIRESTORE STRUCTURE
+===================
+
+Use a clean structure similar to:
+
+animes/{malId}
+
+title
+image
+synopsis
+type
+status
+year
+updatedAt
+
+animes/{malId}/episodes/{episodeNumber}
+
+episode
+title
+video
+createdAt
+updatedAt
+
+The "video" field should contain the external Febbox URL.
+
+You may rename the field to "febboxUrl" if that makes the structure clearer, but use ONE consistent field name throughout the entire project.
+
+For example:
+
+animes/20/episodes/1
+
+episode: 1
+title: "Episode 1 title"
+febboxUrl: "THE_SAVED_FEBOX_URL"
+createdAt: timestamp
+updatedAt: timestamp
+
+The anime metadata should come from Jikan, while the Febbox URL comes from the admin.
+
+If the anime metadata does not already exist in Firestore, automatically create/update the anime document when I upload an episode.
+
+IMPORTANT:
+
+Do not create a separate anime document using the anime title as the document ID.
+
+Use the Jikan MAL ID.
+
+==================================================
+PUBLIC ANIME PAGES
+==================
+
+When a user searches for an anime:
+
+* Search Jikan API.
+* Show Jikan search results.
+* Clicking an anime should open an anime details page using its MAL ID.
+* Fetch the anime's poster, title, synopsis, genres, and other metadata from Jikan.
+* Fetch the uploaded episodes for that anime from Firestore using its MAL ID.
+* Display only episodes that I have actually uploaded to Firestore as playable episodes.
+* Do not assume that every episode listed by Jikan has a playable video.
+* Clearly show unavailable episodes if appropriate.
+
+If an episode exists in Jikan but does not have a saved Febbox URL in Firestore, display it as:
+
+"Not Available Yet"
+
+or
+
+"Coming Soon"
+
+Do not show a Watch button for unavailable episodes.
+
+If an episode has a valid saved Febbox URL, show:
+
+"▶ Watch Episode"
+
+Clicking it should use the saved Febbox URL and preserve the existing Febbox redirect behavior.
+
+==================================================
+WATCH PAGE
+==========
+
+When a user clicks an uploaded episode:
+
+* Load the anime metadata using the MAL ID.
+* Load the episode from:
+
+animes/{malId}/episodes/{episodeNumber}
+
+* Display:
+
+  * Anime title
+  * Anime poster if useful
+  * Episode number
+  * Episode title
+
+* Use the saved Febbox URL for the WATCH button/redirect behavior.
+
+* Keep Previous Episode and Next Episode navigation.
+
+* Navigation should only move to episodes that actually exist in Firestore when possible.
+
+* Do not show "Episode Not Available" if the episode exists in Firestore.
+
+* Do not accidentally use the Jikan episode MAL ID as the episode number.
+
+* Use the actual episode number.
+
+If the saved Febbox URL is missing or invalid, show a clear message instead of sending the user to a broken page.
+
+==================================================
+FRESH / LATEST EPISODES SECTION
+===============================
+
+Add a "Fresh Episodes" or "Latest Episodes" section to the homepage.
+
+This section should automatically update as new episodes are added.
+
+When I upload a new episode through the admin dashboard:
+
+* Save createdAt and updatedAt timestamps.
+
+* The latest uploaded episodes should automatically appear in the Fresh Episodes section.
+
+* Show:
+
+  * Anime poster
+  * Anime title
+  * Episode number
+  * Episode title
+  * Date uploaded
+
+* Clicking a Fresh Episode should open its watch page.
+
+* The watch page should then use the saved Febbox URL.
+
+* Sort newest uploaded episodes first.
+
+Also add a "Recently Updated Anime" section if practical, showing anime that recently received a new uploaded episode.
+
+IMPORTANT:
+
+The Fresh Episodes section should NOT require me to manually edit HTML every time I upload an episode.
+
+The homepage should dynamically read recent uploaded episodes from Firestore.
+
+==================================================
+API + FIREBASE + FEBOX RESPONSIBILITIES
+=======================================
+
+Use Jikan for:
+
+* Anime information
+* Anime search
+* Posters
+* Descriptions
+* Genres
+* Anime metadata
+* Episode metadata
+* Episode titles
+* Airing information
+
+Use Firebase Firestore for:
+
+* Uploaded episode records
+* Anime MAL ID references
+* Episode numbers
+* Episode titles copied from Jikan when uploaded
+* External Febbox URLs
+* Upload timestamps
+* Recent uploads
+
+Use Febbox for:
+
+* Hosting/providing access to the external video content
+* The destination users are sent to when they click Watch Episode
+
+Do NOT mix these responsibilities.
+
+Jikan should NOT provide the video URL.
+
+Firebase should NOT host the actual video files.
+
+The Febbox URL should NOT be generated from Jikan.
+
+==================================================
+IMPORTANT FOR API RELIABILITY
+=============================
+
+Jikan API can rate-limit requests.
+
+Add:
+
+* Reasonable error handling
+* Loading states
+* Empty states
+* API error messages
+* Caching where appropriate
+* Avoid unnecessary duplicate API requests
+
+If an API request fails, show a useful message instead of leaving the page stuck on "Loading".
+
+Do not make unnecessary repeated requests to Jikan.
+
+==================================================
+ADMIN UI
+========
+
+Keep the Netflix-style dark admin dashboard design I already have.
+
+Do not replace it with a basic plain HTML form.
+
+Keep the left-side anime search/selection experience and right-side episode upload editor.
+
+Make it responsive for desktop and mobile.
+
+Make sure all buttons actually work:
+
+* Search anime
+* Select anime
+* Load episodes
+* Previous 100
+* Next 100
+* Select episode
+* Upload episode
+* View recent uploads
+* Search/filter uploaded episodes
+* Open/view saved Febbox URL if appropriate
+
+The admin dashboard should clearly show when an episode has already been uploaded.
+
+If an episode already exists in Firestore, show its upload status and allow me to edit/update its saved Febbox URL if appropriate.
+
+==================================================
+SECURITY
+========
+
+Do not expose admin-only functionality to normal users.
+
+Keep my existing authentication and admin access control.
+
+Only authenticated/authorized admins should be able to:
+
+* Upload episodes
+* Edit episode data
+* Add or change Febbox URLs
+* Delete uploaded episodes
+
+Normal users should only be able to view public anime data and access available episodes.
+
+==================================================
+EXISTING PROJECT
+================
+
+Before changing the project, inspect my existing files and reuse my existing:
+
+* Firebase configuration
+* Firebase authentication
+* Admin authentication/access control
+* Tailwind/CSS
+* API utilities
+* Anime pages
+* Watch page
+* Admin page
+* Existing Febbox integration
+* Existing Firestore data where possible
+
+Do not create duplicate Firebase initialization code if the project already has a Firebase utility/module.
+
+Do not create multiple conflicting Firebase configurations.
+
+Do not create duplicate event listeners.
+
+Do not break existing working features unnecessarily.
+
+Do not remove existing uploaded episodes.
+
+Do not remove the existing Febbox URL behavior.
+
+If existing Firestore data uses a different structure, create a safe migration or compatibility layer where practical instead of immediately deleting old data.
+
+After making the changes, explain exactly:
+
+1. Which files you modified.
+2. Which files you created.
+3. The final Firestore structure.
+4. How Jikan API connects to the website.
+5. How the admin dashboard works.
+6. How episodes are uploaded.
+7. How Febbox URLs are stored.
+8. How the Watch Episode button sends users to Febbox.
+9. How Fresh Episodes are generated.
+10. How the Previous/Next episode navigation works.
+
+Finally, test the entire flow:
+
+Jikan anime search
+→ Select anime
+→ Load episodes
+→ Select episode
+→ Paste Febbox URL
+→ Upload to Firestore
+→ Episode appears on public anime page
+→ Episode appears in Fresh Episodes
+→ User clicks Watch Episode
+→ User is sent to the correct saved Febbox URL
+
+Make sure the complete flow works without JavaScript errors.

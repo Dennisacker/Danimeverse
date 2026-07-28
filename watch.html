@@ -14,97 +14,99 @@
       font-family: 'Segoe UI', system-ui, sans-serif;
       min-height: 100vh;
     }
-
     .glass {
       background: rgba(255,255,255,0.05);
       backdrop-filter: blur(15px);
       border: 1px solid rgba(255,255,255,0.08);
     }
-
     .watch-btn {
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 12px;
+      width: 100%;
       background: linear-gradient(135deg, #ec4899, #9333ea);
       color: white;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 800;
-      padding: 18px 40px;
+      padding: 20px 40px;
       border-radius: 16px;
       border: none;
       cursor: pointer;
-      letter-spacing: .03em;
-      transition: opacity .2s, transform .2s;
-      width: 100%;
+      letter-spacing: .04em;
+      transition: opacity .2s, transform .15s;
+      text-decoration: none;
     }
     .watch-btn:hover { opacity: .88; transform: translateY(-2px); }
-
     .nav-btn {
       flex: 1;
       padding: 12px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.15);
-      background: rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.05);
       color: white;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       transition: all .2s;
     }
-    .nav-btn:hover:not(:disabled) { border-color: #ec4899; background: rgba(236,72,153,.15); }
-    .nav-btn:disabled { opacity: .35; cursor: not-allowed; }
-
-    .unavailable {
-      text-align: center;
-      padding: 40px;
-      color: #64748b;
-    }
-    .unavailable .icon { font-size: 48px; margin-bottom: 12px; }
-    .unavailable h3 { font-size: 18px; color: #94a3b8; margin-bottom: 6px; }
-    .unavailable p { font-size: 14px; }
-
-    .loading-pulse {
-      width: 100%;
-      height: 200px;
-      background: rgba(255,255,255,0.04);
-      border-radius: 16px;
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: .4; }
-    }
-
-    .back-link {
-      display: inline-flex;
+    .nav-btn:hover:not([disabled]) { border-color: #ec4899; background: rgba(236,72,153,.15); }
+    .nav-btn[disabled] { opacity: .3; cursor: not-allowed; }
+    .ep-row {
+      display: flex;
       align-items: center;
-      gap: 6px;
-      color: #94a3b8;
-      font-size: 13px;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
       text-decoration: none;
-      margin-bottom: 16px;
-      transition: color .2s;
+      color: white;
+      transition: all .2s;
     }
-    .back-link:hover { color: #ec4899; }
+    .ep-row:hover { background: rgba(255,255,255,0.06); border-color: rgba(236,72,153,.4); }
+    .ep-row.current { background: rgba(236,72,153,.12); border-color: rgba(236,72,153,.5); }
+    .pulse-skeleton {
+      background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 12px;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
   </style>
 </head>
-
 <body>
+
 <div class="w-full max-w-2xl mx-auto px-4 py-6">
 
-  <a id="backLink" href="index.html" class="back-link">← Back to Home</a>
+  <!-- BACK LINK -->
+  <a id="backLink" href="index.html"
+     class="inline-flex items-center gap-2 text-slate-400 text-sm mb-5 hover:text-pink-400 transition no-underline">
+    ← Back
+  </a>
 
-  <!-- EPISODE INFO CARD -->
-  <div class="glass rounded-2xl p-6 mb-5" id="infoCard">
-    <div class="loading-pulse" id="loadingPulse"></div>
+  <!-- INFO CARD -->
+  <div class="glass rounded-2xl p-6 mb-5">
+    <!-- skeleton while loading -->
+    <div id="skeleton">
+      <div class="pulse-skeleton h-4 w-1/3 mb-3"></div>
+      <div class="pulse-skeleton h-8 w-2/3 mb-2"></div>
+      <div class="pulse-skeleton h-5 w-1/2 mb-6"></div>
+      <div class="pulse-skeleton h-16 w-full"></div>
+    </div>
+
+    <!-- real content -->
     <div id="infoContent" style="display:none">
       <p id="animeName" class="text-pink-400 font-bold uppercase text-sm tracking-wider mb-1"></p>
       <h1 id="episodeNum" class="text-3xl font-black mb-1"></h1>
-      <h2 id="episodeTitle" class="text-lg font-semibold text-white/80 mb-4"></h2>
-
-      <!-- WATCH BUTTON -->
+      <h2 id="episodeTitle" class="text-base font-semibold text-white/70 mb-5"></h2>
       <div id="watchArea"></div>
+    </div>
+
+    <!-- error state -->
+    <div id="errorState" style="display:none" class="text-center py-6">
+      <div style="font-size:48px;margin-bottom:12px">🎬</div>
+      <h3 id="errorTitle" class="text-lg font-semibold text-slate-300 mb-2">Episode Not Available</h3>
+      <p id="errorMsg" class="text-sm text-slate-500">This episode hasn't been uploaded yet.</p>
     </div>
   </div>
 
@@ -114,50 +116,30 @@
     <button id="nextBtn" class="nav-btn" disabled>Next Episode ▶</button>
   </div>
 
-  <!-- EPISODE LIST (all uploaded eps for this anime) -->
-  <div id="epListWrap" style="display:none">
-    <div class="glass rounded-2xl p-4">
-      <h3 class="text-sm font-bold text-white/50 uppercase tracking-wider mb-3">More Episodes</h3>
-      <div id="epList" class="flex flex-col gap-2"></div>
-    </div>
+  <!-- EPISODE LIST -->
+  <div id="epListWrap" style="display:none" class="glass rounded-2xl p-4">
+    <h3 class="text-sm font-bold text-white/40 uppercase tracking-wider mb-3">Episodes</h3>
+    <div id="epList" class="flex flex-col gap-2 max-h-80 overflow-y-auto"></div>
   </div>
 
 </div>
 
 <script type="module">
-  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { db }  from "./firebase-config.js";
   import {
-    getFirestore,
-    doc,
-    getDoc,
-    collection,
-    getDocs,
-    query,
-    where,
-    orderBy
+    doc, getDoc, collection, getDocs
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  /* ── FIREBASE ── */
-  const firebaseConfig = {
-    apiKey: "AIzaSyC9mOlwqobv6V8O50BWADbkhRNQpDRNYQ4",
-    authDomain: "danimeverse-c1fa3.firebaseapp.com",
-    projectId: "danimeverse-c1fa3",
-    storageBucket: "danimeverse-c1fa3.firebasestorage.app",
-    messagingSenderId: "626679123848",
-    appId: "1:626679123848:web:dec7eeffb63885fa48343d"
-  };
-
-  const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  /* ── URL PARAMS ── */
-  const params = new URLSearchParams(location.search);
-  const anime  = (params.get("anime") || "").toLowerCase().trim();
-  let   ep     = parseInt(params.get("ep")) || 1;
+  /* ── URL PARAMS — support both ?malId=X&ep=Y (new) and ?anime=slug&ep=Y (legacy) ── */
+  const params  = new URLSearchParams(location.search);
+  const malId   = params.get("malId");
+  const slug    = params.get("anime");   // legacy
+  let   ep      = parseInt(params.get("ep")) || 1;
 
   /* ── ELEMENTS ── */
-  const loadingPulse = document.getElementById("loadingPulse");
+  const skeleton     = document.getElementById("skeleton");
   const infoContent  = document.getElementById("infoContent");
+  const errorState   = document.getElementById("errorState");
   const animeName    = document.getElementById("animeName");
   const episodeNum   = document.getElementById("episodeNum");
   const episodeTitle = document.getElementById("episodeTitle");
@@ -168,124 +150,165 @@
   const epList       = document.getElementById("epList");
   const backLink     = document.getElementById("backLink");
 
-  if (!anime) {
-    location.href = "index.html";
-  }
+  if (!malId && !slug) { location.href = "index.html"; }
 
-  /* ── LOAD EPISODE ── */
-  async function loadEpisode() {
-    // Show loading state
-    loadingPulse.style.display = "block";
-    infoContent.style.display  = "none";
-    prevBtn.disabled = true;
-    nextBtn.disabled = true;
+  /* ── UPDATE BACK LINK ── */
+  if (malId) backLink.href = `anime.html?malId=${malId}`;
 
-    const docId = `${anime}_${ep}`;
-    const snap  = await getDoc(doc(db, "videos", docId));
-
-    // Update display name
-    animeName.textContent  = snap.exists()
-      ? (snap.data().animeName || anime.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()))
-      : anime.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
-    episodeNum.textContent = `Episode ${ep}`;
-
-    // Update back link — try to find dedicated page
-    const SITE_PAGES = {
-      "naruto": "naruto.html", "attack-on-titan": "aot.html",
-      "demon-slayer": "demon-slayer.html", "jujutsu-kaisen": "jujutsu-kaisen.html",
-      "chainsaw-man": "chainsaw-man.html", "fire-force": "fire-force.html",
-      "dr-stone": "dr-stone.html", "re-zero": "rezero.html",
-      "mushoku-tensei": "mushoku-tensei.html", "my-hero-academia": "my-hero-academia.html",
-      "assassination-classroom": "assassination-classroom.html",
-      "fate-strange-fake": "fate-strange-fake.html", "frieren": "frieren.html",
-      "hells-paradise": "hells-paradise.html", "oshi-no-ko": "oshi-no-ko.html",
-      "solo-leveling": "solo-leveling.html", "tokyo-revengers": "tokyo-revengers.html",
-      "witch-hat-atelier": "witch-hat-atelier.html"
-    };
-    if (SITE_PAGES[anime]) backLink.href = SITE_PAGES[anime];
-
-    loadingPulse.style.display = "none";
-    infoContent.style.display  = "block";
-
-    if (!snap.exists()) {
-      episodeTitle.textContent = "";
-      watchArea.innerHTML = `
-        <div class="unavailable">
-          <div class="icon">🎬</div>
-          <h3>Episode ${ep} Not Available Yet</h3>
-          <p>This episode hasn't been uploaded. Check back later.</p>
-        </div>`;
-    } else {
-      const data = snap.data();
-      episodeTitle.textContent = data.title || `Episode ${ep}`;
-
-      const videoUrl = data.video || "";
-      if (videoUrl) {
-        watchArea.innerHTML = `
-          <button class="watch-btn" onclick="window.location.href='${videoUrl.replace(/'/g, "\\'")}'"
-            title="Opens Febbox in this tab">
-            ▶ WATCH EPISODE
-          </button>
-          <p style="text-align:center;margin-top:10px;font-size:12px;color:#475569;">
-            Opens on Febbox — your video destination
-          </p>`;
-      } else {
-        watchArea.innerHTML = `
-          <div class="unavailable">
-            <div class="icon">⚠️</div>
-            <h3>No Video Link</h3>
-            <p>The video URL for this episode is missing.</p>
-          </div>`;
+  /* ── LOAD NEW STRUCTURE (malId) ── */
+  async function loadNew() {
+    try {
+      // Fetch anime doc for display name
+      let displayName = "";
+      let image = "";
+      const animeSnap = await getDoc(doc(db, "animes", String(malId)));
+      if (animeSnap.exists()) {
+        const ad = animeSnap.data();
+        displayName = ad.title || "";
+        image       = ad.image || "";
       }
+
+      // Fetch this episode
+      const epSnap = await getDoc(doc(db, "animes", String(malId), "episodes", String(ep)));
+
+      skeleton.style.display    = "none";
+      infoContent.style.display = "block";
+
+      animeName.textContent  = displayName || `Anime #${malId}`;
+      episodeNum.textContent = `Episode ${ep}`;
+
+      if (!epSnap.exists()) {
+        showError("Episode Not Uploaded Yet", "This episode hasn't been uploaded. Check back later.");
+      } else {
+        const data = epSnap.data();
+        episodeTitle.textContent = data.title || `Episode ${ep}`;
+        renderWatchButton(data.febboxUrl || data.video || "");
+      }
+
+      // Nav
+      prevBtn.disabled = ep <= 1;
+      nextBtn.disabled = false;
+
+      // Episode list
+      loadEpisodeList();
+
+    } catch (err) {
+      console.error("Watch load error:", err);
+      showError("Error Loading Episode", "Could not load episode data. Please try again.");
     }
-
-    /* nav buttons */
-    prevBtn.disabled = ep <= 1;
-    nextBtn.disabled = false;
-
-    /* load episode list */
-    loadEpisodeList();
   }
 
-  /* ── LOAD ALL EPISODES FOR THIS ANIME ── */
+  /* ── LOAD LEGACY STRUCTURE (slug) ── */
+  async function loadLegacy() {
+    try {
+      const docId  = `${slug}_${ep}`;
+      const epSnap = await getDoc(doc(db, "videos", docId));
+
+      skeleton.style.display    = "none";
+      infoContent.style.display = "block";
+
+      animeName.textContent  = slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      episodeNum.textContent = `Episode ${ep}`;
+
+      if (!epSnap.exists()) {
+        showError("Episode Not Available", "This episode hasn't been uploaded yet.");
+      } else {
+        const data = epSnap.data();
+        episodeTitle.textContent = data.title || `Episode ${ep}`;
+        renderWatchButton(data.febboxUrl || data.video || "");
+      }
+
+      prevBtn.disabled = ep <= 1;
+      nextBtn.disabled = false;
+
+      // Episode list for legacy
+      loadLegacyEpisodeList();
+
+    } catch (err) {
+      showError("Error", "Could not load episode data.");
+    }
+  }
+
+  /* ── RENDER WATCH BUTTON ── */
+  function renderWatchButton(url) {
+    if (!url) {
+      watchArea.innerHTML = `
+        <div class="text-center py-4">
+          <p class="text-slate-400 text-sm">⚠️ No video link saved for this episode.</p>
+        </div>`;
+      return;
+    }
+    watchArea.innerHTML = `
+      <a href="${url.replace(/"/g,"&quot;")}" target="_blank" rel="noopener" class="watch-btn">
+        ▶ WATCH EPISODE
+      </a>
+      <p class="text-center text-xs text-slate-600 mt-3">Opens Febbox in a new tab</p>`;
+  }
+
+  /* ── SHOW ERROR ── */
+  function showError(title, msg) {
+    watchArea.innerHTML = "";
+    infoContent.style.display = "block";
+    errorState.style.display  = "block";
+    document.getElementById("errorTitle").textContent = title;
+    document.getElementById("errorMsg").textContent   = msg;
+  }
+
+  /* ── EPISODE LIST (new structure) ── */
   async function loadEpisodeList() {
     try {
-      const snap = await getDocs(collection(db, "videos"));
-      const all = [];
-      snap.forEach(d => {
-        if (d.data().anime === anime || d.data().animeSlug === anime) {
-          all.push(d.data());
-        }
-      });
+      const snap = await getDocs(collection(db, "animes", String(malId), "episodes"));
+      const all  = [];
+      snap.forEach(d => all.push(d.data()));
       all.sort((a, b) => a.episode - b.episode);
-
-      if (all.length > 1) {
-        epListWrap.style.display = "block";
-        epList.innerHTML = all.map(e => `
-          <a href="watch.html?anime=${encodeURIComponent(anime)}&ep=${e.episode}"
-             class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition cursor-pointer no-underline text-white
-                    ${e.episode === ep ? 'bg-pink-600/20 border border-pink-500/30' : ''}">
-            <span class="text-pink-400 font-bold text-sm min-w-[60px]">Ep ${e.episode}</span>
-            <span class="text-sm ${e.episode === ep ? 'text-white font-semibold' : 'text-white/70'}">${e.title || 'Episode ' + e.episode}</span>
-            ${e.episode === ep ? '<span class="ml-auto text-xs bg-pink-500/30 text-pink-300 px-2 py-0.5 rounded-full">Playing</span>' : ''}
-          </a>`).join("");
-      }
+      if (all.length <= 1) return;
+      renderEpList(all, (n) => `watch.html?malId=${malId}&ep=${n}`);
     } catch (_) {}
   }
 
-  /* ── NAV ── */
+  /* ── EPISODE LIST (legacy) ── */
+  async function loadLegacyEpisodeList() {
+    try {
+      const snap = await getDocs(collection(db, "videos"));
+      const all  = [];
+      snap.forEach(d => {
+        const data = d.data();
+        if ((data.animeSlug || data.anime) === slug) all.push(data);
+      });
+      all.sort((a, b) => a.episode - b.episode);
+      if (all.length <= 1) return;
+      renderEpList(all, (n) => `watch.html?anime=${encodeURIComponent(slug)}&ep=${n}`);
+    } catch (_) {}
+  }
+
+  function renderEpList(all, linkFn) {
+    epListWrap.style.display = "block";
+    epList.innerHTML = all.map(e => `
+      <a href="${linkFn(e.episode)}" class="ep-row ${e.episode === ep ? "current" : ""}">
+        <span class="text-pink-400 font-bold text-sm min-w-[56px]">Ep ${e.episode}</span>
+        <span class="text-sm flex-1 ${e.episode === ep ? "text-white font-semibold" : "text-white/60"}">${e.title || "Episode " + e.episode}</span>
+        ${e.episode === ep ? '<span class="text-xs bg-pink-500/30 text-pink-300 px-2 py-0.5 rounded-full ml-auto">▶ Playing</span>' : ""}
+      </a>`).join("");
+  }
+
+  /* ── NAVIGATION ── */
   prevBtn.onclick = () => {
     if (ep <= 1) return;
-    ep--;
-    location.href = `watch.html?anime=${encodeURIComponent(anime)}&ep=${ep}`;
+    const base = malId
+      ? `watch.html?malId=${malId}&ep=${ep - 1}`
+      : `watch.html?anime=${encodeURIComponent(slug)}&ep=${ep - 1}`;
+    location.href = base;
   };
-
   nextBtn.onclick = () => {
-    ep++;
-    location.href = `watch.html?anime=${encodeURIComponent(anime)}&ep=${ep}`;
+    const base = malId
+      ? `watch.html?malId=${malId}&ep=${ep + 1}`
+      : `watch.html?anime=${encodeURIComponent(slug)}&ep=${ep + 1}`;
+    location.href = base;
   };
 
-  loadEpisode();
+  /* ── KICK OFF ── */
+  if (malId) loadNew();
+  else       loadLegacy();
 </script>
 
 </body>

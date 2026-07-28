@@ -1,34 +1,29 @@
 /* =========================
-   SEARCH — Site Catalogue First, Jikan Fallback
+   SEARCH — Jikan API (any anime) + Site Catalogue highlight
 ========================= */
 
-const SITE_CATALOG = [
-  { title: "Naruto",            keywords: ["naruto","uzumaki"],                          page: "naruto.html",                 image: "https://cdn.myanimelist.net/images/anime/13/17405.jpg",     genres: "Action · Adventure" },
-  { title: "Attack on Titan",   keywords: ["aot","titan","shingeki","eren"],             page: "aot.html",                    image: "https://cdn.myanimelist.net/images/anime/10/47347.jpg",     genres: "Action · Dark Fantasy" },
-  { title: "Demon Slayer",      keywords: ["demon","kimetsu","tanjiro","yaiba"],         page: "demon-slayer.html",           image: "https://cdn.myanimelist.net/images/anime/1286/99889.jpg",   genres: "Action · Shonen" },
-  { title: "Jujutsu Kaisen",    keywords: ["jjk","jujutsu","gojo","itadori"],            page: "jujutsu-kaisen.html",         image: "https://cdn.myanimelist.net/images/anime/1171/109222.jpg",  genres: "Action · Supernatural" },
-  { title: "Chainsaw Man",      keywords: ["chainsaw","denji","power"],                  page: "chainsaw-man.html",           image: "https://cdn.myanimelist.net/images/anime/1806/126216.jpg",  genres: "Action · Dark" },
-  { title: "Fire Force",        keywords: ["fire","enen","shinra"],                      page: "fire-force.html",             image: "https://cdn.myanimelist.net/images/anime/1715/100536.jpg",  genres: "Action · Sci-Fi" },
-  { title: "Dr. Stone",         keywords: ["stone","senku","dr stone"],                  page: "dr-stone.html",               image: "https://cdn.myanimelist.net/images/anime/1613/102576.jpg",  genres: "Sci-Fi · Adventure" },
-  { title: "Re:Zero",           keywords: ["rezero","re zero","subaru","emilia"],        page: "rezero.html",                 image: "https://cdn.myanimelist.net/images/anime/1522/128039.jpg",  genres: "Fantasy · Drama" },
-  { title: "Mushoku Tensei",    keywords: ["mushoku","rudeus","isekai"],                 page: "mushoku-tensei.html",         image: "https://cdn.myanimelist.net/images/anime/1530/117776.jpg",  genres: "Fantasy · Isekai" },
-  { title: "My Hero Academia",  keywords: ["mha","bnha","boku no hero","deku","midoriya"],page: "my-hero-academia.html",      image: "https://cdn.myanimelist.net/images/anime/10/78745.jpg",     genres: "Action · School" },
-  { title: "Assassination Classroom", keywords: ["ansatsu","koro","korosensei"],         page: "assassination-classroom.html",image: "https://cdn.myanimelist.net/images/anime/5/75639.jpg",     genres: "Action · Comedy" },
-  { title: "Fate/Strange Fake", keywords: ["fate","strange fake"],                       page: "fate-strange-fake.html",      image: "https://cdn.myanimelist.net/images/anime/1764/134379.jpg",  genres: "Action · Fantasy" },
-  { title: "Frieren",           keywords: ["sousou","frieren","journey"],                page: "frieren.html",                image: "https://cdn.myanimelist.net/images/anime/1015/138006.jpg",  genres: "Adventure · Drama" },
-  { title: "Hell's Paradise",   keywords: ["jigokuraku","hell paradise","gabimaru"],     page: "hells-paradise.html",         image: "https://cdn.myanimelist.net/images/anime/1438/134581.jpg",  genres: "Action · Dark" },
-  { title: "Oshi no Ko",        keywords: ["oshi","idol","aqua","ruby"],                 page: "oshi-no-ko.html",             image: "https://cdn.myanimelist.net/images/anime/1812/134736.jpg",  genres: "Drama · Mystery" },
-  { title: "Solo Leveling",     keywords: ["solo","jinwoo","level up","ore dake"],       page: "solo-leveling.html",          image: "https://cdn.myanimelist.net/images/anime/1325/140390.jpg",  genres: "Action · Fantasy" },
-  { title: "Tokyo Revengers",   keywords: ["tokyo rev","takemichi","mikey"],             page: "tokyo-revengers.html",        image: "https://cdn.myanimelist.net/images/anime/1839/110491.jpg",  genres: "Action · Drama" },
-  { title: "Witch Hat Atelier", keywords: ["tongari","witch hat","coco"],                page: "witch-hat-atelier.html",      image: "https://cdn.myanimelist.net/images/anime/1826/139048.jpg",  genres: "Fantasy · Adventure" },
-];
+/* Site catalogue — used to badge "On Site" but all links go to anime.html?malId=X */
+const SITE_CATALOG_TITLES = new Set([
+  "naruto", "attack on titan", "shingeki no kyojin",
+  "demon slayer", "kimetsu no yaiba",
+  "jujutsu kaisen", "chainsaw man", "fire force",
+  "enen no shouboutai", "dr. stone", "re:zero",
+  "mushoku tensei", "my hero academia", "boku no hero academia",
+  "assassination classroom", "ansatsu kyoushitsu",
+  "fate/strange fake", "frieren", "sousou no frieren",
+  "hell's paradise", "jigokuraku", "oshi no ko",
+  "solo leveling", "ore dake level up na ken",
+  "tokyo revengers", "witch hat atelier",
+  "tongari booshi no atelier",
+]);
 
-function matchSite(query) {
-  const q = query.toLowerCase();
-  return SITE_CATALOG.filter(a =>
-    a.title.toLowerCase().includes(q) ||
-    a.keywords.some(k => k.includes(q) || q.includes(k))
-  );
+function isOnSite(title) {
+  const t = (title || "").toLowerCase().trim();
+  if (SITE_CATALOG_TITLES.has(t)) return true;
+  for (const k of SITE_CATALOG_TITLES) {
+    if (t.includes(k) || k.includes(t)) return true;
+  }
+  return false;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -48,67 +43,62 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // — instant site-catalogue results (no network) —
-    const siteMatches = matchSite(query);
-    let html = "";
-
-    if (siteMatches.length) {
-      html += `<p style="font-size:10px;font-weight:700;letter-spacing:.08em;color:#ec4899;padding:8px 12px 2px;text-transform:uppercase;">On Danimeverse</p>`;
-      siteMatches.forEach(a => {
-        html += `
-          <a href="${a.page}"
-             class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition">
-            <img src="${a.image}" class="w-12 h-16 object-cover rounded-lg" loading="lazy" />
-            <div>
-              <h4 class="text-sm font-semibold text-white">${a.title}</h4>
-              <p class="text-xs text-slate-400">${a.genres}</p>
-              <span style="font-size:10px;background:#ec4899;color:white;padding:1px 7px;border-radius:999px;">▶ Watch</span>
-            </div>
-          </a>`;
-      });
-    }
-
-    searchResults.innerHTML = html || "";
+    // Show loading state immediately
+    searchResults.innerHTML = `
+      <p style="font-size:12px;color:#94a3b8;padding:12px 14px;text-align:center">Searching…</p>`;
     searchResults.classList.remove("hidden");
 
-    // — Jikan fallback after 350 ms debounce —
     debounceTimer = setTimeout(async () => {
       try {
-        const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=6`);
-        if (!res.ok) return;
+        const res = await fetch(
+          `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=8&sfw=false`
+        );
+        if (!res.ok) { searchResults.classList.add("hidden"); return; }
         const data = await res.json();
-        if (!data.data?.length) return;
+        const items = data.data || [];
 
-        // filter out titles already shown from site
-        const siteNames = new Set(siteMatches.map(a => a.title.toLowerCase()));
-        const external = data.data.filter(a =>
-          !siteNames.has((a.title_english || a.title).toLowerCase())
-        ).slice(0, 5);
+        if (!items.length) {
+          searchResults.innerHTML = `
+            <p style="font-size:13px;color:#64748b;padding:12px 14px;text-align:center">No results found.</p>`;
+          return;
+        }
 
-        if (!external.length) return;
+        let html = `<p style="font-size:10px;font-weight:700;letter-spacing:.08em;color:#ec4899;padding:8px 12px 2px;text-transform:uppercase;">Search Results</p>`;
 
-        let jikanHtml = `<p style="font-size:10px;font-weight:700;letter-spacing:.08em;color:#94a3b8;padding:8px 12px 2px;text-transform:uppercase;">More Anime</p>`;
-        external.forEach(a => {
-          const siteHit = matchSite(a.title_english || a.title)[0];
-          const href = siteHit ? siteHit.page : "#";
-          jikanHtml += `
+        items.forEach(a => {
+          const title   = a.title_english || a.title;
+          const year    = a.aired?.prop?.from?.year || a.year || "";
+          const type    = a.type || "Anime";
+          const onSite  = isOnSite(title) || isOnSite(a.title);
+          const href    = `anime.html?malId=${a.mal_id}`;
+          const img     = a.images?.jpg?.image_url || "";
+
+          html += `
             <a href="${href}"
                class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition">
-              <img src="${a.images.jpg.image_url}" class="w-12 h-16 object-cover rounded-lg" loading="lazy" />
-              <div>
-                <h4 class="text-sm font-semibold text-white">${a.title_english || a.title}</h4>
-                <p class="text-xs text-slate-400">${a.type || "Anime"}</p>
-                ${siteHit ? '<span style="font-size:10px;background:#ec4899;color:white;padding:1px 7px;border-radius:999px;">▶ On Site</span>' : ""}
+              <img src="${img}" class="w-12 h-16 object-cover rounded-lg flex-shrink-0" loading="lazy"
+                   onerror="this.style.display='none'"/>
+              <div class="min-w-0">
+                <h4 class="text-sm font-semibold text-white truncate">${title}</h4>
+                <p class="text-xs text-slate-400">${type}${year ? " · " + year : ""}</p>
+                ${onSite
+                  ? `<span style="font-size:10px;background:#ec4899;color:white;padding:1px 7px;border-radius:999px;">▶ On Site</span>`
+                  : `<span style="font-size:10px;background:rgba(255,255,255,.1);color:#94a3b8;padding:1px 7px;border-radius:999px;">▶ View</span>`
+                }
               </div>
             </a>`;
         });
 
-        searchResults.innerHTML = html + jikanHtml;
-      } catch (_) {}
-    }, 350);
+        searchResults.innerHTML = html;
+        searchResults.classList.remove("hidden");
+
+      } catch (_) {
+        searchResults.classList.add("hidden");
+      }
+    }, 400);
   });
 
-  // close on outside click
+  // Close on outside click
   document.addEventListener("click", e => {
     if (!searchResults.contains(e.target) && e.target !== searchInput) {
       searchResults.classList.add("hidden");
