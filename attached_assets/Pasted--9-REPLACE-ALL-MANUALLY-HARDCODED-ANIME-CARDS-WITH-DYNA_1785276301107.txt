@@ -1,0 +1,164 @@
+## 9. REPLACE ALL MANUALLY HARDCODED ANIME CARDS WITH DYNAMIC API CARDS
+
+I want to clean up the homepage and remove ALL anime cards that I manually hardcoded/added myself.
+
+This applies to EVERY homepage anime section where I manually added anime cards, including but not limited to:
+
+* Popular Anime
+* Trending Anime
+* Latest Anime / Latest Episodes
+* Any other anime section containing manually hardcoded anime cards that I previously added
+
+IMPORTANT:
+
+Do NOT remove the sections themselves.
+
+Do NOT remove the card design.
+
+Do NOT remove the anime card component.
+
+Do NOT remove the Jikan API integration.
+
+Instead, remove the manually hardcoded anime data/cards and make the existing Jikan API dynamically populate the appropriate sections.
+
+The goal is:
+
+Jikan API
+→ Fetch anime data
+→ Generate anime cards dynamically
+→ Populate the existing homepage sections
+→ Display the correct poster, title, and anime details link
+
+I want the homepage to rely on dynamic API data instead of manually hardcoded anime cards wherever the existing project architecture supports it.
+
+## SECTION-SPECIFIC BEHAVIOR
+
+For each existing homepage anime section, inspect what it is intended to display and use the appropriate Jikan API data.
+
+For example:
+
+Popular Anime
+→ Dynamically load popular anime from the Jikan API.
+
+Trending Anime
+→ Dynamically load the appropriate trending/top anime data from the Jikan API.
+
+Latest Anime / Latest Episodes
+→ Dynamically load the appropriate latest anime or currently airing data from the Jikan API where appropriate.
+
+Do NOT simply put the exact same API results into every section.
+
+Each section should use the appropriate Jikan API endpoint, sorting, filtering, or parameters so that the sections remain meaningfully different.
+
+If the existing application already has API functions for these sections, reuse them rather than creating duplicate API calls unnecessarily.
+
+## ANIME CARD REQUIREMENTS
+
+Every dynamically generated anime card should:
+
+* Use the correct anime poster from the API.
+* Display the correct anime title.
+* Link to the correct anime details page.
+* Remain fully clickable.
+* Use the existing anime card design and styling.
+* Maintain the existing hover effects and animations where applicable.
+* Handle missing poster images gracefully.
+* Handle API loading states.
+* Handle API errors gracefully.
+* Avoid displaying broken or empty cards.
+
+Do not use hardcoded anime IDs or manually written anime card HTML unless absolutely necessary for the application's architecture.
+
+## MOBILE RESPONSIVE LAYOUT
+
+The API-generated cards must work correctly on mobile and desktop.
+
+Test at:
+
+320px
+375px
+390px
+412px
+430px
+
+Make sure:
+
+* Cards are properly visible on mobile.
+* Poster images render correctly.
+* Titles are visible.
+* Cards have consistent dimensions.
+* Cards remain clickable.
+* The responsive grid/layout uses the available screen width properly.
+* There are no unnecessary empty spaces.
+* The cards do not collapse or become invisible.
+* The layout does not create awkward rows due to incorrect fixed widths.
+* The card aspect ratio remains consistent.
+* Desktop layout continues to work correctly.
+
+Do NOT simply hide cards to make the rows look even.
+
+Do NOT delete API results just to force a specific number of cards per row.
+
+Instead, use a proper responsive CSS grid or the existing responsive card layout so the number of columns naturally adapts to the available screen width.
+
+## IMPORTANT: MOBILE VISIBILITY BUG
+
+This is connected to the existing mobile-only anime card problem.
+
+On desktop, the anime cards display correctly.
+
+On mobile, many cards—especially cards in Popular Anime and other homepage sections—appear as empty/invisible spaces even though they are still clickable. Tapping the empty space opens the correct anime.
+
+Please make sure that replacing the manual cards with dynamic API cards does NOT reproduce this issue.
+
+Investigate and fix the underlying mobile rendering problem rather than simply replacing the cards.
+
+Check:
+
+* Mobile media queries
+* Card image dimensions
+* Width and height
+* `display: none`
+* `visibility: hidden`
+* `opacity`
+* `z-index`
+* `position: absolute`
+* `overflow: hidden`
+* Image layering
+* `object-fit`
+* Responsive grid/flex layout
+* Lazy loading
+* Intersection Observer
+* Mobile-specific image loading
+* Jikan image URLs
+* Any CSS that behaves differently on mobile
+
+Compare the different homepage sections to identify whether they use different card components or CSS classes.
+
+The final result should be that ALL homepage anime cards are dynamically generated from the appropriate Jikan API data and are fully visible and functional on both mobile and desktop.
+
+## IMPORTANT: DO NOT BREAK EXISTING FUNCTIONALITY
+
+* Do NOT remove the homepage sections.
+* Do NOT remove the Jikan API.
+* Do NOT replace the existing anime data source with a different API.
+* Do NOT remove working anime details links.
+* Do NOT break the existing search functionality.
+* Do NOT break Firebase.
+* Do NOT break the Admin Dashboard.
+* Do NOT break the episode system.
+* Do NOT break the Febbox Watch Episode functionality.
+* Do NOT break the Fresh Episodes system.
+* Do NOT rewrite unrelated parts of the project.
+
+After implementing, tell me:
+
+1. Which manually hardcoded anime cards/data were removed.
+2. Which homepage sections are now dynamically populated from Jikan.
+3. Which Jikan API endpoints or functions are used for each section.
+4. Whether all homepage anime cards now use the same reusable card component where appropriate.
+5. What caused the mobile cards to become invisible.
+6. What was changed to fix the mobile rendering issue.
+7. Which files were modified.
+8. Confirm that the desktop layout still works.
+9. Confirm that the mobile layout works at 320px, 375px, 390px, 412px, and 430px.
