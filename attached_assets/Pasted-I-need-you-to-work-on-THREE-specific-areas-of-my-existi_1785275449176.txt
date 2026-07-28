@@ -1,0 +1,444 @@
+I need you to work on THREE specific areas of my existing project. Please inspect the current project structure and existing code BEFORE making changes. Do not break any existing functionality, and do not rewrite unrelated parts of the application.
+
+# 1. FIX THE MOBILE-ONLY ANIME CARD VISIBILITY BUG
+
+The homepage anime cards work perfectly on desktop.
+
+The problem happens ONLY on mobile.
+
+On mobile, many anime cards—especially the Popular Anime cards—appear as completely empty/invisible spaces. However, the cards are actually still present because when I tap on the empty space where an anime card should be, it opens the correct anime page.
+
+This means the clickable card elements and links are present, but the visual content is invisible or not rendering correctly on mobile.
+
+Please investigate and fix this specifically as a MOBILE-ONLY rendering issue.
+
+Check:
+
+* Mobile responsive CSS and media queries
+* Popular Anime card component and its CSS/classes
+* Card image width and height
+* Images collapsing to 0 width or height
+* `display: none`
+* `visibility: hidden`
+* `opacity`
+* `z-index`
+* `position: absolute`
+* `overflow: hidden`
+* Elements covering the poster images
+* `object-fit`
+* Responsive grid/flex layout
+* Lazy loading
+* Intersection Observer, if used
+* Mobile-specific image loading
+* Jikan API image URLs
+* Any mobile CSS overriding the desktop card styles
+
+Compare the Popular Anime cards with other anime card sections that display correctly on mobile to identify why the Popular Anime cards are affected more severely.
+
+IMPORTANT:
+
+* Do NOT remove the anime cards.
+* Do NOT replace the existing anime data source.
+* Do NOT remove or replace the Jikan API integration.
+* Do NOT change the existing anime links.
+* Do NOT break the desktop layout, which currently works correctly.
+* Keep the existing design and functionality as much as possible.
+
+Test the homepage at:
+
+320px
+375px
+390px
+412px
+430px
+
+After fixing it, explain the exact cause of the mobile-only invisibility and which files you modified.
+
+---
+
+# 2. IMPLEMENT THE FEBBOX EPISODE SYSTEM CORRECTLY
+
+I want the Febbox system to work as an external viewing destination, similar to how Showbox directs users to external video content.
+
+CRITICAL:
+
+Do NOT embed a Febbox player inside my website.
+
+When a user clicks "Watch Episode", the website should redirect the user to the EXACT Febbox URL saved for that specific episode.
+
+The workflow must be:
+
+Jikan API
+→ Anime metadata and episode information
+
+Admin Dashboard
+→ Admin selects the anime
+→ Admin selects or creates the specific episode
+→ Admin pastes the exact Febbox URL for that episode
+
+Firebase Firestore
+→ Stores the anime information
+→ Stores the episode information
+→ Stores the exact Febbox URL associated with that specific episode
+
+Public Anime Page
+→ Displays the available episodes
+
+User
+→ Clicks "Watch Episode"
+
+Website
+→ Retrieves the saved Febbox URL for THAT EXACT episode
+→ Redirects the user to that exact Febbox destination
+
+Each episode must have its own correct Febbox URL.
+
+Example:
+
+Anime A
+Episode 1 → Febbox URL A
+Episode 2 → Febbox URL B
+Episode 3 → Febbox URL C
+
+If the user clicks Episode 2, they must be redirected to Febbox URL B—not Episode 1, not a generic Febbox homepage, and not another episode.
+
+The website should behave similarly to Showbox's external viewing flow: the website manages and displays the anime and episode information, while Febbox is the external destination where the user is sent when they choose to watch.
+
+Do NOT:
+
+* Scrape Febbox.
+* Automatically generate Febbox URLs.
+* Embed Febbox inside an iframe.
+* Embed a Febbox video player.
+* Guess or modify the Febbox URL.
+* Redirect every episode to the same generic Febbox URL.
+
+The admin must be able to manually paste and save the correct Febbox URL for each episode.
+
+Make sure the saved URL is persisted in Firebase Firestore and retrieved correctly when the user clicks "Watch Episode".
+
+Use the existing Firestore structure where appropriate:
+
+`/animes/{malId}`
+`/animes/{malId}/episodes/{epId}`
+
+Each episode should have its own saved Febbox URL, for example:
+
+`febboxUrl`
+
+or another appropriate field name based on the existing project architecture.
+
+The Watch Episode button must retrieve the Febbox URL belonging to the EXACT episode the user selected.
+
+Do not use a single global Febbox URL for all episodes.
+
+Before implementing, inspect how the current Admin Dashboard, anime details page, episode list, and Watch Episode button are structured. Integrate this functionality into the existing architecture instead of creating a duplicate episode system.
+
+---
+
+# 3. CONNECT THE FRESH EPISODES SYSTEM TO FIREBASE FIRESTORE
+
+I have NOT manually created a `freshEpisodes` collection in my Firebase Firestore database yet.
+
+I was told that the existing Fresh Episodes section on my homepage is not currently connected to Firebase Firestore.
+
+Please inspect the existing project and connect the existing Fresh Episodes system properly to Firebase Firestore.
+
+IMPORTANT:
+
+Do NOT create a completely separate system if one already exists.
+
+First inspect:
+
+* The current Fresh Episodes component
+* The homepage
+* The Admin Dashboard
+* Firebase configuration
+* Existing Firestore code
+* Existing anime data structure
+* Existing episode data structure
+* Existing Jikan API integration
+* Existing Watch Episode functionality
+
+Use the existing architecture wherever possible.
+
+## Desired Fresh Episodes workflow
+
+Admin Dashboard
+→ Admin selects an anime and episode
+→ Admin adds or updates the Fresh Episode
+→ The app saves the Fresh Episode record to Firestore
+→ Firestore automatically creates the `freshEpisodes` collection when the first document is saved
+→ Homepage Fresh Episodes section reads the data from Firestore
+→ Fresh Episodes are displayed dynamically
+→ User clicks a Fresh Episode
+→ User is taken to the correct anime/episode page
+→ User can then use the correct Watch Episode button for that episode
+→ Watch Episode redirects to the exact Febbox URL saved for that specific episode
+
+Use the existing Firestore collection path:
+
+`/freshEpisodes/{docId}`
+
+I do NOT want to manually create an empty `freshEpisodes` collection or manually add documents through the Firebase Console unless absolutely necessary.
+
+The first Fresh Episode created through the Admin Dashboard should automatically create the `freshEpisodes` collection and its first document in Firestore.
+
+## Fresh Episodes Firestore data
+
+The Fresh Episode record should correctly reference the actual anime and episode.
+
+Where appropriate, use identifiers such as:
+
+`malId`
+`epId`
+
+The Fresh Episode should be connected to the corresponding episode document:
+
+`/animes/{malId}/episodes/{epId}`
+
+Do not duplicate unnecessary episode data if the existing application architecture provides a better way to reference the episode.
+
+The Fresh Episodes system must work together with the same anime and episode system used by the rest of the website.
+
+If the Fresh Episodes section needs to display information such as the title, poster, or episode number, use the existing data structure or references rather than creating conflicting duplicate data.
+
+The Fresh Episodes section should:
+
+* Load dynamically from Firestore
+* Display the correct anime title
+* Display the correct episode number
+* Display the correct poster/image
+* Display the correct release/upload date if available
+* Link to the correct anime and episode
+* Update when new Fresh Episode records are added through the Admin Dashboard
+* Have proper loading and empty states
+* Not rely on hardcoded dummy data when Firestore data is available
+
+The Admin Dashboard must allow an authenticated admin/user to create and update Fresh Episode records.
+
+---
+
+# 4. FIRESTORE SECURITY RULES
+
+The current Firestore rules are:
+
+rules_version = '2';
+service cloud.firestore {
+match /databases/{database}/documents {
+
+```
+match /animes/{malId} {
+  allow read: if true;
+  allow write: if request.auth != null;
+
+  match /episodes/{epId} {
+    allow read: if true;
+    allow write: if request.auth != null;
+  }
+}
+
+match /freshEpisodes/{docId} {
+  allow read: if true;
+  allow write: if request.auth != null;
+}
+
+match /videos/{docId} {
+  allow read: if true;
+  allow write: if request.auth != null;
+}
+
+match /users/{uid} {
+  allow read, write: if request.auth != null && request.auth.uid == uid;
+}
+
+match /watchlists/{uid}/items/{slug} {
+  allow read, write: if request.auth != null && request.auth.uid == uid;
+}
+```
+
+}
+}
+
+Please verify that the Firestore rules are deployed and active.
+
+For the public website:
+
+* Public users must be able to READ anime data.
+* Public users must be able to READ episode data.
+* Public users must be able to READ Fresh Episodes.
+* Public users must NOT be able to WRITE anime data.
+* Public users must NOT be able to WRITE episode data.
+* Public users must NOT be able to WRITE Fresh Episodes.
+
+Only authenticated users should be able to create or update these records according to the existing application architecture.
+
+Do NOT weaken the security rules.
+
+Do NOT make Firestore publicly writable.
+
+Do NOT change authenticated write access to public write access.
+
+If you need to update the rules, preserve the same security principle:
+
+`allow read: if true;`
+
+`allow write: if request.auth != null;`
+
+for public content that needs to be displayed by the website.
+
+---
+
+# 5. IMPORTANT INTEGRATION REQUIREMENTS
+
+These three systems must work together:
+
+Jikan API
+↓
+Anime metadata and episode information
+
+Firebase Firestore
+↓
+Anime records
+↓
+Episode records
+↓
+Febbox URL for each specific episode
+↓
+Fresh Episodes records referencing the correct anime/episode
+
+Public Website
+↓
+Anime page
+↓
+Episode list
+↓
+Watch Episode
+↓
+Exact saved Febbox URL
+
+Fresh Episodes
+↓
+Correct anime
+↓
+Correct episode
+↓
+Correct Watch Episode button
+↓
+Exact saved Febbox URL
+
+The same episode should NOT have multiple conflicting data sources.
+
+The Fresh Episodes system should reference the same episode system used by the anime details page.
+
+The Watch Episode button should always use the Febbox URL belonging to the exact episode selected by the user.
+
+---
+
+# 6. BEFORE YOU MAKE CHANGES
+
+First inspect the existing project and identify:
+
+1. Homepage file/component.
+2. Popular Anime card component.
+3. Anime card CSS and responsive CSS.
+4. Jikan API integration.
+5. Firebase configuration.
+6. Firestore initialization.
+7. Admin Dashboard.
+8. Anime data structure.
+9. Episode data structure.
+10. Current Watch Episode button/function.
+11. Current Fresh Episodes component.
+12. Current Firestore reads and writes.
+13. Current authentication system.
+
+Then implement the required changes using the existing architecture.
+
+Do NOT rewrite unrelated parts of the application.
+
+Do NOT remove working features.
+
+Do NOT replace the Jikan API.
+
+Do NOT break the existing desktop layout.
+
+Do NOT create duplicate anime or episode systems unnecessarily.
+
+Do NOT create unnecessary duplicate Firestore collections.
+
+Keep the current design and functionality wherever possible.
+
+---
+
+# 7. TEST EVERYTHING AFTER IMPLEMENTATION
+
+After making the changes, test:
+
+## Mobile anime cards
+
+320px
+375px
+390px
+412px
+430px
+
+Confirm:
+
+* Popular Anime cards are visible.
+* Poster images are visible.
+* Anime titles are visible.
+* Cards remain clickable.
+* Correct anime opens when clicked.
+* Desktop layout still works.
+
+## Fresh Episodes
+
+Confirm:
+
+* Admin can create a Fresh Episode.
+* The first Fresh Episode automatically creates the `freshEpisodes` collection if it does not exist.
+* Homepage can read Fresh Episodes without authentication.
+* New Fresh Episodes appear on the homepage.
+* The correct anime is displayed.
+* The correct episode number is displayed.
+* Clicking a Fresh Episode leads to the correct anime/episode.
+* The correct Watch Episode button is displayed.
+
+## Febbox
+
+Confirm:
+
+* Admin can paste and save a Febbox URL for a specific episode.
+* The URL is saved in Firestore.
+* Each episode can have a different Febbox URL.
+* Clicking Episode 1 opens Episode 1's saved Febbox URL.
+* Clicking Episode 2 opens Episode 2's saved Febbox URL.
+* The website does NOT embed Febbox.
+* The website does NOT scrape Febbox.
+* The website simply redirects the user to the exact saved Febbox URL for the selected episode.
+
+---
+
+# 8. FINAL REPORT
+
+When everything is finished, give me a clear summary containing:
+
+1. What caused the mobile anime cards to be invisible.
+2. Which files were changed for the mobile fix.
+3. How the Febbox URL is stored for each episode.
+4. How the Watch Episode button retrieves the correct URL.
+5. Which files were changed for the Febbox functionality.
+6. Whether the Fresh Episodes homepage is now connected to Firestore.
+7. Which files were changed for Fresh Episodes.
+8. What fields are stored in `/freshEpisodes/{docId}`.
+9. How the Admin Dashboard creates or updates Fresh Episode records.
+10. How the homepage retrieves and displays Fresh Episodes.
+11. How Fresh Episodes link to the correct anime and episode.
+12. Confirm that public users can READ Fresh Episodes without authentication.
+13. Confirm that unauthenticated users CANNOT WRITE to `freshEpisodes`.
+14. Explain exactly how I should add my first Fresh Episode from the Admin Dashboard.
+15. Confirm that adding the first Fresh Episode will automatically create the `freshEpisodes` collection in Firestore.
+16. Confirm that Febbox is NOT embedded and that Watch Episode redirects to the exact saved Febbox URL for that specific episode.
+
+Please do not simply tell me what you plan to do. Actually inspect the existing project and implement the changes.

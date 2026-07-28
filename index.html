@@ -1560,7 +1560,7 @@ loading="lazy" />
               entry.target.classList.add('visible');
             }
           });
-        }, { threshold: 0.2 });
+        }, { threshold: 0.05, rootMargin: '0px 0px 150px 0px' });
         fadeSections.forEach((section) => observer.observe(section));
       });
     </script>
