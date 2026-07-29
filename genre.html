@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Danimeverse — Genre</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Your main CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-slate-950 text-white min-h-screen">
+
+  <!-- GENRE SECTION -->
+  <section class="mt-20 px-4">
+
+    <div class="text-center">
+      <p class="text-sm uppercase tracking-[0.3em] text-pink-400">
+        Browse Genre
+      </p>
+
+      <h1
+        id="genreTitle"
+        class="mt-3 text-3xl md:text-5xl font-bold text-white"
+      >
+        Loading...
+      </h1>
+
+      <p class="mt-3 text-slate-400">
+        Explore anime from this genre
+      </p>
+    </div>
+
+    <!-- ANIME RESULTS -->
+    <div
+      id="genreAnimeContainer"
+      class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+    >
+      <!-- Anime will load here -->
+    </div>
+
+  </section>
+
+
+  <!-- GENRE JAVASCRIPT -->
+  <script src="genre.js"></script>
+  
+</body>
+</html>
