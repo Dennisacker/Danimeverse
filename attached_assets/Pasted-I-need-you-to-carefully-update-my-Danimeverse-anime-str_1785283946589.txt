@@ -1,0 +1,133 @@
+I need you to carefully update my Danimeverse anime streaming website. **Do NOT rewrite, delete, or modify unrelated parts of the project. Preserve my existing design, layout, Tailwind styling, authentication, search functionality, theme toggle, navigation, hero section, and all existing pages.**
+
+### MAIN GOAL
+
+Remove ALL manually hard-coded anime cards from `index.html` and replace them with anime cards loaded dynamically from the **Jikan API** (`https://api.jikan.moe/v4`).
+
+### IMPORTANT
+
+My current `index.html` contains manually coded anime cards such as:
+
+* Naruto
+* Attack on Titan
+* Assassination Classroom
+* Jujutsu Kaisen
+* Frieren
+* Witch Hat Atelier
+* Hell's Paradise
+* Mushoku Tensei
+* Oshi no Ko
+* Re:Zero
+* Dr. Stone
+* Fire Force
+* Fate/strange Fake
+* Chainsaw Man
+* and other manually written anime cards.
+
+Remove these hard-coded anime cards completely. Do not leave duplicate manual cards alongside the API cards.
+
+### API SECTIONS
+
+Make these sections dynamic:
+
+1. **FAN FAVORITES / Popular Anime's**
+
+   * Load popular anime from Jikan's Top Anime endpoint.
+   * Display the anime cards dynamically.
+   * Use real anime title, image, genres, score, status, and synopsis from Jikan.
+   * Cards should link to `anime.html?malId=ANIME_MAL_ID`.
+
+2. **TOP PICKS RIGHT NOW**
+
+   * Load anime dynamically from Jikan.
+   * Use the existing `topPicksAPI` container.
+   * Cards should link to `anime.html?malId=ANIME_MAL_ID`.
+
+3. **TRENDING ANIME'S**
+
+   * Load current seasonal anime dynamically from Jikan.
+   * Use the existing `trendingAnimeContainer` container.
+   * Cards should link to `anime.html?malId=ANIME_MAL_ID`.
+
+4. **LATEST EPISODES**
+
+   * Load current seasonal anime dynamically from Jikan.
+   * Use the existing `latestEpisodesContainer` container.
+   * Display the anime image, title, episode count, genres, and status.
+   * Cards should link to `anime.html?malId=ANIME_MAL_ID`.
+
+### API.JS
+
+Clean up `api.js`.
+
+The file currently contains Git merge conflict markers such as:
+`<<<<<<< HEAD`
+`=======`
+`>>>>>>> 497c63d62a41d12ef762e2bc125764bc0fef5599`
+
+Remove all merge conflict markers and resolve the conflict properly.
+
+Keep only ONE clean Jikan API implementation. Do not duplicate functions or API calls.
+
+Use a simple localStorage cache if appropriate to reduce unnecessary Jikan API requests and avoid rate-limit issues.
+
+The API code should:
+
+* Fetch data from Jikan.
+* Handle API errors gracefully.
+* Show a friendly fallback message if the API fails.
+* Clear each API container before rendering to prevent duplicate cards.
+* Render cards only into their designated containers.
+* Avoid adding duplicate anime cards.
+* Use safe fallbacks if an anime has no image, score, synopsis, genres, or episode count.
+
+### INDEX.HTML
+
+Clean up `index.html` so that the anime sections contain only empty containers for JavaScript-generated cards.
+
+Do NOT leave any manually hard-coded anime cards inside these sections.
+
+Use containers similar to:
+
+`animeContainer`
+`topPicksAPI`
+`trendingAnimeContainer`
+`latestEpisodesContainer`
+
+Keep the existing section headings and overall visual design.
+
+Do not create multiple elements with the same ID. Each ID must exist only once.
+
+### IMPORTANT CODE QUALITY
+
+Before finishing:
+
+1. Check `index.html` for duplicate IDs.
+2. Check for duplicate `topPicksAPI` elements.
+3. Check for duplicate `mobileMenu` elements.
+4. Remove unnecessary duplicate HTML blocks.
+5. Make sure the HTML structure is valid.
+6. Make sure `api.js` is loaded correctly from `index.html`.
+7. Make sure there are no JavaScript syntax errors.
+8. Make sure there are no Git merge conflict markers anywhere in the final code.
+9. Do not modify authentication or search functionality unless absolutely necessary.
+10. Do not modify `anime.html` or other anime detail pages unless required for the API cards to work.
+11. Do not remove existing CSS or Tailwind classes unless they are directly related to deleted manual cards.
+
+### FINAL REQUIREMENT
+
+After making the changes, test the site and confirm that:
+
+* The manual anime cards are completely gone.
+* Anime cards are loaded from Jikan API.
+* Popular Anime section works.
+* Top Picks section works.
+* Trending Anime section works.
+* Latest Episodes section works.
+* Clicking an API anime card opens `anime.html?malId=...`.
+* Search still works.
+* Authentication still works.
+* The site has no duplicate cards caused by JavaScript running twice.
+* The site has no Git merge conflict markers.
+
+If something is unclear, inspect the existing project files and preserve the current implementation rather than guessing or rewriting the project.
