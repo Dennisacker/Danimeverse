@@ -1,282 +1,967 @@
-/* =====================================================
-   DANIMEVERSE — Jikan API loader
-   All sections use clear-then-render to prevent
-   duplicate cards if the script runs more than once.
-   localStorage cache (30-min TTL) reduces API calls.
-===================================================== */
+/* =========================================================
+   DANIMEVERSE - API.JS
+   FAN FAVORITES + TOP PICKS + FRESH DROPS
+========================================================= */
 
-const CACHE_TTL = 30 * 60 * 1000;
-const FALLBACK_IMG = "https://via.placeholder.com/400x600?text=No+Image";
+const JIKAN_BASE =
+  "https://api.jikan.moe/v4";
 
-/* ── cache helpers ── */
-function getCached(key) {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
-    const { ts, data } = JSON.parse(raw);
-    if (Date.now() - ts > CACHE_TTL) { localStorage.removeItem(key); return null; }
-    return data;
-  } catch (_) { return null; }
-}
-function setCache(key, data) {
-  try { localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch (_) {}
-}
 
-/* ── shared helpers ── */
-function animeLink(anime) {
-  return `anime.html?malId=${anime.mal_id}`;
-}
-function safeImg(anime) {
-  return anime?.images?.jpg?.large_image_url || FALLBACK_IMG;
-}
-function safeTitle(anime) {
-  return anime.title_english || anime.title || "Unknown Title";
-}
-function safeGenres(anime, max) {
-  return anime.genres?.slice(0, max).map(g => g.name).join(", ") || "—";
-}
-function safeSynopsis(anime, len) {
-  return anime.synopsis ? anime.synopsis.substring(0, len) + "…" : "No description available.";
-}
-function showError(container, msg) {
-  container.innerHTML = `<p class="col-span-full text-center text-slate-400 py-10">${msg}</p>`;
-}
+/* =========================================================
+   GET CONTAINERS
+========================================================= */
 
-/* =====================================================
-   1. FAN FAVORITES — /v4/top/anime
-      Container: #animeContainer
-===================================================== */
-async function loadTopAnime() {
-  const container = document.getElementById("animeContainer");
+const popularContainer =
+  document.getElementById(
+    "popularAnimeContainer"
+  );
+
+const trendingContainer =
+  document.getElementById(
+    "trendingAnimeContainer"
+  );
+
+const latestContainer =
+  document.getElementById(
+    "latestAnimeContainer"
+  );
+
+
+console.log(
+  "🔥 DANIMEVERSE API.JS LOADED"
+);
+
+console.log(
+  "Popular:",
+  popularContainer
+);
+
+console.log(
+  "Trending:",
+  trendingContainer
+);
+
+console.log(
+  "Fresh Drops:",
+  latestContainer
+);
+
+
+/* =========================================================
+   LOADING SKELETON
+========================================================= */
+
+function showLoading(
+  container,
+  count = 6
+) {
+
   if (!container) return;
 
-  const cached = getCached("jikan_top_anime");
-  if (cached) { renderTopAnime(cached, container); return; }
+  container.innerHTML = "";
 
-  try {
-    const res = await fetch("https://api.jikan.moe/v4/top/anime");
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    setCache("jikan_top_anime", data);
-    renderTopAnime(data, container);
-  } catch (e) {
-    console.error("Top Anime API Error:", e);
-    showError(container, "⚠️ Could not load popular anime. Please try again later.");
-  }
-}
+  for (
+    let i = 0;
+    i < count;
+    i++
+  ) {
 
-function renderTopAnime(data, container) {
-  const items = (data.data || []).slice(0, 12);
-  if (!items.length) { showError(container, "No anime found."); return; }
+    const skeleton =
+      document.createElement(
+        "article"
+      );
 
-  container.innerHTML = items.map(anime => `
-    <a href="${animeLink(anime)}" class="block">
-      <article class="glass-card group relative overflow-hidden rounded-[2rem] border border-white/10 p-5 shadow-soft transition duration-500 hover:-translate-y-1 hover:shadow-glow">
-        <img src="${safeImg(anime)}"
-             alt="${safeTitle(anime)}"
-             class="w-full h-[320px] object-cover rounded-2xl"
-             loading="eager" />
-        <div class="space-y-3 mt-4">
-          <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
-            ${safeGenres(anime, 3) || "Anime"}
-          </span>
-          <h3 class="text-xl font-semibold text-white">${safeTitle(anime)}</h3>
-          <p class="text-xs md:text-sm leading-6 text-slate-300">
-            ${safeSynopsis(anime, 120)}
-          </p>
-          <div class="flex flex-wrap gap-3 pt-3">
-            <span class="bg-pink-700 text-white px-4 py-2 rounded-full text-sm font-semibold">
-              ${anime.score ? `⭐ ${anime.score}` : "Unrated"}
-            </span>
-            <span class="bg-white/10 text-white px-4 py-2 rounded-full text-sm">
-              ▶ Episodes
-            </span>
-          </div>
+    skeleton.className =
+      "glass-card overflow-hidden rounded-[2rem] border border-white/10 p-4 shadow-soft animate-pulse";
+
+    skeleton.innerHTML = `
+
+      <div
+        class="w-full h-[280px] rounded-2xl bg-white/10"
+      ></div>
+
+      <div class="mt-4 space-y-3">
+
+        <div
+          class="h-4 bg-white/10 rounded w-1/2"
+        ></div>
+
+        <div
+          class="h-6 bg-white/10 rounded w-3/4"
+        ></div>
+
+        <div
+          class="h-3 bg-white/10 rounded w-full"
+        ></div>
+
+        <div class="flex gap-2 pt-3">
+
+          <div
+            class="h-10 w-20 bg-white/10 rounded-full"
+          ></div>
+
+          <div
+            class="h-10 w-24 bg-white/10 rounded-full"
+          ></div>
+
         </div>
-      </article>
-    </a>`).join("");
+
+      </div>
+
+    `;
+
+    container.appendChild(
+      skeleton
+    );
+
+  }
+
 }
 
-/* =====================================================
-   2. TOP PICKS RIGHT NOW — /v4/seasons/now
-      Container: #topPicksAPI
-===================================================== */
-async function loadTopPicks() {
-  const container = document.getElementById("topPicksAPI");
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+function showError(
+  container,
+  message
+) {
+
   if (!container) return;
 
-  const cached = getCached("jikan_seasons_now");
-  if (cached) { renderTopPicks(cached, container); return; }
+  container.innerHTML = `
+
+    <div
+      class="col-span-full text-center py-10"
+    >
+
+      <div
+        class="glass-card rounded-[2rem] p-8"
+      >
+
+        <p
+          class="text-red-400 text-lg font-semibold"
+        >
+          ${message}
+        </p>
+
+        <button
+          onclick="location.reload()"
+          class="mt-4 bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-full transition"
+        >
+          Try Again
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   FETCH JIKAN API
+========================================================= */
+
+async function fetchAnime(
+  endpoint
+) {
 
   try {
-    const res = await fetch("https://api.jikan.moe/v4/seasons/now");
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    setCache("jikan_seasons_now", data);
-    renderTopPicks(data, container);
-  } catch (e) {
-    console.error("Top Picks API Error:", e);
-    showError(container, "⚠️ Could not load top picks. Please try again later.");
-  }
-}
 
-function renderTopPicks(data, container) {
-  const items = (data.data || []).slice(0, 6);
-  if (!items.length) { showError(container, "No top picks found."); return; }
+    console.log(
+      "📡 Fetching:",
+      endpoint
+    );
 
-  container.innerHTML = items.map(anime => `
-    <a href="${animeLink(anime)}" class="block no-underline">
-      <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
-        <img src="${safeImg(anime)}"
-             alt="${safeTitle(anime)}"
-             class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"
-             loading="eager" />
-        <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
-          <h3 class="text-xl md:text-2xl font-bold mb-2">${safeTitle(anime)}</h3>
-          <div class="flex flex-wrap items-center gap-3 mb-4">
-            <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
-              ${anime.score ? `${anime.score}/10` : "N/A"}
-            </span>
-            <span class="bg-purple-700 text-white text-xs px-3 py-1 rounded-full">
-              ${anime.status || "Airing"}
-            </span>
-            <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
-              ${safeGenres(anime, 2)}
-            </span>
-          </div>
-          <span class="inline-block bg-pink-700 text-white px-5 py-2 rounded-full text-sm font-semibold">
-            ▶ Episodes
-          </span>
-        </div>
-      </article>
-    </a>`).join("");
-}
+    const response =
+      await fetch(
+        `${JIKAN_BASE}${endpoint}`
+      );
 
-/* =====================================================
-   3. TRENDING ANIME'S — /v4/top/anime?filter=airing
-      Container: #trendingAnimeContainer
-===================================================== */
-async function loadTrendingAnime() {
-  const container = document.getElementById("trendingAnimeContainer");
-  if (!container) return;
+    console.log(
+      "📡 Status:",
+      response.status
+    );
 
-  const cached = getCached("jikan_trending_airing");
-  if (cached) { renderTrendingAnime(cached, container); return; }
+    if (!response.ok) {
 
-  try {
-    const res = await fetch("https://api.jikan.moe/v4/top/anime?filter=airing");
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    setCache("jikan_trending_airing", data);
-    renderTrendingAnime(data, container);
-  } catch (e) {
-    console.error("Trending Anime API Error:", e);
-    showError(container, "⚠️ Could not load trending anime. Please try again later.");
-  }
-}
+      throw new Error(
+        `Jikan API returned ${response.status}`
+      );
 
-function renderTrendingAnime(data, container) {
-  const items = (data.data || []).slice(0, 6);
-  if (!items.length) { showError(container, "No trending anime found."); return; }
-
-  container.innerHTML = items.map(anime => `
-    <a href="${animeLink(anime)}" class="block no-underline">
-      <article class="glass-card overflow-hidden rounded-[2rem] p-5 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
-        <img src="${safeImg(anime)}"
-             alt="${safeTitle(anime)}"
-             class="mb-4 h-48 md:h-64 w-full rounded-[1.5rem] object-cover"
-             loading="eager" />
-        <div class="bg-gray-900 rounded-xl shadow-lg p-3 md:p-4 text-white">
-          <h3 class="text-xl md:text-2xl font-bold mb-2">${safeTitle(anime)}</h3>
-          <div class="flex flex-wrap items-center gap-3 mb-4">
-            <span class="bg-pink-600 text-white text-sm font-bold px-3 py-1 rounded-full">
-              ${anime.score ? `${anime.score}/10` : "N/A"}
-            </span>
-            <span class="bg-green-700 text-white text-xs px-3 py-1 rounded-full">
-              🔴 Airing
-            </span>
-            <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
-              ${safeGenres(anime, 2)}
-            </span>
-          </div>
-          <span class="inline-block bg-pink-700 text-white px-5 py-2 rounded-full text-sm font-semibold">
-            ▶ Episodes
-          </span>
-        </div>
-      </article>
-    </a>`).join("");
-}
-
-/* =====================================================
-   4. LATEST EPISODES — reuses /v4/seasons/now data
-      (shares cache key with loadTopPicks to avoid a
-       second identical request and prevent 429 errors)
-      Container: #latestEpisodesContainer
-===================================================== */
-async function loadLatestEpisodes() {
-  const container = document.getElementById("latestEpisodesContainer");
-  if (!container) return;
-
-  /* reuse the seasons/now cache that loadTopPicks already populated */
-  let data = getCached("jikan_seasons_now");
-  if (!data) {
-    try {
-      const res = await fetch("https://api.jikan.moe/v4/seasons/now");
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      data = await res.json();
-      setCache("jikan_seasons_now", data);
-    } catch (e) {
-      console.error("Latest Episodes API Error:", e);
-      showError(container, "⚠️ Could not load latest episodes. Please try again later.");
-      return;
     }
+
+    const result =
+      await response.json();
+
+    console.log(
+      "✅ Anime received:",
+      result.data?.length
+    );
+
+    return (
+      result.data || []
+    );
+
+  } catch (error) {
+
+    console.error(
+      "❌ JIKAN API ERROR:",
+      error
+    );
+
+    return [];
+
   }
-  renderLatestEpisodes(data, container);
+
 }
 
-function renderLatestEpisodes(data, container) {
-  const items = (data.data || []).slice(0, 8);
-  if (!items.length) { showError(container, "No episodes found."); return; }
 
-  container.innerHTML = items.map(anime => `
-    <a href="${animeLink(anime)}" class="block no-underline">
-      <article class="glass-card overflow-hidden rounded-[2rem] p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow">
-        <div class="flex gap-4">
-          <img src="${safeImg(anime)}"
-               alt="${safeTitle(anime)}"
-               class="w-28 h-28 rounded-[1.5rem] object-cover flex-shrink-0"
-               loading="eager" />
-          <div class="flex flex-col justify-center gap-2 min-w-0">
-            <span class="text-xs text-pink-400 font-semibold uppercase tracking-wide">
-              ${safeGenres(anime, 2)}
-            </span>
-            <h3 class="text-base md:text-lg font-bold text-white leading-snug truncate">
-              ${safeTitle(anime)}
-            </h3>
-            <div class="flex flex-wrap gap-2">
-              <span class="bg-purple-700 text-white text-xs px-2 py-0.5 rounded-full">
-                ${anime.episodes ? `${anime.episodes} eps` : "Ongoing"}
-              </span>
-              <span class="bg-white/10 text-slate-300 text-xs px-2 py-0.5 rounded-full">
-                ${anime.status || "Airing"}
-              </span>
-              ${anime.score ? `<span class="bg-pink-600 text-white text-xs px-2 py-0.5 rounded-full">⭐ ${anime.score}</span>` : ""}
-            </div>
-          </div>
+/* =========================================================
+   GENRES
+========================================================= */
+
+function getGenres(
+  anime
+) {
+
+  if (
+    !anime.genres ||
+    anime.genres.length === 0
+  ) {
+
+    return "Anime";
+
+  }
+
+  return anime.genres
+    .slice(
+      0,
+      3
+    )
+    .map(
+      genre =>
+        genre.name
+    )
+    .join(
+      ", "
+    );
+
+}
+
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+function getDescription(
+  anime
+) {
+
+  if (!anime.synopsis) {
+
+    return "No description available.";
+
+  }
+
+  return anime.synopsis.length > 120
+
+    ? anime.synopsis.substring(
+        0,
+        120
+      ) + "..."
+
+    : anime.synopsis;
+
+}
+
+
+/* =========================================================
+   LOCAL ANIME PAGES
+========================================================= */
+
+function getAnimePage(
+  anime
+) {
+
+  const title =
+    (
+      anime.title_english ||
+      anime.title ||
+      ""
+    )
+      .toLowerCase()
+      .replace(
+        /[^a-z0-9\s-]/g,
+        ""
+      )
+      .trim()
+      .replace(
+        /\s+/g,
+        "-"
+      );
+
+
+  const animePages = {
+
+    "naruto":
+      "naruto.html",
+
+    "attack-on-titan":
+      "aot.html",
+
+    "assassination-classroom":
+      "assassination-classroom.html",
+
+    "jujutsu-kaisen":
+      "jujutsu-kaisen.html",
+
+    "frieren-beyond-journeys-end":
+      "frieren.html",
+
+    "witch-hat-atelier":
+      "witch-hat-atelier.html"
+
+  };
+
+
+  return (
+    animePages[title] ||
+    null
+  );
+
+}
+
+
+/* =========================================================
+   CREATE ANIME CARD
+========================================================= */
+
+function createAnimeCard(
+  anime,
+  isFreshDrop = false
+) {
+
+  const title =
+    anime.title_english ||
+    anime.title ||
+    "Unknown Anime";
+
+
+  const image =
+    anime.images?.jpg?.large_image_url ||
+    anime.images?.jpg?.image_url ||
+    "https://via.placeholder.com/600x900?text=No+Image";
+
+
+  const score =
+    anime.score
+      ? `${anime.score}/10`
+      : "N/A";
+
+
+  const genres =
+    getGenres(
+      anime
+    );
+
+
+  const description =
+    getDescription(
+      anime
+    );
+
+
+  const episodes =
+    anime.episodes
+      ? `${anime.episodes} Episodes`
+      : "Ongoing";
+
+
+  const type =
+    anime.type ||
+    "Anime";
+
+
+  const localPage =
+    getAnimePage(
+      anime
+    );
+
+
+  const card =
+    document.createElement(
+      "article"
+    );
+
+
+  card.className =
+    "glass-card group overflow-hidden rounded-[2rem] border border-white/10 p-4 shadow-soft transition duration-500 hover:-translate-y-2 hover:shadow-glow";
+
+
+  /* =========================================================
+     FRESH DROPS CARD
+     Only Fresh Drops uses this simplified version
+========================================================= */
+
+  if (isFreshDrop) {
+
+    card.innerHTML = `
+
+      <!-- IMAGE -->
+
+      <div
+        class="relative overflow-hidden rounded-2xl"
+      >
+
+        <img
+  src="${image}"
+  alt="${title}"
+  class="w-full h-[320px] sm:h-[250px] md:h-[290px] object-cover transition duration-500 group-hover:scale-105"
+  loading="lazy"
+>
+
+
+        <!-- STILL AIRING -->
+
+        <div
+          class="absolute top-3 left-3"
+        >
+
+          <span
+            class="bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg"
+          >
+            🟢 Still Airing
+          </span>
+
         </div>
-      </article>
-    </a>`).join("");
+
+
+        <!-- TYPE -->
+
+        <div
+          class="absolute top-3 right-3"
+        >
+
+          <span
+            class="bg-black/70 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full"
+          >
+            ${type}
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- FRESH DROPS CONTENT -->
+
+      <div
+        class="mt-4 space-y-3"
+      >
+
+        <!-- TITLE -->
+
+        <h3
+          class="text-xl font-bold text-white line-clamp-2"
+        >
+          ${title}
+        </h3>
+
+
+        <!-- STILL AIRING STATUS -->
+
+        <div
+          class="flex items-center gap-2"
+        >
+
+          <span
+            class="text-xs font-semibold text-green-400"
+          >
+            Currently Airing
+          </span>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+
+        <div
+          class="flex flex-wrap gap-3 pt-3"
+        >
+
+          <button
+            class="watch-btn bg-pink-700 border border-black text-black px-4 py-2 rounded-full text-sm font-semibold hover:bg-black hover:text-white transition"
+          >
+            WATCH
+          </button>
+
+
+          <button
+            class="download-btn bg-transparent border border-white/20 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-white hover:text-black transition"
+          >
+            DOWNLOAD
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+  } else {
+
+
+    /* =========================================================
+       FAN FAVORITES + TOP PICKS CARD
+========================================================= */
+
+    card.innerHTML = `
+
+      <!-- IMAGE -->
+
+      <div
+        class="relative overflow-hidden rounded-2xl"
+      >
+
+       <img
+  src="${image}"
+  alt="${title}"
+  class="w-full h-[320px] sm:h-[250px] md:h-[290px] object-cover transition duration-500 group-hover:scale-105"
+  loading="lazy"
+>
+
+
+        <!-- RATING -->
+
+        <div
+          class="absolute top-3 left-3"
+        >
+
+          <span
+            class="bg-pink-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg"
+          >
+
+            ⭐ ${score}
+
+          </span>
+
+        </div>
+
+
+        <!-- TYPE -->
+
+        <div
+          class="absolute top-3 right-3"
+        >
+
+          <span
+            class="bg-black/70 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full"
+          >
+
+            ${type}
+
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- CONTENT -->
+
+      <div
+        class="mt-4 space-y-3"
+      >
+
+
+        <!-- GENRES -->
+
+        <div>
+
+          <span
+            class="inline-block bg-indigo-600 text-white text-xs px-3 py-1 rounded-full"
+          >
+
+            ${genres}
+
+          </span>
+
+        </div>
+
+
+        <!-- TITLE -->
+
+        <h3
+          class="text-xl font-bold text-white line-clamp-2"
+        >
+
+          ${title}
+
+        </h3>
+
+
+        <!-- EPISODES -->
+
+        <p
+          class="text-xs text-pink-400 font-semibold"
+        >
+
+          ${episodes}
+
+        </p>
+
+
+        <!-- DESCRIPTION -->
+
+        <p
+          class="text-xs md:text-sm leading-6 text-slate-300 line-clamp-3"
+        >
+
+          ${description}
+
+        </p>
+
+
+        <!-- BUTTONS -->
+
+        <div
+          class="flex flex-wrap gap-3 pt-3"
+        >
+
+          <button
+            class="watch-btn bg-pink-700 border border-black text-black px-4 py-2 rounded-full text-sm font-semibold hover:bg-black hover:text-white transition"
+          >
+            WATCH
+          </button>
+
+
+          <button
+            class="download-btn bg-transparent border border-white/20 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-white hover:text-black transition"
+          >
+            DOWNLOAD
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* =========================================================
+     WATCH
+========================================================= */
+
+  const watchButton =
+    card.querySelector(
+      ".watch-btn"
+    );
+
+
+  watchButton.addEventListener(
+    "click",
+    function () {
+
+      if (localPage) {
+
+        window.location.href =
+          localPage;
+
+      } else {
+
+        alert(
+          `${title} has not been added to the Danimeverse watch system yet.`
+        );
+
+      }
+
+    }
+  );
+
+
+  /* =========================================================
+     DOWNLOAD
+========================================================= */
+
+  const downloadButton =
+    card.querySelector(
+      ".download-btn"
+    );
+
+
+  downloadButton.addEventListener(
+    "click",
+    function () {
+
+      alert(
+        `Download links for ${title} will be available when this anime is added to the Danimeverse watch system.`
+      );
+
+    }
+  );
+
+
+  return card;
+
 }
 
-/* ── kick everything off with stagger to respect Jikan's 3 req/sec limit ── */
-(async () => {
-  loadTopAnime();
-  await new Promise(r => setTimeout(r, 400));
-  loadTopPicks();
-  await new Promise(r => setTimeout(r, 400));
-  loadTrendingAnime();
-  /* loadLatestEpisodes reuses the seasons/now cache from loadTopPicks,
-     so wait until that cache is likely populated */
-  await new Promise(r => setTimeout(r, 800));
-  loadLatestEpisodes();
-})();
+
+/* =========================================================
+   RENDER 12 ANIME
+========================================================= */
+
+function renderAnime(
+  container,
+  animeList,
+  isFreshDrop = false
+) {
+
+  if (!container) {
+
+    console.error(
+      "❌ RENDER ERROR: Container missing."
+    );
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    "";
+
+
+  if (
+    !animeList ||
+    animeList.length === 0
+  ) {
+
+    showError(
+      container,
+      "No anime could be loaded."
+    );
+
+    return;
+
+  }
+
+
+  animeList
+    .slice(
+      0,
+      12
+    )
+    .forEach(
+      anime => {
+
+        const card =
+          createAnimeCard(
+            anime,
+            isFreshDrop
+          );
+
+        container.appendChild(
+          card
+        );
+
+      }
+    );
+
+
+  console.log(
+    "✅ Rendered:",
+    animeList
+      .slice(
+        0,
+        12
+      )
+      .length,
+    "anime"
+  );
+
+}
+
+
+/* =========================================================
+   FAN FAVORITES
+========================================================= */
+
+async function loadPopularAnime() {
+
+  if (!popularContainer) {
+
+    console.error(
+      "❌ popularAnimeContainer NOT FOUND"
+    );
+
+    return;
+
+  }
+
+
+  showLoading(
+    popularContainer,
+    6
+  );
+
+
+  const anime =
+    await fetchAnime(
+      "/top/anime?filter=bypopularity&limit=12"
+    );
+
+
+  renderAnime(
+    popularContainer,
+    anime
+  );
+
+}
+
+
+/* =========================================================
+   TOP PICKS
+========================================================= */
+
+async function loadTrendingAnime() {
+
+  if (!trendingContainer) {
+
+    console.error(
+      "❌ trendingAnimeContainer NOT FOUND"
+    );
+
+    return;
+
+  }
+
+
+  showLoading(
+    trendingContainer,
+    6
+  );
+
+
+  const anime =
+    await fetchAnime(
+      "/seasons/now?limit=12"
+    );
+
+
+  renderAnime(
+    trendingContainer,
+    anime
+  );
+
+}
+
+
+/* =========================================================
+   FRESH DROPS
+========================================================= */
+
+async function loadLatestAnime() {
+
+  if (!latestContainer) {
+
+    console.error(
+      "❌ latestAnimeContainer NOT FOUND"
+    );
+
+    return;
+
+  }
+
+
+  showLoading(
+    latestContainer,
+    6
+  );
+
+
+  const anime =
+    await fetchAnime(
+      "/top/anime?filter=airing&limit=12"
+    );
+
+
+  renderAnime(
+    latestContainer,
+    anime,
+    true
+  );
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+async function loadHomepageAnime() {
+
+  console.log(
+    "🚀 STARTING DANIMEVERSE API"
+  );
+
+
+  await loadPopularAnime();
+
+
+  await new Promise(
+    resolve =>
+      setTimeout(
+        resolve,
+        1500
+      )
+  );
+
+
+  await loadTrendingAnime();
+
+
+  await new Promise(
+    resolve =>
+      setTimeout(
+        resolve,
+        1500
+      )
+  );
+
+
+  await loadLatestAnime();
+
+
+  console.log(
+    "🎉 DANIMEVERSE HOMEPAGE COMPLETE"
+  );
+
+}
+
+
+/* =========================================================
+   RUN
+========================================================= */
+
+if (
+  document.readyState ===
+  "loading"
+) {
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    loadHomepageAnime
+  );
+
+} else {
+
+  loadHomepageAnime();
+
+}
