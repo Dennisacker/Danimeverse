@@ -1,0 +1,380 @@
+I need you to completely fix and refactor my Danimeverse anime homepage and search system.
+
+IMPORTANT: Before changing anything, inspect the entire project and understand the current structure.
+
+### CRITICAL DESIGN INSTRUCTION
+
+I ALREADY HAVE A GENRE SECTION/GENRE STRUCTURE THAT I LIKE.
+
+DO NOT:
+
+* Create a new genre design.
+* Replace my existing genre section.
+* Redesign the genre cards.
+* Change the visual style of my genre section.
+* Remove my existing genre layout.
+
+Instead, KEEP MY CURRENT GENRE STRUCTURE AND DESIGN EXACTLY AS IT IS, but make it:
+
+* Fully responsive on mobile, tablet, and desktop.
+* Smooth and horizontally scrollable on smaller screens if that is how the current structure is intended to work.
+* Similar to Netflix's genre browsing experience in terms of responsiveness and usability.
+* Easy to navigate with touch on mobile.
+* Properly spaced and sized at different screen widths.
+
+The goal is to make MY EXISTING GENRE STRUCTURE responsive and functional, NOT to create a new design.
+
+---
+
+## 1. REMOVE ALL MANUAL ANIME CARDS FROM index.html
+
+Completely remove every manually hardcoded anime card from `index.html`.
+
+This includes cards such as:
+
+* Naruto
+* Attack on Titan
+* Assassination Classroom
+* Jujutsu Kaisen
+* Frieren
+* Witch Hat Atelier
+* Hell's Paradise
+* Mushoku Tensei
+* Oshi no Ko
+* Re:Zero
+* Dr. Stone
+* Fire Force
+* Fate/strange Fake
+* Chainsaw Man
+* Tokyo Revengers
+* Demon Slayer
+* My Hero Academia
+* Solo Leveling
+* and every other manually hardcoded anime card.
+
+Do not leave hidden copies of the cards.
+
+Do not leave duplicate cards.
+
+Do not leave the old `<a href="naruto.html">`, `<a href="aot.html">`, etc. card structures.
+
+The homepage must use empty containers that JavaScript populates dynamically, such as:
+
+`<div id="animeContainer"></div>`
+
+`<div id="topPicksAPI"></div>`
+
+`<div id="trendingAnimeContainer"></div>`
+
+`<div id="latestEpisodesContainer"></div>`
+
+Do not hardcode anime data into `index.html`.
+
+---
+
+## 2. USE JIKAN API FOR HOMEPAGE ANIME
+
+Use:
+
+https://api.jikan.moe/v4
+
+All anime cards displayed on the homepage must be loaded dynamically from Jikan.
+
+The homepage should dynamically load:
+
+* Popular anime
+* Top anime
+* Current seasonal anime
+* Trending anime
+* Latest/new anime
+
+Do not hardcode anime titles, images, descriptions, ratings, or genres into `index.html`.
+
+All anime data must come from Jikan.
+
+Keep the existing Danimeverse visual design and card styling.
+
+Add proper loading states such as:
+
+* Loading anime...
+* Loading trending anime...
+* Loading episodes...
+
+Add proper error states if the API fails.
+
+Use sensible localStorage caching if needed, but make sure broken or stale cached data cannot permanently prevent fresh API data from loading.
+
+---
+
+## 3. FIX THE HOMEPAGE SEARCH BAR
+
+The current homepage search bar is broken.
+
+It briefly shows "Connecting..." and then returns no results.
+
+Find the actual cause and fix it instead of just hiding the problem.
+
+The search bar must:
+
+* Listen to `#searchInput`
+* Use debounce to avoid excessive API requests
+* Search Jikan with:
+
+`https://api.jikan.moe/v4/anime?q=SEARCH_TERM&limit=10&sfw=true`
+
+* Display real search results inside `#searchResults`
+* Show anime poster/image
+* Show anime title
+* Show year when available
+* Show score when available
+* Allow users to click a search result
+* Clicking an anime should open:
+
+`anime.html?malId=ANIME_ID`
+
+* Show "Searching..." while waiting
+* Show "No anime found" when appropriate
+* Show a useful error if Jikan fails
+* Hide results when the search field is empty
+
+Do not allow the search to remain stuck on "Connecting...".
+
+Make sure the correct JavaScript file is actually loaded by `index.html`.
+
+Check for duplicate or conflicting search scripts and remove/fix them.
+
+---
+
+## 4. FIX THE DASHBOARD SEARCH
+
+Inspect the dashboard/admin page and fix its search system too.
+
+The dashboard search must actually return results.
+
+If the dashboard searches anime from Jikan, use the same reliable Jikan search logic.
+
+Avoid having multiple conflicting implementations.
+
+If appropriate, create a shared API utility such as:
+
+`jikan-api.js`
+
+that can be used by:
+
+* Homepage
+* Dashboard
+* Anime detail page
+* Genre browsing
+
+Make sure scripts load in the correct order.
+
+---
+
+## 5. MAKE MY EXISTING GENRE STRUCTURE WORK LIKE NETFLIX
+
+IMPORTANT:
+
+I ALREADY HAVE A GENRE STRUCTURE THAT I LIKE.
+
+DO NOT CREATE A NEW GENRE SECTION.
+
+DO NOT CHANGE ITS DESIGN.
+
+DO NOT REPLACE IT WITH A DIFFERENT CARD STYLE.
+
+Keep my current genre HTML and CSS structure and improve it only where necessary.
+
+Make the existing genre section behave similarly to Netflix's genre browsing experience:
+
+* Responsive on mobile
+* Responsive on tablets
+* Responsive on desktop
+* Smooth horizontal scrolling where appropriate
+* Touch-friendly on mobile
+* Proper spacing between genre items
+* No broken overflow
+* No content being cut off
+* No awkward wrapping
+* Maintain my current visual style
+* Maintain my current colors
+* Maintain my current card design
+* Maintain my current genre layout
+
+When a user selects a genre from my existing genre structure:
+
+1. Use the selected genre.
+2. Fetch anime from Jikan using the correct genre ID.
+3. Display the results in the existing anime card grid/container.
+4. Do not create a completely new card design.
+5. Show a loading state.
+6. Show the selected genre name.
+7. Show "No anime found" when necessary.
+8. Allow users to switch between genres easily without refreshing the page.
+
+Use Jikan's genre filtering correctly.
+
+The genre system should feel like Netflix in functionality and responsiveness, while STILL LOOKING LIKE MY CURRENT DANIMEVERSE DESIGN.
+
+---
+
+## 6. USE ONE CONSISTENT ANIME DETAIL SYSTEM
+
+All dynamically generated anime cards should link to:
+
+`anime.html?malId=ANIME_ID`
+
+The `anime.html` page should read the `malId` from the URL and fetch the anime details from Jikan.
+
+Do not depend on manually created individual anime HTML pages for dynamically loaded Jikan results.
+
+---
+
+## 7. REMOVE OLD ANIME FILES ONLY AFTER CHECKING REFERENCES
+
+After the homepage has been converted to a fully dynamic Jikan system, inspect the project for old manually created anime files and JavaScript files.
+
+Examples:
+
+* `naruto.js`
+* `assassination_classroom.js`
+* Other individual anime JavaScript files
+* Old individual anime HTML pages that are only used by the old manual-card system
+
+Before deleting anything, check whether each file is still referenced by another active feature.
+
+DO NOT delete files still required by:
+
+* `anime.html`
+* Watch system
+* Video playback
+* Episode pages
+* Authentication
+* Admin/dashboard
+* Any other active feature
+
+If an old individual anime file is no longer needed because the new system uses:
+
+`anime.html?malId=ANIME_ID`
+
+then delete the obsolete files.
+
+Also remove obsolete references from JavaScript maps such as `localPageMap`.
+
+---
+
+## 8. CLEAN UP THE CURRENT JIKAN API CODE
+
+I currently have conflicting versions of Jikan API code.
+
+I also previously encountered Git merge conflict markers such as:
+
+`<<<<<<< HEAD`
+
+`=======`
+
+`>>>>>>>`
+
+Search the entire project and remove ALL Git merge conflict markers.
+
+Do not blindly combine conflicting code.
+
+Choose one clean, reliable implementation.
+
+There must not be multiple functions fighting over the same containers.
+
+For example:
+
+* `animeContainer` should have one owner.
+* `topPicksAPI` should have one owner.
+* `trendingAnimeContainer` should have one owner.
+* `latestEpisodesContainer` should have one owner.
+
+Remove duplicate containers and duplicate IDs where necessary.
+
+---
+
+## 9. FIX THE HTML STRUCTURE
+
+Inspect `index.html` for structural problems.
+
+Look specifically for:
+
+* Duplicate `<header>` elements
+* Duplicate `mobileMenu` IDs
+* Duplicate `topPicksAPI` IDs
+* Duplicate API containers
+* Stray closing tags
+* Stray `</nav>` tags
+* Improperly nested elements
+* Duplicate sections
+* Invalid HTML
+* Buttons incorrectly nested inside clickable links
+* Conflicting script loading
+
+Fix these issues while preserving the existing Danimeverse design.
+
+---
+
+## 10. DO NOT BREAK EXISTING FEATURES
+
+Before modifying or deleting anything, make sure these continue working:
+
+* Authentication
+* User profile
+* Sign in/sign up
+* Watchlist/My List
+* Theme toggle
+* Navigation
+* Hero section
+* Existing genre structure
+* Anime detail page
+* Watch page
+* Episode system
+* Admin/dashboard
+* Search
+
+---
+
+## 11. TEST EVERYTHING BEFORE FINISHING
+
+Actually test the project after making the changes.
+
+Verify:
+
+1. No manually hardcoded anime cards remain on the homepage.
+2. Jikan anime cards load automatically.
+3. Popular anime loads.
+4. Trending/seasonal anime loads.
+5. Latest anime/episodes load.
+6. Homepage search returns real results.
+7. Search result clicking works.
+8. Dashboard search works.
+9. My existing genre structure remains visually unchanged.
+10. My existing genre structure is responsive on mobile, tablet, and desktop.
+11. Genre selection loads the correct anime from Jikan.
+12. Genre switching works without refreshing the page.
+13. Clicking an anime opens `anime.html?malId=...`.
+14. `anime.html` loads the selected anime from Jikan.
+15. There are no JavaScript console errors.
+16. There are no Git merge conflict markers.
+17. There are no duplicate IDs.
+18. The current Danimeverse design is preserved.
+
+IMPORTANT:
+
+Do not simply tell me that the work is complete without checking it.
+
+Actually inspect the files, make the changes, and test the application.
+
+If Jikan API rate limits are causing failures, implement sensible caching, debouncing, request delays, and error handling.
+
+At the end, give me a concise summary of:
+
+* Files modified
+* Files deleted
+* Files created
+* What was fixed
+* Any remaining issues
+
+MOST IMPORTANT:
+KEEP MY EXISTING GENRE DESIGN. ONLY MAKE IT RESPONSIVE AND FUNCTIONAL LIKE A NETFLIX-STYLE GENRE BROWSING EXPERIENCE. DO NOT REDESIGN IT.
