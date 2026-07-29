@@ -1,0 +1,181 @@
+I need you to fix my Danimeverse project carefully. **Do not rewrite the entire project and do not remove unrelated working features. Inspect the existing files first, then make only the necessary changes.**
+
+## 1. REMOVE ALL MANUAL ANIME CARDS FROM HOME PAGE
+
+Open `index.html` and completely remove every manually hard-coded anime card from the anime listing sections.
+
+I do NOT want any manually coded cards for:
+
+* Naruto
+* Attack on Titan
+* Assassination Classroom
+* Jujutsu Kaisen
+* Frieren
+* Witch Hat Atelier
+* Hell's Paradise
+* Mushoku Tensei
+* Oshi no Ko
+* Re:Zero
+* Dr. Stone
+* Fire Force
+* Fate/strange Fake
+* Chainsaw Man
+* or any other manually created anime card.
+
+Search through the ENTIRE `index.html` file and remove ALL hard-coded `<article>` anime cards that are inside the anime listing sections.
+
+The home page should display anime ONLY through JavaScript-generated cards from the Jikan API.
+
+Keep the section headings, styling, layout, hero banner, navigation, authentication UI, and other non-anime content.
+
+The following containers should be the ONLY places where anime cards are dynamically rendered:
+
+* `animeContainer` → Popular / Fan Favorites
+* `topPicksAPI` → Top Picks
+* `trendingAnimeContainer` → Trending Anime
+* `latestEpisodesContainer` → Latest Episodes
+
+Make sure each of these IDs exists ONLY ONCE in `index.html`.
+
+Do NOT leave duplicate containers or duplicate API sections.
+
+Also remove any unused manual-card wrappers that are no longer needed.
+
+---
+
+## 2. FIX THE HOME PAGE SEARCH
+
+The search bar in the home page is currently not working.
+
+Inspect:
+
+* `index.html`
+* `search.js`
+* `api.js`
+* any other JavaScript file responsible for search.
+
+The search input has:
+
+`id="searchInput"`
+
+The search results container has:
+
+`id="searchResults"`
+
+Make the search bar fully functional using the Jikan API.
+
+When a user types an anime name:
+
+1. Listen to the `input` event on `#searchInput`.
+2. Wait briefly before searching to avoid sending an API request for every keystroke.
+3. Search Jikan using:
+   `https://api.jikan.moe/v4/anime?q=QUERY&limit=8&sfw=true`
+4. Display the search results inside `#searchResults`.
+5. Show the anime image, title, score if available, and type/status.
+6. Clicking a search result should open:
+   `anime.html?malId=ANIME_MAL_ID`
+7. Hide the search results when the input is empty.
+8. Hide the search results when the user clicks outside the search area.
+9. Handle Jikan API errors gracefully.
+10. Prevent multiple event listeners from being attached if the script is loaded more than once.
+
+Do not use the old hard-coded anime list as the search database. Search must use the Jikan API.
+
+---
+
+## 3. FIX DASHBOARD SEARCH
+
+The search bar in the admin/dashboard page is also not working.
+
+First inspect the dashboard files and identify:
+
+* the dashboard HTML file
+* the dashboard JavaScript file
+* the search input ID
+* the search results container ID
+
+Do NOT assume the IDs. Inspect the actual files.
+
+Make the dashboard search work correctly.
+
+If the dashboard search is supposed to search anime, connect it to the Jikan API.
+
+If it is supposed to search/filter dashboard data locally, preserve that intended behavior.
+
+Do not break the dashboard's existing functionality.
+
+---
+
+## 4. CHECK JAVASCRIPT FILE LOADING
+
+Inspect all relevant `<script>` tags in:
+
+* `index.html`
+* the dashboard HTML page
+
+Make sure the required JavaScript files are loaded exactly once and in the correct order.
+
+Pay special attention to:
+
+* `search.js`
+* `api.js`
+* authentication scripts
+* Firebase scripts
+* dashboard scripts
+
+Do not load the same JavaScript file twice.
+
+Do not create duplicate event listeners.
+
+---
+
+## 5. FIX ANY GIT MERGE CONFLICTS
+
+Search the entire project for:
+
+`<<<<<<<`
+
+`=======`
+
+`>>>>>>>`
+
+Remove and properly resolve any Git merge conflict markers found in actual source files.
+
+Do NOT leave merge conflict markers inside JavaScript, HTML, CSS, or other source files.
+
+---
+
+## 6. TEST EVERYTHING
+
+After making the changes, test the website.
+
+Confirm that:
+
+### Home page:
+
+* No manually hard-coded anime cards remain.
+* Popular Anime cards come from Jikan API.
+* Top Picks cards come from Jikan API.
+* Trending cards come from Jikan API.
+* Latest Episodes cards come from Jikan API.
+* Search bar works.
+* Search results appear when typing.
+* Clicking a result opens `anime.html?malId=...`.
+* No duplicate anime cards appear.
+* No duplicate IDs exist.
+
+### Dashboard:
+
+* Dashboard search works correctly.
+* Existing dashboard functionality still works.
+* Authentication is not broken.
+
+### General:
+
+* No JavaScript console errors.
+* No failed script loading caused by incorrect file paths.
+* No duplicate script imports.
+* No Git merge conflict markers.
+* Do not modify unrelated pages or features.
+
+Before finishing, tell me exactly which files you modified and briefly explain what you changed in each file.

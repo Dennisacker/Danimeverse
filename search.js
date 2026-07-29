@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     debounceTimer = setTimeout(async () => {
       try {
         const res = await fetch(
-          `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=8&sfw=false`
+          `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=8&sfw=true`
         );
         if (!res.ok) { searchResults.classList.add("hidden"); return; }
         const data = await res.json();
