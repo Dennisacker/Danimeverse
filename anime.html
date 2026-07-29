@@ -1,240 +1,1388 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <link rel="icon" type="image/png" href="https://i.pinimg.com/736x/fc/8d/c0/fc8dc0a1f0db8842d9c58373acd655a8.jpg">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title id="pageTitle">Loading... | Danimeverse</title>
-  <link rel="stylesheet" href="tailwind.min.css">
-  <style>
-    body { background: #050816; color: white; font-family: 'Segoe UI', system-ui, sans-serif; overflow-x: hidden; }
-    .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,0.08); }
-    .hero-overlay { background: linear-gradient(to top, rgba(5,8,22,1) 0%, rgba(5,8,22,0.7) 40%, rgba(5,8,22,0.2) 100%); }
-    .skeleton {
-      background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.4s infinite;
-      border-radius: .75rem;
-    }
-    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-    .ep-card { transition: transform .2s, box-shadow .2s; }
-    .ep-card:hover { transform: translateY(-4px); }
-    .badge { display:inline-block; padding:2px 12px; border-radius:999px; font-size:12px; font-weight:600; }
-    .available { background: rgba(236,72,153,.15); border:1px solid rgba(236,72,153,.4); color:#f472b6; }
-    .unavailable { background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:#64748b; }
-    .watch-pill {
-      display:inline-flex; align-items:center; gap:6px;
-      background: linear-gradient(135deg,#ec4899,#9333ea);
-      color:white; font-size:13px; font-weight:700;
-      padding:8px 18px; border-radius:999px; text-decoration:none;
-      transition: opacity .2s;
-    }
-    .watch-pill:hover { opacity: .85; }
-  </style>
-</head>
-<body>
+  <!DOCTYPE html>
 
-  <!-- HERO -->
-  <section class="relative h-[60vh] overflow-hidden">
-    <img id="heroBg" src="" alt="" class="absolute inset-0 h-full w-full object-cover"
-         onerror="this.style.display='none'"/>
-    <div class="hero-overlay absolute inset-0"></div>
-    <div class="relative z-10 flex h-full items-end">
-      <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-5 pb-10 md:flex-row md:items-end">
-        <img id="poster" src="" alt=""
-             class="w-32 md:w-40 rounded-2xl shadow-2xl border-2 border-white/10"
-             onerror="this.style.display='none'" loading="lazy"/>
-        <div class="flex-1 min-w-0">
-          <p class="mb-2 text-pink-400 font-semibold uppercase tracking-[0.3em] text-sm">Anime Series</p>
-          <h1 id="animeTitle" class="text-4xl md:text-5xl font-black leading-tight">
-            <span class="skeleton inline-block w-64 h-10">&nbsp;</span>
-          </h1>
-          <div id="metaRow" class="mt-3 flex flex-wrap gap-2 items-center text-xs text-slate-400"></div>
-          <div id="genreTags" class="mt-2 flex flex-wrap gap-2"></div>
-        </div>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://i.pinimg.com/736x/fc/8d/c0/fc8dc0a1f0db8842d9c58373acd655a8.jpg"
+    >
+
+    <title id="pageTitle">Loading... | Danimeverse</title>
+
+    <link rel="stylesheet" href="tailwind.min.css">
+
+    <style>
+      body {
+        background: #050816;
+        color: white;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        overflow-x: hidden;
+      }
+
+      .glass {
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(18px);
+        border: 1px solid rgba(255,255,255,0.08);
+      }
+
+      .hero-overlay {
+        background:
+          linear-gradient(
+            to top,
+            rgba(5,8,22,1) 0%,
+            rgba(5,8,22,0.85) 35%,
+            rgba(5,8,22,0.35) 75%,
+            rgba(5,8,22,0.15) 100%
+          );
+      }
+
+      .skeleton {
+        background:
+          linear-gradient(
+            90deg,
+            rgba(255,255,255,0.05) 25%,
+            rgba(255,255,255,0.1) 50%,
+            rgba(255,255,255,0.05) 75%
+          );
+        background-size: 200% 100%;
+        animation: shimmer 1.4s infinite;
+        border-radius: .75rem;
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      .ep-card {
+        transition:
+          transform .2s,
+          box-shadow .2s,
+          border-color .2s;
+      }
+
+      .ep-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(236,72,153,.45);
+        box-shadow: 0 15px 40px rgba(236,72,153,.08);
+      }
+
+      .watch-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        background: linear-gradient(135deg,#ec4899,#9333ea);
+        color: white;
+        font-size: 13px;
+        font-weight: 700;
+        padding: 9px 18px;
+        border-radius: 999px;
+        text-decoration: none;
+        transition:
+          opacity .2s,
+          transform .2s;
+      }
+
+      .watch-pill:hover {
+        opacity: .88;
+        transform: translateY(-1px);
+      }
+
+      .unavailable-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,.06);
+        border: 1px solid rgba(255,255,255,.1);
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 9px 16px;
+        border-radius: 999px;
+      }
+
+      .available-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        color: #f9a8d4;
+        background: rgba(236,72,153,.12);
+        border: 1px solid rgba(236,72,153,.3);
+      }
+
+      .unavailable-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        color: #64748b;
+        background: rgba(255,255,255,.05);
+        border: 1px solid rgba(255,255,255,.08);
+      }
+
+      .back-link {
+        transition: color .2s;
+      }
+
+      .back-link:hover {
+        color: #f472b6;
+      }
+
+      .error-box {
+        background: rgba(239,68,68,.08);
+        border: 1px solid rgba(239,68,68,.2);
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+    <!-- =========================================================
+         HERO
+    ========================================================== -->
+
+    <section class="relative h-[65vh] min-h-[520px] overflow-hidden">
+
+  ```
+  <img
+    id="heroBg"
+    src=""
+    alt=""
+    class="absolute inset-0 h-full w-full object-cover"
+    onerror="this.style.display='none'"
+  >
+
+  <div class="hero-overlay absolute inset-0"></div>
+
+  <div class="relative z-10 flex h-full items-end">
+
+    <div
+      class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-5 pb-10 md:flex-row md:items-end"
+    >
+
+      <!-- POSTER -->
+
+      <div class="flex-shrink-0">
+
+        <img
+          id="poster"
+          src=""
+          alt=""
+          class="w-32 md:w-44 rounded-2xl shadow-2xl border-2 border-white/10 object-cover"
+          onerror="this.style.display='none'"
+          loading="lazy"
+        >
+
       </div>
-    </div>
-  </section>
 
-  <!-- BACK NAV -->
-  <div class="mx-auto max-w-5xl px-5 pt-5">
-    <a href="index.html" class="text-slate-400 hover:text-pink-400 transition text-sm no-underline">← Back to Home</a>
+
+      <!-- INFO -->
+
+      <div class="flex-1 min-w-0">
+
+        <p
+          class="mb-2 text-pink-400 font-semibold uppercase tracking-[0.3em] text-xs md:text-sm"
+        >
+          Anime Series
+        </p>
+
+
+        <h1
+          id="animeTitle"
+          class="text-3xl md:text-5xl font-black leading-tight"
+        >
+
+          <span class="skeleton inline-block w-64 h-10">
+            &nbsp;
+          </span>
+
+        </h1>
+
+
+        <div
+          id="metaRow"
+          class="mt-4 flex flex-wrap gap-2 items-center text-xs text-slate-400"
+        ></div>
+
+
+        <div
+          id="genreTags"
+          class="mt-3 flex flex-wrap gap-2"
+        ></div>
+
+      </div>
+
+    </div>
+
+  </div>
+  ```
+
+    </section>
+
+    <!-- =========================================================
+         NAVIGATION
+    ========================================================== -->
+
+    <div class="mx-auto max-w-6xl px-5 pt-6">
+
+  ```
+  <a
+    href="index.html"
+    class="back-link inline-flex items-center gap-2 text-slate-400 text-sm no-underline"
+  >
+    ← Back to Home
+  </a>
+  ```
+
+    </div>
+
+    <!-- =========================================================
+         SYNOPSIS
+    ========================================================== -->
+
+    <section class="mx-auto max-w-6xl px-5 mt-6">
+
+  ```
+  <div class="glass rounded-2xl p-5 md:p-6">
+
+    <h2
+      class="font-bold text-sm uppercase tracking-wider text-slate-400 mb-3"
+    >
+      Synopsis
+    </h2>
+
+
+    <p
+      id="synopsis"
+      class="text-slate-300 text-sm leading-7"
+    >
+
+      <span class="skeleton inline-block w-full h-4 mb-2">
+        &nbsp;
+      </span>
+
+      <span class="skeleton inline-block w-5/6 h-4 mb-2">
+        &nbsp;
+      </span>
+
+      <span class="skeleton inline-block w-4/6 h-4">
+        &nbsp;
+      </span>
+
+    </p>
+
+  </div>
+  ```
+
+    </section>
+
+    <!-- =========================================================
+         EPISODES
+    ========================================================== -->
+
+    <section class="mx-auto max-w-6xl px-5 mt-8 pb-20">
+
+  ```
+  <div class="flex items-center justify-between mb-5">
+
+    <div>
+
+      <h2 class="text-xl md:text-2xl font-bold">
+        Episodes
+      </h2>
+
+      <p
+        id="episodeSubtitle"
+        class="text-xs text-slate-500 mt-1"
+      >
+        Loading episodes...
+      </p>
+
+    </div>
+
+
+    <span
+      id="epCountBadge"
+      class="text-xs text-slate-500"
+    ></span>
+
   </div>
 
-  <!-- SYNOPSIS -->
-  <section class="mx-auto max-w-5xl px-5 mt-6">
-    <div class="glass rounded-2xl p-5">
-      <h2 class="font-bold text-sm uppercase tracking-wider text-slate-400 mb-3">Synopsis</h2>
-      <p id="synopsis" class="text-slate-300 text-sm leading-7">
-        <span class="skeleton inline-block w-full h-4 mb-2">&nbsp;</span>
-        <span class="skeleton inline-block w-5/6 h-4 mb-2">&nbsp;</span>
-        <span class="skeleton inline-block w-4/6 h-4">&nbsp;</span>
-      </p>
+
+  <!-- EPISODE SKELETON -->
+
+  <div
+    id="epSkeleton"
+    class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+  >
+
+    <div class="skeleton h-36 rounded-2xl"></div>
+    <div class="skeleton h-36 rounded-2xl"></div>
+    <div class="skeleton h-36 rounded-2xl"></div>
+    <div class="skeleton h-36 rounded-2xl"></div>
+    <div class="skeleton h-36 rounded-2xl"></div>
+    <div class="skeleton h-36 rounded-2xl"></div>
+
+  </div>
+
+
+  <!-- EPISODE GRID -->
+
+  <div
+    id="episodeGrid"
+    class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+    style="display:none"
+  ></div>
+
+
+  <!-- EMPTY -->
+
+  <div
+    id="epEmpty"
+    style="display:none"
+    class="glass rounded-2xl p-10 text-center"
+  >
+
+    <div
+      style="font-size:48px;margin-bottom:12px"
+    >
+      🎬
     </div>
-  </section>
 
-  <!-- EPISODES -->
-  <section class="mx-auto max-w-5xl px-5 mt-8 pb-16">
-    <div class="flex items-center justify-between mb-5">
-      <h2 class="text-xl font-bold">Episodes</h2>
-      <span id="epCountBadge" class="text-xs text-slate-500"></span>
+    <h3
+      class="font-semibold text-slate-300 mb-2"
+    >
+      No Episodes Uploaded Yet
+    </h3>
+
+    <p
+      class="text-sm text-slate-500"
+    >
+      Episodes will appear here as they are uploaded.
+    </p>
+
+  </div>
+
+
+  <!-- ERROR -->
+
+  <div
+    id="epError"
+    style="display:none"
+    class="error-box rounded-2xl p-8 text-center"
+  >
+
+    <div
+      style="font-size:42px;margin-bottom:10px"
+    >
+      ⚠️
     </div>
 
-    <!-- skeleton grid -->
-    <div id="epSkeleton" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      ${Array(6).fill(`<div class="skeleton h-32 rounded-2xl"></div>`).join("")}
-    </div>
+    <h3
+      class="font-semibold text-red-300 mb-2"
+    >
+      Could Not Load Episodes
+    </h3>
 
-    <!-- real episodes -->
-    <div id="episodeGrid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" style="display:none"></div>
+    <p
+      id="epErrorMessage"
+      class="text-sm text-red-400/70"
+    >
+      Something went wrong while loading episodes.
+    </p>
 
-    <!-- empty / error -->
-    <div id="epEmpty" style="display:none" class="glass rounded-2xl p-10 text-center">
-      <div style="font-size:48px;margin-bottom:12px">🎬</div>
-      <h3 class="font-semibold text-slate-300 mb-2">No Episodes Uploaded Yet</h3>
-      <p class="text-sm text-slate-500">Episodes will appear here as they are uploaded.</p>
-    </div>
-  </section>
+  </div>
+  ```
 
-<script type="module">
-  import { db }  from "./firebase-config.js";
-  import {
-    doc, getDoc, setDoc, collection, getDocs
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    </section>
 
-  const JIKAN = "https://api.jikan.moe/v4";
+    <!-- =========================================================
+         FIREBASE + JIKAN
+    ========================================================== -->
 
-  /* ── URL PARAM ── */
-  const params = new URLSearchParams(location.search);
-  const malId  = params.get("malId");
+    <script type="module">
 
-  if (!malId) { location.href = "index.html"; }
+      import { db } from "./firebase-config.js";
 
-  /* ── FETCH WITH RETRY (handles Jikan rate-limiting) ── */
-  async function jikanFetch(url, retries = 3) {
-    for (let i = 0; i < retries; i++) {
-      try {
-        const res = await fetch(url);
-        if (res.status === 429) {
-          await new Promise(r => setTimeout(r, 1200 * (i + 1)));
-          continue;
+      import {
+        doc,
+        getDoc,
+        setDoc,
+        collection,
+        getDocs
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+      const JIKAN = "https://api.jikan.moe/v4";
+
+
+      /* =========================================================
+         URL PARAMETER
+      ========================================================== */
+
+      const params = new URLSearchParams(
+        window.location.search
+      );
+
+      const malId = params.get("malId");
+
+
+      if (!malId) {
+
+        window.location.href = "index.html";
+
+      }
+
+
+      /* =========================================================
+         ELEMENTS
+      ========================================================== */
+
+      const heroBg =
+        document.getElementById("heroBg");
+
+      const poster =
+        document.getElementById("poster");
+
+      const animeTitle =
+        document.getElementById("animeTitle");
+
+      const pageTitle =
+        document.getElementById("pageTitle");
+
+      const synopsis =
+        document.getElementById("synopsis");
+
+      const metaRow =
+        document.getElementById("metaRow");
+
+      const genreTags =
+        document.getElementById("genreTags");
+
+      const episodeGrid =
+        document.getElementById("episodeGrid");
+
+      const epSkeleton =
+        document.getElementById("epSkeleton");
+
+      const epEmpty =
+        document.getElementById("epEmpty");
+
+      const epError =
+        document.getElementById("epError");
+
+      const epErrorMessage =
+        document.getElementById("epErrorMessage");
+
+      const epCountBadge =
+        document.getElementById("epCountBadge");
+
+      const episodeSubtitle =
+        document.getElementById("episodeSubtitle");
+
+
+      /* =========================================================
+         JIKAN FETCH
+      ========================================================== */
+
+      async function jikanFetch(
+        url,
+        retries = 3
+      ) {
+
+        for (
+          let i = 0;
+          i < retries;
+          i++
+        ) {
+
+          try {
+
+            const response =
+              await fetch(url);
+
+
+            if (
+              response.status === 429
+            ) {
+
+              await new Promise(
+                resolve =>
+                  setTimeout(
+                    resolve,
+                    1200 * (i + 1)
+                  )
+              );
+
+              continue;
+
+            }
+
+
+            if (!response.ok) {
+
+              throw new Error(
+                `Jikan HTTP ${response.status}`
+              );
+
+            }
+
+
+            return await response.json();
+
+          } catch (error) {
+
+            if (
+              i === retries - 1
+            ) {
+
+              throw error;
+
+            }
+
+
+            await new Promise(
+              resolve =>
+                setTimeout(
+                  resolve,
+                  700
+                )
+            );
+
+          }
+
         }
-        if (!res.ok) throw new Error(res.status);
-        return await res.json();
-      } catch (e) {
-        if (i === retries - 1) throw e;
-        await new Promise(r => setTimeout(r, 600));
-      }
-    }
-  }
 
-  /* ── LOAD ANIME METADATA ── */
-  async function loadAnimeInfo() {
-    try {
-      const data = await jikanFetch(`${JIKAN}/anime/${malId}`);
-      const a    = data.data;
-
-      const title    = a.title_english || a.title;
-      const image    = a.images?.jpg?.large_image_url || a.images?.jpg?.image_url || "";
-      const synopsis = a.synopsis || "No synopsis available.";
-      const genres   = a.genres?.map(g => g.name) || [];
-      const year     = a.year || a.aired?.prop?.from?.year || "";
-      const type     = a.type || "";
-      const status   = a.status || "";
-      const epCount  = a.episodes;
-
-      // Update page
-      document.title = `${title} | Danimeverse`;
-      document.getElementById("pageTitle").textContent = `${title} | Danimeverse`;
-      document.getElementById("heroBg").src  = image;
-      document.getElementById("poster").src  = image;
-      document.getElementById("animeTitle").textContent = title;
-      document.getElementById("synopsis").textContent   = synopsis;
-
-      const metaRow = document.getElementById("metaRow");
-      metaRow.innerHTML = [
-        year  ? `<span>${year}</span>` : "",
-        type  ? `<span class="px-2 py-0.5 rounded-full bg-white/10">${type}</span>` : "",
-        status? `<span class="px-2 py-0.5 rounded-full bg-white/10">${status}</span>` : "",
-        epCount ? `<span>${epCount} eps</span>` : "",
-      ].join("");
-
-      document.getElementById("genreTags").innerHTML = genres
-        .slice(0, 5)
-        .map(g => `<span class="px-3 py-1 rounded-full text-xs bg-indigo-700/60 border border-indigo-500/40 text-indigo-200">${g}</span>`)
-        .join("");
-
-      // Cache anime doc in Firestore (background, no await needed)
-      setDoc(doc(db, "animes", String(malId)), {
-        malId: parseInt(malId),
-        title, image, synopsis,
-        type, status, year: year || null,
-        genres,
-        updatedAt: Date.now()
-      }, { merge: true }).catch(() => {});
-
-    } catch (err) {
-      console.error("Jikan metadata error:", err);
-      document.getElementById("animeTitle").textContent = `Anime #${malId}`;
-      document.getElementById("synopsis").textContent   = "Could not load anime information.";
-    }
-  }
-
-  /* ── LOAD UPLOADED EPISODES FROM FIRESTORE ── */
-  async function loadEpisodes() {
-    document.getElementById("epSkeleton").style.display   = "grid";
-    document.getElementById("episodeGrid").style.display  = "none";
-    document.getElementById("epEmpty").style.display      = "none";
-
-    try {
-      const snap = await getDocs(collection(db, "animes", String(malId), "episodes"));
-      const episodes = [];
-      snap.forEach(d => episodes.push(d.data()));
-      episodes.sort((a, b) => a.episode - b.episode);
-
-      document.getElementById("epSkeleton").style.display = "none";
-
-      if (!episodes.length) {
-        document.getElementById("epEmpty").style.display = "block";
-        document.getElementById("epCountBadge").textContent = "No episodes uploaded yet";
-        return;
       }
 
-      document.getElementById("epCountBadge").textContent =
-        `${episodes.length} episode${episodes.length !== 1 ? "s" : ""} available`;
 
-      const grid = document.getElementById("episodeGrid");
-      grid.style.display = "grid";
+      /* =========================================================
+         LOAD ANIME INFORMATION
+      ========================================================== */
 
-      grid.innerHTML = episodes.map(ep => {
-        const hasVideo = !!(ep.febboxUrl || ep.video);
-        return `
-          <div class="glass ep-card rounded-2xl p-4 flex flex-col gap-3">
-            <div>
-              <p class="text-xs text-pink-400 font-semibold uppercase tracking-wider mb-1">Episode ${ep.episode}</p>
-              <h3 class="font-semibold text-sm leading-snug text-white">
-                ${ep.title || "Episode " + ep.episode}
-              </h3>
-            </div>
-            <div class="mt-auto">
-              ${hasVideo
-                ? `<a href="watch.html?malId=${malId}&ep=${ep.episode}" class="watch-pill">▶ Watch</a>`
-                : `<span class="badge unavailable">Coming Soon</span>`
+      async function loadAnimeInfo() {
+
+        try {
+
+          const result =
+          await jikanFetch(
+            `${JIKAN}/anime/${malId}`
+          );
+
+          const a =
+            result.data;
+
+
+          if (!a) {
+
+            throw new Error(
+              "Anime not found"
+            );
+
+          }
+
+
+          const title =
+            a.title_english ||
+            a.title ||
+            `Anime #${malId}`;
+
+
+          const image =
+            a.images?.jpg?.large_image_url ||
+            a.images?.jpg?.image_url ||
+            "";
+
+
+          const synopsisText =
+            a.synopsis ||
+            "No synopsis available.";
+
+
+          const genres =
+            a.genres?.map(
+              genre =>
+                genre.name
+            ) ||
+            [];
+
+
+          const year =
+            a.aired?.prop?.from?.year ||
+            a.year ||
+            "";
+
+
+          const type =
+            a.type ||
+            "";
+
+
+          const status =
+            a.status ||
+            "";
+
+
+          const epCount =
+            a.episodes ||
+            null;
+
+
+          /* =====================================================
+             UPDATE PAGE
+          ====================================================== */
+
+          document.title =
+            `${title} | Danimeverse`;
+
+
+          pageTitle.textContent =
+            `${title} | Danimeverse`;
+
+
+          heroBg.src =
+            image;
+
+
+          poster.src =
+            image;
+
+
+          animeTitle.textContent =
+            title;
+
+
+          synopsis.textContent =
+            synopsisText;
+
+
+          metaRow.innerHTML = [
+
+            year
+              ? `<span>${year}</span>`
+              : "",
+
+            type
+              ? `
+                <span class="px-2 py-0.5 rounded-full bg-white/10">
+                  ${type}
+                </span>
+              `
+              : "",
+
+            status
+              ? `
+                <span class="px-2 py-0.5 rounded-full bg-white/10">
+                  ${status}
+                </span>
+              `
+              : "",
+
+            epCount
+              ? `<span>${epCount} episodes</span>`
+              : ""
+
+          ].join("");
+
+
+          genreTags.innerHTML =
+            genres
+              .slice(0, 6)
+              .map(
+                genre => `
+                  <span
+                    class="px-3 py-1 rounded-full text-xs
+                    bg-indigo-700/60
+                    border border-indigo-500/40
+                    text-indigo-200"
+                  >
+                    ${genre}
+                  </span>
+                `
+              )
+              .join("");
+
+
+          /* =====================================================
+             CACHE ANIME METADATA
+          ====================================================== */
+
+          await setDoc(
+            doc(
+              db,
+              "animes",
+              String(malId)
+            ),
+            {
+
+              malId:
+                parseInt(malId),
+
+              title,
+
+              image,
+
+              synopsis:
+                synopsisText,
+
+              type,
+
+              status,
+
+              year:
+                year || null,
+
+              genres,
+
+              totalEps:
+                epCount || null,
+
+              updatedAt:
+                Date.now()
+
+            },
+            {
+              merge: true
+            }
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "Jikan anime error:",
+            error
+          );
+
+
+          animeTitle.textContent =
+            `Anime #${malId}`;
+
+
+          synopsis.textContent =
+            "Could not load anime information.";
+
+        }
+
+      }
+
+
+      /* =========================================================
+         LOAD NEW FIRESTORE EPISODES
+
+         Structure:
+         animes
+            └── MAL ID
+                 └── episodes
+                      └── episode number
+      ========================================================== */
+
+      async function loadNewEpisodes() {
+
+        const episodes = [];
+
+
+        try {
+
+          const snapshot =
+            await getDocs(
+              collection(
+                db,
+                "animes",
+                String(malId),
+                "episodes"
+              )
+            );
+
+
+          snapshot.forEach(
+            episodeDoc => {
+
+              const data =
+                episodeDoc.data();
+
+
+              const episodeNumber =
+                Number(
+                  data.episode
+                );
+
+
+              if (
+                !episodeNumber ||
+                episodeNumber < 1
+              ) {
+
+                return;
+
               }
-            </div>
-          </div>`;
-      }).join("");
 
-    } catch (err) {
-      console.error("Firestore episodes error:", err);
-      document.getElementById("epSkeleton").style.display = "none";
-      document.getElementById("epEmpty").style.display    = "block";
-    }
-  }
 
-  /* ── INIT ── */
-  loadAnimeInfo();
-  loadEpisodes();
-</script>
-</body>
-</html>
+              episodes.push({
+
+                episode:
+                  episodeNumber,
+
+                title:
+                  data.title ||
+                  `Episode ${episodeNumber}`,
+
+                febboxUrl:
+                  data.febboxUrl ||
+                  data.video ||
+                  "",
+
+                source:
+                  "new"
+
+              });
+
+            }
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "New Firestore episodes error:",
+            error
+          );
+
+        }
+
+
+        return episodes;
+
+      }
+
+
+      /* =========================================================
+         LOAD OLD / LEGACY EPISODES
+
+         Old structure:
+         videos
+
+         This supports records containing:
+         - malId
+         - animeMalId
+         - animeId
+         - animeSlug
+         - anime
+      ========================================================== */
+
+      async function loadLegacyEpisodes() {
+
+        const episodes = [];
+
+
+        try {
+
+          const snapshot =
+            await getDocs(
+              collection(
+                db,
+                "videos"
+              )
+            );
+
+
+          snapshot.forEach(
+            episodeDoc => {
+
+              const data =
+                episodeDoc.data();
+
+
+              const recordMalId =
+                data.malId ??
+                data.animeMalId ??
+                data.animeId;
+
+
+              const matchesMalId =
+                recordMalId &&
+                String(recordMalId) ===
+                String(malId);
+
+
+              if (
+                !matchesMalId
+              ) {
+
+                return;
+
+              }
+
+
+              const episodeNumber =
+                Number(
+                  data.episode
+                );
+
+
+              if (
+                !episodeNumber ||
+                episodeNumber < 1
+              ) {
+
+                return;
+
+              }
+
+
+              episodes.push({
+
+                episode:
+                  episodeNumber,
+
+                title:
+                  data.title ||
+                  `Episode ${episodeNumber}`,
+
+                febboxUrl:
+                  data.febboxUrl ||
+                  data.video ||
+                  "",
+
+                source:
+                  "legacy"
+
+              });
+
+            }
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "Legacy Firestore episodes error:",
+            error
+          );
+
+        }
+
+
+        return episodes;
+
+      }
+
+
+      /* =========================================================
+         COMBINE EPISODES
+
+         New structure takes priority.
+         If Episode 1 exists in both old and new,
+         the new record wins.
+      ========================================================== */
+
+      function combineEpisodes(
+        newEpisodes,
+        legacyEpisodes
+      ) {
+
+        const map =
+          new Map();
+
+
+        /* OLD FIRST */
+
+        legacyEpisodes.forEach(
+          episode => {
+
+            map.set(
+              episode.episode,
+              episode
+            );
+
+          }
+        );
+
+
+        /* NEW OVERRIDES OLD */
+
+        newEpisodes.forEach(
+          episode => {
+
+            map.set(
+              episode.episode,
+              episode
+            );
+
+          }
+        );
+
+
+        return Array.from(
+          map.values()
+        ).sort(
+          (a, b) =>
+            a.episode -
+            b.episode
+        );
+
+      }
+
+
+      /* =========================================================
+         RENDER EPISODES
+      ========================================================== */
+
+      function renderEpisodes(
+        episodes
+      ) {
+
+        epSkeleton.style.display =
+          "none";
+
+
+        episodeGrid.style.display =
+          "grid";
+
+
+        epEmpty.style.display =
+          "none";
+
+
+        epError.style.display =
+          "none";
+
+
+        if (
+          !episodes.length
+        ) {
+
+          episodeGrid.style.display =
+            "none";
+
+
+          epEmpty.style.display =
+            "block";
+
+
+          epCountBadge.textContent =
+            "No episodes";
+
+
+          episodeSubtitle.textContent =
+            "No episodes have been uploaded yet.";
+
+
+          return;
+
+        }
+
+
+        const availableCount =
+          episodes.filter(
+            episode =>
+              !!episode.febboxUrl
+          ).length;
+
+
+        epCountBadge.textContent =
+          `${availableCount} available`;
+
+
+        episodeSubtitle.textContent =
+          `${episodes.length} episode${episodes.length !== 1 ? "s" : ""} listed`;
+
+
+        episodeGrid.innerHTML =
+          episodes
+            .map(
+              episode => {
+
+                const hasVideo =
+                  !!episode.febboxUrl;
+
+
+                const watchUrl =
+                  `watch.html?malId=${encodeURIComponent(malId)}&ep=${episode.episode}`;
+
+
+                return `
+
+                  <div
+                    class="glass ep-card rounded-2xl p-5 flex flex-col gap-4"
+                  >
+
+                    <!-- TOP -->
+
+                    <div
+                      class="flex items-start justify-between gap-3"
+                    >
+
+                      <div>
+
+                        <p
+                          class="text-xs text-pink-400 font-semibold uppercase tracking-wider mb-1"
+                        >
+                          Episode ${episode.episode}
+                        </p>
+
+
+                        <h3
+                          class="font-semibold text-sm leading-snug text-white"
+                        >
+                          ${escapeHtml(
+                            episode.title ||
+                            `Episode ${episode.episode}`
+                          )}
+                        </h3>
+
+                      </div>
+
+
+                      ${
+                        hasVideo
+
+                          ? `
+                            <span class="available-badge">
+                              AVAILABLE
+                            </span>
+                          `
+
+                          : `
+                            <span class="unavailable-badge">
+                              COMING SOON
+                            </span>
+                          `
+                      }
+
+                    </div>
+
+
+                    <!-- BOTTOM -->
+
+                    <div
+                      class="mt-auto pt-2"
+                    >
+
+                      ${
+                        hasVideo
+
+                          ? `
+                            <a
+                              href="${watchUrl}"
+                              class="watch-pill"
+                            >
+                              ▶ Watch Episode
+                            </a>
+                          `
+
+                          : `
+                            <span
+                              class="unavailable-pill"
+                            >
+                              🔒 Not Available Yet
+                            </span>
+                          `
+                      }
+
+                    </div>
+
+                  </div>
+
+                `;
+
+              }
+            )
+            .join("");
+
+      }
+
+
+      /* =========================================================
+         ESCAPE HTML
+
+         Prevents anime titles / episode titles
+         from breaking the page HTML.
+      ========================================================== */
+
+      function escapeHtml(
+        value
+      ) {
+
+        return String(value)
+          .replace(
+            /&/g,
+            "&amp;"
+          )
+          .replace(
+            /</g,
+            "&lt;"
+          )
+          .replace(
+            />/g,
+            "&gt;"
+          )
+          .replace(
+            /"/g,
+            "&quot;"
+          )
+          .replace(
+            /'/g,
+            "&#039;"
+          );
+
+      }
+
+
+      /* =========================================================
+         LOAD ALL EPISODES
+      ========================================================== */
+
+      async function loadEpisodes() {
+
+        epSkeleton.style.display =
+          "grid";
+
+
+        episodeGrid.style.display =
+          "none";
+
+
+        epEmpty.style.display =
+          "none";
+
+
+        epError.style.display =
+          "none";
+
+
+        try {
+
+          /*
+            Load both systems at the same time.
+
+            New:
+            animes/{malId}/episodes
+
+            Old:
+            videos
+          */
+
+          const [
+            newEpisodes,
+            legacyEpisodes
+          ] = await Promise.all([
+
+            loadNewEpisodes(),
+
+            loadLegacyEpisodes()
+
+          ]);
+
+
+          console.log(
+            "New episodes:",
+            newEpisodes
+          );
+
+
+          console.log(
+            "Legacy episodes:",
+            legacyEpisodes
+          );
+
+
+          const allEpisodes =
+            combineEpisodes(
+              newEpisodes,
+              legacyEpisodes
+            );
+
+
+          console.log(
+            "Combined episodes:",
+            allEpisodes
+          );
+
+
+          renderEpisodes(
+            allEpisodes
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "Episode loading error:",
+            error
+          );
+
+
+          epSkeleton.style.display =
+            "none";
+
+
+          episodeGrid.style.display =
+            "none";
+
+
+          epEmpty.style.display =
+            "none";
+
+
+          epError.style.display =
+            "block";
+
+
+          epErrorMessage.textContent =
+            error.message ||
+            "Could not load episodes.";
+
+        }
+
+      }
+
+
+      /* =========================================================
+         START
+      ========================================================== */
+
+      async function init() {
+
+        /*
+          Load anime info and episodes
+          simultaneously.
+        */
+
+        await Promise.all([
+
+          loadAnimeInfo(),
+
+          loadEpisodes()
+
+        ]);
+
+
+        console.log(
+          "🎬 Danimeverse anime page loaded:",
+          malId
+        );
+
+      }
+
+
+      init();
+
+    </script>
+
+  </body>
+  </html>

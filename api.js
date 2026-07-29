@@ -387,11 +387,7 @@ function createAnimeCard(
     "Anime";
 
 
-  const localPage =
-    getAnimePage(
-      anime
-    );
-
+  const malId = anime.mal_id;
 
   const card =
     document.createElement(
@@ -669,22 +665,21 @@ function createAnimeCard(
     "click",
     function () {
 
-      if (localPage) {
+      if (malId) {
 
         window.location.href =
-          localPage;
+          `anime.html?malId=${malId}`;
 
       } else {
 
         alert(
-          `${title} has not been added to the Danimeverse watch system yet.`
+          `${title} could not be found in the Danimeverse system.`
         );
 
       }
 
     }
   );
-
 
   /* =========================================================
      DOWNLOAD

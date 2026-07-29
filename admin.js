@@ -309,14 +309,14 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
 
   // 1. Upsert anime document (metadata cache)
   await setDoc(doc(db, "animes", malIdStr), {
-    malId:    selectedAnime.malId,
-    title:    selectedAnime.title,
-    image:    selectedAnime.image,
-    type:     selectedAnime.type,
-    year:     selectedAnime.year || null,
+    malId:     selectedAnime.malId,
+    title:     selectedAnime.title,
+    image:     selectedAnime.image,
+    type:      selectedAnime.type,
+    year:      selectedAnime.year || null,
+    totalEps:  selectedAnime.totalEps || null,
     updatedAt: now
   }, { merge: true });
-
   // 2. Save episode to subcollection
   const isNew = !uploadedEpNums.has(epNum);
   await setDoc(
