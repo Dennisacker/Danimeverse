@@ -712,7 +712,16 @@
                   </span>
                 `
               )
-              .join("");
+              .join("");        } catch (error) {
+
+              console.error(
+                "Anime info error:",
+                error
+              );
+
+            }
+
+          }
 
 
         
@@ -1291,33 +1300,20 @@
          START
       ========================================================== */
 
-      async function init() {
+     async function init() {
 
-        /*
-          Load anime info and episodes
-          simultaneously.
-        */
+  await Promise.all([
+    loadAnimeInfo(),
+    loadEpisodes()
+  ]);
 
-        await Promise.all([
+  console.log(
+    "🎬 Danimeverse anime page loaded:",
+    malId
+  );
 
-          loadAnimeInfo(),
+}
 
-          loadEpisodes()
+init();
 
-        ]);
-
-
-        console.log(
-          "🎬 Danimeverse anime page loaded:",
-          malId
-        );
-
-      }
-
-
-      init();
-
-    </script>
-
-  </body>
-  </html>
+</script>
