@@ -421,11 +421,9 @@
       import {
         doc,
         getDoc,
-        setDoc,
         collection,
         getDocs
       } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 
       const JIKAN = "https://api.jikan.moe/v4";
 
@@ -717,70 +715,7 @@
               .join("");
 
 
-          /* =====================================================
-             CACHE ANIME METADATA
-          ====================================================== */
-
-          await setDoc(
-            doc(
-              db,
-              "animes",
-              String(malId)
-            ),
-            {
-
-              malId:
-                parseInt(malId),
-
-              title,
-
-              image,
-
-              synopsis:
-                synopsisText,
-
-              type,
-
-              status,
-
-              year:
-                year || null,
-
-              genres,
-
-              totalEps:
-                epCount || null,
-
-              updatedAt:
-                Date.now()
-
-            },
-            {
-              merge: true
-            }
-          );
-
-
-        } catch (error) {
-
-          console.error(
-            "Jikan anime error:",
-            error
-          );
-
-
-          animeTitle.textContent =
-            `Anime #${malId}`;
-
-
-          synopsis.textContent =
-            "Could not load anime information.";
-
-        }
-
-      }
-
-
+        
       /* =========================================================
          LOAD NEW FIRESTORE EPISODES
 

@@ -295,77 +295,192 @@ function loadEpisodeIntoForm(epNum, epTitle) {
    UPLOAD EPISODE
 ═══════════════════════════════════════════════════════ */
 document.getElementById("uploadBtn").addEventListener("click", async () => {
-  if (!selectedAnime) { toast("Select an anime first.", "error"); return; }
+  if (!selectedAnime) {
+    toast("Select an anime first.", "error");
+    return;
+  }
 
-  const epNum  = parseInt(document.getElementById("epNumber").value);
-  const title  = document.getElementById("epTitle").value.trim();
+  const epNum = parseInt(document.getElementById("epNumber").value);
+  const title = document.getElementById("epTitle").value.trim();
   const febbox = document.getElementById("epVideo").value.trim();
 
-  if (!epNum || epNum < 1) { toast("Enter a valid episode number.", "error"); return; }
-  if (!febbox)             { toast("Paste the Febbox URL.", "error"); return; }
+  if (!epNum || epNum < 1) {
+    toast("Enter a valid episode number.", "error");
+    return;
+  }
 
-  const malIdStr = String(selectedAnime.malId);
-  const now = Date.now();
+  if (!febbox) {
+    toast("Paste the Febbox URL.", "error");
+    return;
+  }
 
-  // 1. Upsert anime document (metadata cache)
-  await setDoc(doc(db, "animes", malIdStr), {
-    malId:     selectedAnime.malId,
-    title:     selectedAnime.title,
-    image:     selectedAnime.image,
-    type:      selectedAnime.type,
-    year:      selectedAnime.year || null,
-    totalEps:  selectedAnime.totalEps || null,
-    updatedAt: now
-  }, { merge: true });
-  // 2. Save episode to subcollection
-  const isNew = !uploadedEpNums.has(epNum);
-  await setDoc(
-    doc(db, "animes", malIdStr, "episodes", String(epNum)),
-    {
-      episode:   epNum,
-      title:     title || `Episode ${epNum}`,
+  try {
+    const malIdStr = String(selectedAnime.malId);
+    const now = Date.now();
+
+    // ============================================
+    // 1. SAVE / UPDATE ANIME INFORMATION
+    // ============================================
+
+    await setDoc(
+      doc(db, "animes", malIdStr),
+      {
+        malId: selectedAnime.malId,
+        title: selectedAnime.title,
+        image: selectedAnime.image,
+        type: selectedAnime.type,
+        year: selectedAnime.year || null,
+        totalEps: selectedAnime.totalEps || null,
+        updatedAt: now
+      },
+      { merge: true }
+    );
+
+
+    // ============================================
+    // 2. SAVE EPISODE
+    // ============================================
+
+    const episodeRef = doc(
+      db,
+      "animes",
+      malIdStr,
+      "episodes",
+      String(epNum)
+    );
+
+    const existingEpisode = await getDoc(episodeRef);
+
+    const episodeData = {
+      episode: epNum,
+      title: title || `Episode ${epNum}`,
       febboxUrl: febbox,
-      createdAt: isNew ? now : undefined,
       updatedAt: now
-    },
-    { merge: true }
-  );
+    };
 
-  // 3. Write/update freshEpisodes entry for homepage
-  await setDoc(doc(db, "freshEpisodes", `${malIdStr}_${epNum}`), {
-    malId:       selectedAnime.malId,
-    episode:     epNum,
-    title:       title || `Episode ${epNum}`,
-    animeName:   selectedAnime.title,
-    animeImage:  selectedAnime.image,
-    febboxUrl:   febbox,
-    createdAt:   isNew ? now : (await getDoc(doc(db, "freshEpisodes", `${malIdStr}_${epNum}`))).data()?.createdAt || now,
-    updatedAt:   now
-  });
+    // Only add createdAt when creating a NEW episode
+    if (!existingEpisode.exists()) {
+      episodeData.createdAt = now;
+    }
 
-  // 4. Save URL to history
-  saveUrlHistory(febbox);
+    await setDoc(
+      episodeRef,
+      episodeData,
+      { merge: true }
+    );
 
-  toast(`✅ Episode ${epNum} of "${selectedAnime.title}" ${isNew ? "uploaded" : "updated"}!`);
 
-  // Show success banner
-  const banner = document.getElementById("successBanner");
-  banner.style.display = "flex";
-  setTimeout(() => { banner.style.display = "none"; }, 3000);
+    // ============================================
+    // 3. SAVE TO FRESH EPISODES
+    // ============================================
 
-  // Clear video + title (bump episode for next upload)
-  document.getElementById("epTitle").value = "";
-  document.getElementById("epVideo").value = "";
-  formEp = null;
+    const freshEpisodeRef = doc(
+      db,
+      "freshEpisodes",
+      `${malIdStr}_${epNum}`
+    );
 
-  // Refresh
-  await loadUploadedEpisodes();
-  // Re-render Jikan list to update ✔ badges
-  await loadJikanEpisodes();
-  loadStats();
-  loadRecentUploads();
+    const existingFreshEpisode =
+      await getDoc(freshEpisodeRef);
+
+    const freshEpisodeData = {
+      malId: selectedAnime.malId,
+      episode: epNum,
+      title: title || `Episode ${epNum}`,
+      animeName: selectedAnime.title,
+      animeImage: selectedAnime.image,
+      febboxUrl: febbox,
+      updatedAt: now
+    };
+
+    if (
+      existingFreshEpisode.exists() &&
+      existingFreshEpisode.data().createdAt
+    ) {
+      freshEpisodeData.createdAt =
+        existingFreshEpisode.data().createdAt;
+    } else {
+      freshEpisodeData.createdAt = now;
+    }
+
+    await setDoc(
+      freshEpisodeRef,
+      freshEpisodeData,
+      { merge: true }
+    );
+
+
+    // ============================================
+    // 4. SAVE URL TO HISTORY
+    // ============================================
+
+    saveUrlHistory(febbox);
+
+
+    // ============================================
+    // 5. SUCCESS MESSAGE
+    // ============================================
+
+    const isNew =
+      !uploadedEpNums.has(epNum);
+
+    toast(
+      `✅ Episode ${epNum} of "${selectedAnime.title}" ${
+        isNew ? "uploaded" : "updated"
+      }!`
+    );
+
+
+    // ============================================
+    // 6. SUCCESS BANNER
+    // ============================================
+
+    const banner =
+      document.getElementById("successBanner");
+
+    if (banner) {
+      banner.style.display = "flex";
+
+      setTimeout(() => {
+        banner.style.display = "none";
+      }, 3000);
+    }
+
+
+    // ============================================
+    // 7. CLEAR FORM
+    // ============================================
+
+    document.getElementById("epTitle").value = "";
+    document.getElementById("epVideo").value = "";
+
+    formEp = null;
+
+
+    // ============================================
+    // 8. REFRESH EVERYTHING
+    // ============================================
+
+    await loadUploadedEpisodes();
+    await loadJikanEpisodes();
+
+    loadStats();
+    loadRecentUploads();
+
+  } catch (error) {
+
+    console.error(
+      "UPLOAD EPISODE ERROR:",
+      error
+    );
+
+    toast(
+      `Upload failed: ${error.message}`,
+      "error"
+    );
+
+  }
 });
-
 /* ═══════════════════════════════════════════════════════
    CLEAR BUTTON
 ═══════════════════════════════════════════════════════ */
