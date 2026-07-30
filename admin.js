@@ -69,48 +69,6 @@ onAuthStateChanged(auth, function (user) {
   }
 
 });
-/* =========================================================
-   ADMIN AUTHENTICATION
-========================================================= */
-
-const ADMIN_EMAIL =
-  "dennisackerman246@gmail.com";
-
-const loginScreen =
-  document.getElementById(
-    "loginScreen"
-  );
-
-const adminDashboard =
-  document.getElementById(
-    "adminDashboard"
-  );
-
-const loginForm =
-  document.getElementById(
-    "loginForm"
-  );
-
-const loginEmail =
-  document.getElementById(
-    "loginEmail"
-  );
-
-const loginPassword =
-  document.getElementById(
-    "loginPassword"
-  );
-
-const loginBtn =
-  document.getElementById(
-    "loginBtn"
-  );
-
-const loginError =
-  document.getElementById(
-    "loginError"
-  );
-
 
 /* =========================================================
    LOGIN
