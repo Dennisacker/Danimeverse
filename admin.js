@@ -1,6 +1,6 @@
 console.log("🎬 ADMIN JS LOADED");
 
-import { db } from "./firebase-config.js";
+import { db, auth } from "./firebase-config.js";
 
 import {
   doc,
@@ -14,6 +14,378 @@ import {
   limit
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+/* =========================================================
+   ADMIN AUTHENTICATION CHECK
+========================================================= */
+
+const ADMIN_EMAIL = "dennisackerman246@gmail.com";
+
+const adminDashboard =
+  document.querySelector(".main");
+
+onAuthStateChanged(auth, function (user) {
+
+  if (!user) {
+
+    console.log("🔒 NOT LOGGED IN");
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+  if (user.email !== ADMIN_EMAIL) {
+
+    console.log(
+      "⛔ UNAUTHORIZED USER:",
+      user.email
+    );
+
+    signOut(auth);
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+  console.log(
+    "✅ ADMIN AUTHENTICATED:",
+    user.email
+  );
+
+  if (adminDashboard) {
+
+    adminDashboard.style.display =
+      "flex";
+
+  }
+
+});
+/* =========================================================
+   ADMIN AUTHENTICATION
+========================================================= */
+
+const ADMIN_EMAIL =
+  "dennisackerman246@gmail.com";
+
+const loginScreen =
+  document.getElementById(
+    "loginScreen"
+  );
+
+const adminDashboard =
+  document.getElementById(
+    "adminDashboard"
+  );
+
+const loginForm =
+  document.getElementById(
+    "loginForm"
+  );
+
+const loginEmail =
+  document.getElementById(
+    "loginEmail"
+  );
+
+const loginPassword =
+  document.getElementById(
+    "loginPassword"
+  );
+
+const loginBtn =
+  document.getElementById(
+    "loginBtn"
+  );
+
+const loginError =
+  document.getElementById(
+    "loginError"
+  );
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+if (loginForm) {
+
+  loginForm.addEventListener(
+    "submit",
+    async function (event) {
+
+      event.preventDefault();
+
+      const email =
+        loginEmail.value.trim();
+
+      const password =
+        loginPassword.value;
+
+
+      if (!email || !password) {
+
+        showLoginError(
+          "Please enter your email and password."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        loginBtn.disabled =
+          true;
+
+        loginBtn.textContent =
+          "⏳ Signing in...";
+
+
+        const userCredential =
+          await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+
+
+        const user =
+          userCredential.user;
+        /* =========================================================
+           LOGOUT
+        ========================================================= */
+
+        const logoutBtn =
+          document.getElementById(
+            "logoutBtn"
+          );
+
+
+        if (logoutBtn) {
+
+          logoutBtn.addEventListener(
+            "click",
+            async function () {
+
+              try {
+
+                await signOut(auth);
+
+                console.log(
+                  "👋 ADMIN LOGGED OUT"
+                );
+
+              } catch (error) {
+
+                console.error(
+                  "❌ LOGOUT ERROR:",
+                  error
+                );
+
+                showToast(
+                  "Failed to logout.",
+                  "error"
+                );
+
+              }
+
+            }
+          );
+
+        }
+
+        /* =================================================
+           CHECK ADMIN EMAIL
+        ================================================= */
+
+        if (
+          user.email?.toLowerCase() !==
+          ADMIN_EMAIL.toLowerCase()
+        ) {
+
+          await signOut(auth);
+
+          showLoginError(
+            "Access denied. This account is not an admin."
+          );
+
+          return;
+
+        }
+
+
+        console.log(
+          "✅ ADMIN LOGIN SUCCESS:",
+          user.email
+        );
+
+
+        loginError.style.display =
+          "none";
+
+
+      } catch (error) {
+
+        console.error(
+          "❌ LOGIN ERROR:",
+          error
+        );
+
+
+        let message =
+          "Login failed. Check your email and password.";
+
+
+        if (
+          error.code ===
+          "auth/invalid-credential"
+        ) {
+
+          message =
+            "Incorrect email or password.";
+
+        }
+
+
+        if (
+          error.code ===
+          "auth/user-not-found"
+        ) {
+
+          message =
+            "No account exists with this email.";
+
+        }
+
+
+        if (
+          error.code ===
+          "auth/wrong-password"
+        ) {
+
+          message =
+            "Incorrect password.";
+
+        }
+
+
+        showLoginError(
+          message
+        );
+
+
+      } finally {
+
+        loginBtn.disabled =
+          false;
+
+        loginBtn.textContent =
+          "🔐 Sign In";
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   AUTH STATE CHECK
+========================================================= */
+
+onAuthStateChanged(
+  auth,
+  user => {
+
+    if (
+      user &&
+      user.email?.toLowerCase() ===
+      ADMIN_EMAIL.toLowerCase()
+    ) {
+
+      console.log(
+        "🔓 ADMIN AUTHENTICATED:",
+        user.email
+      );
+
+
+      if (loginScreen) {
+
+        loginScreen.style.display =
+          "none";
+
+      }
+
+
+      if (adminDashboard) {
+
+        adminDashboard.style.display =
+          "flex";
+
+      }
+
+
+    } else {
+
+      console.log(
+        "🔒 ADMIN NOT AUTHENTICATED"
+      );
+
+
+      if (loginScreen) {
+
+        loginScreen.style.display =
+          "flex";
+
+      }
+
+
+      if (adminDashboard) {
+
+        adminDashboard.style.display =
+          "none";
+
+      }
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   LOGIN ERROR
+========================================================= */
+
+function showLoginError(
+  message
+) {
+
+  if (!loginError) {
+
+    return;
+
+  }
+
+
+  loginError.textContent =
+    message;
+
+  loginError.style.display =
+    "block";
+
+}
 
 /* =========================================================
    ANILIST

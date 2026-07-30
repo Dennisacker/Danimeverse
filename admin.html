@@ -131,12 +131,200 @@
   #toast.show { transform: translateY(0); opacity: 1; }
   #toast.success { border-color: #22c55e; color: #22c55e; }
   #toast.error { border-color: #ef4444; color: #ef4444; }
+  /* ── ADMIN LOGIN ── */
+  #loginScreen {
+    position: fixed;
+    inset: 0;
+    background: #050816;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 9999;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+  }
+
+  .login-logo {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg,#ec4899,#9333ea);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .login-subtitle {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 13px;
+    margin-bottom: 25px;
+  }
+
+  .login-group {
+    margin-bottom: 15px;
+  }
+
+  .login-label {
+    display: block;
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .login-input {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 9px;
+    color: white;
+    outline: none;
+    font-size: 14px;
+  }
+
+  .login-input:focus {
+    border-color: #ec4899;
+  }
+
+  #loginBtn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg,#ec4899,#9333ea);
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 5px;
+  }
+
+  #loginBtn:hover {
+    opacity: .85;
+  }
+
+  #loginBtn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+  }
+
+  #loginError {
+    display: none;
+    color: #ef4444;
+    background: rgba(239,68,68,.1);
+    border: 1px solid rgba(239,68,68,.2);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  #logoutBtn {
+    padding: 7px 12px;
+    border: 1px solid rgba(255,255,255,.1);
+    background: transparent;
+    color: #94a3b8;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 11px;
+  }
+
+  #logoutBtn:hover {
+    border-color: #ec4899;
+    color: #ec4899;
+  }
+
+  /* Hide dashboard until authenticated */
+  #adminDashboard {
+    display: none;
+  }
 </style>
 </head>
-<body>
+  <body>
 
-<!-- ═══ SIDEBAR ═══ -->
-<aside class="sidebar">
+  <!-- ═══════════════════════════════════════
+       LOGIN SCREEN
+  ════════════════════════════════════════ -->
+  <div id="loginScreen">
+
+    <div class="login-card">
+
+      <div class="login-logo">
+        🎬 Danimeverse
+      </div>
+
+      <div class="login-subtitle">
+        Admin Dashboard Login
+      </div>
+
+      <form id="loginForm">
+
+        <div class="login-group">
+          <label class="login-label">
+            Email
+          </label>
+
+          <input
+            id="loginEmail"
+            class="login-input"
+            type="email"
+            placeholder="Enter admin email"
+            required
+          />
+        </div>
+
+        <div class="login-group">
+          <label class="login-label">
+            Password
+          </label>
+
+          <input
+            id="loginPassword"
+            class="login-input"
+            type="password"
+            placeholder="Enter password"
+            required
+          />
+        </div>
+
+        <button
+          id="loginBtn"
+          type="submit"
+        >
+          🔐 Sign In
+        </button>
+
+        <div id="loginError"></div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- ═══════════════════════════════════════
+       ADMIN DASHBOARD
+  ════════════════════════════════════════ -->
+  <div id="adminDashboard">
+
+    <!-- YOUR EXISTING SIDEBAR STARTS HERE -->
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="sidebar">
   <div class="logo">🎬 Danimeverse</div>
   <div class="nav-label">Menu</div>
   <a class="nav-item active" href="admin.html">📊 Dashboard</a>
@@ -154,7 +342,14 @@
 <div class="main">
   <div class="topbar">
     <h1>Admin Dashboard</h1>
-    <a href="index.html">← Back to site</a>
+
+    <button id="logoutBtn">
+      🚪 Logout
+    </button>
+
+    <a href="index.html">
+      ← Back to site
+    </a>
   </div>
 
   <div class="content">
@@ -286,9 +481,117 @@
     </div>
 
   </div>
-</div>
+    </div> <!-- END .main -->
 
-<div id="toast"></div>
-<script type="module" src="./admin.js"></script>
+    </div> <!-- END #adminDashboard -->
+
+    <div id="toast"></div>
+
+    <script type="module" src="./admin.js"></script>
 </body>
+  <div id="loginScreen" style="
+    position:fixed;
+    inset:0;
+    background:#050816;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:9999;
+  ">
+
+    <div style="
+      width:100%;
+      max-width:400px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      padding:30px;
+    ">
+
+      <div style="
+        font-size:24px;
+        font-weight:900;
+        background:linear-gradient(135deg,#ec4899,#9333ea);
+        -webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;
+        margin-bottom:8px;
+      ">
+        🎬 Danimeverse
+      </div>
+
+      <h2 style="margin-bottom:6px;">
+        Admin Login
+      </h2>
+
+      <p style="
+        color:#94a3b8;
+        font-size:13px;
+        margin-bottom:20px;
+      ">
+        Sign in to manage your anime episodes.
+      </p>
+
+      <input
+        id="adminEmail"
+        type="email"
+        placeholder="Admin email"
+        style="
+          width:100%;
+          padding:12px;
+          margin-bottom:10px;
+          background:rgba(255,255,255,.06);
+          border:1px solid rgba(255,255,255,.08);
+          border-radius:9px;
+          color:white;
+          outline:none;
+        "
+      >
+
+      <input
+        id="adminPassword"
+        type="password"
+        placeholder="Password"
+        style="
+          width:100%;
+          padding:12px;
+          margin-bottom:12px;
+          background:rgba(255,255,255,.06);
+          border:1px solid rgba(255,255,255,.08);
+          border-radius:9px;
+          color:white;
+          outline:none;
+        "
+      >
+
+      <button
+        id="loginBtn"
+        style="
+          width:100%;
+          padding:12px;
+          border:none;
+          border-radius:9px;
+          background:linear-gradient(135deg,#ec4899,#9333ea);
+          color:white;
+          font-weight:700;
+          cursor:pointer;
+        "
+      >
+        🔐 Sign In
+      </button>
+
+      <p
+        id="loginError"
+        style="
+          display:none;
+          color:#ef4444;
+          font-size:12px;
+          margin-top:12px;
+          text-align:center;
+        "
+      ></p>
+
+    </div>
+
+  </div>
 </html>
