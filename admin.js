@@ -1,313 +1,151 @@
+```js
 console.log("🎬 ADMIN JS LOADED");
 
-import { db, auth } from "./firebase-config.js";
+
+/* =========================================================
+   FIREBASE
+========================================================= */
+
+import {
+  db,
+  auth
+} from "./firebase-config.js";
+
 
 import {
   doc,
   setDoc,
-  getDoc,
   collection,
-  getDocs,
-  deleteDoc,
-  query,
-  orderBy,
-  limit
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 
 import {
   onAuthStateChanged,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
 /* =========================================================
-   ADMIN AUTHENTICATION CHECK
+   ADMIN AUTHENTICATION
 ========================================================= */
 
-const ADMIN_EMAIL = "dennisackerman246@gmail.com";
+const ADMIN_EMAIL =
+  "dennisackerman246@gmail.com";
+
+
+let isAdminAuthenticated =
+  false;
+
+
+/* =========================================================
+   ADMIN DASHBOARD
+========================================================= */
 
 const adminDashboard =
-  document.querySelector(".main");
-
-onAuthStateChanged(auth, function (user) {
-
-  if (!user) {
-
-    console.log("🔒 NOT LOGGED IN");
-
-    window.location.href =
-      "login.html";
-
-    return;
-
-  }
-
-  if (user.email !== ADMIN_EMAIL) {
-
-    console.log(
-      "⛔ UNAUTHORIZED USER:",
-      user.email
-    );
-
-    signOut(auth);
-
-    window.location.href =
-      "login.html";
-
-    return;
-
-  }
-
-  console.log(
-    "✅ ADMIN AUTHENTICATED:",
-    user.email
+  document.querySelector(
+    ".main"
   );
 
-  if (adminDashboard) {
-
-    adminDashboard.style.display =
-      "flex";
-
-  }
-
-});
 
 /* =========================================================
-   LOGIN
+   LOGOUT BUTTON
 ========================================================= */
 
-if (loginForm) {
-
-  loginForm.addEventListener(
-    "submit",
-    async function (event) {
-
-      event.preventDefault();
-
-      const email =
-        loginEmail.value.trim();
-
-      const password =
-        loginPassword.value;
-
-
-      if (!email || !password) {
-
-        showLoginError(
-          "Please enter your email and password."
-        );
-
-        return;
-
-      }
-
-
-      try {
-
-        loginBtn.disabled =
-          true;
-
-        loginBtn.textContent =
-          "⏳ Signing in...";
-
-
-        const userCredential =
-          await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
-
-
-        const user =
-          userCredential.user;
-        /* =========================================================
-           LOGOUT
-        ========================================================= */
-
-        const logoutBtn =
-          document.getElementById(
-            "logoutBtn"
-          );
-
-
-        if (logoutBtn) {
-
-          logoutBtn.addEventListener(
-            "click",
-            async function () {
-
-              try {
-
-                await signOut(auth);
-
-                console.log(
-                  "👋 ADMIN LOGGED OUT"
-                );
-
-              } catch (error) {
-
-                console.error(
-                  "❌ LOGOUT ERROR:",
-                  error
-                );
-
-                showToast(
-                  "Failed to logout.",
-                  "error"
-                );
-
-              }
-
-            }
-          );
-
-        }
-
-        /* =================================================
-           CHECK ADMIN EMAIL
-        ================================================= */
-
-        if (
-          user.email?.toLowerCase() !==
-          ADMIN_EMAIL.toLowerCase()
-        ) {
-
-          await signOut(auth);
-
-          showLoginError(
-            "Access denied. This account is not an admin."
-          );
-
-          return;
-
-        }
-
-
-        console.log(
-          "✅ ADMIN LOGIN SUCCESS:",
-          user.email
-        );
-
-
-        loginError.style.display =
-          "none";
-
-
-      } catch (error) {
-
-        console.error(
-          "❌ LOGIN ERROR:",
-          error
-        );
-
-
-        let message =
-          "Login failed. Check your email and password.";
-
-
-        if (
-          error.code ===
-          "auth/invalid-credential"
-        ) {
-
-          message =
-            "Incorrect email or password.";
-
-        }
-
-
-        if (
-          error.code ===
-          "auth/user-not-found"
-        ) {
-
-          message =
-            "No account exists with this email.";
-
-        }
-
-
-        if (
-          error.code ===
-          "auth/wrong-password"
-        ) {
-
-          message =
-            "Incorrect password.";
-
-        }
-
-
-        showLoginError(
-          message
-        );
-
-
-      } finally {
-
-        loginBtn.disabled =
-          false;
-
-        loginBtn.textContent =
-          "🔐 Sign In";
-
-      }
-
-    }
+const logoutBtn =
+  document.getElementById(
+    "logoutBtn"
   );
-
-}
 
 
 /* =========================================================
-   AUTH STATE CHECK
+   AUTHENTICATION CHECK
 ========================================================= */
 
 onAuthStateChanged(
   auth,
-  user => {
+  async function (user) {
+
+    console.log(
+      "🔍 Checking authentication..."
+    );
+
+
+    /* ==========================================
+       USER NOT LOGGED IN
+    ========================================== */
+
+    if (!user) {
+
+      console.log(
+        "🔒 USER NOT LOGGED IN"
+      );
+
+
+      isAdminAuthenticated =
+        false;
+
+
+      /*
+        Hide dashboard immediately.
+      */
+
+      if (adminDashboard) {
+
+        adminDashboard.style.display =
+          "none";
+
+      }
+
+
+      /*
+        Redirect to login page.
+      */
+
+      window.location.href =
+        "login.html";
+
+
+      return;
+
+    }
+
+
+    /* ==========================================
+       CHECK ADMIN EMAIL
+    ========================================== */
+
+    const userEmail =
+      user.email?.toLowerCase();
+
 
     if (
-      user &&
-      user.email?.toLowerCase() ===
+      userEmail !==
       ADMIN_EMAIL.toLowerCase()
     ) {
 
       console.log(
-        "🔓 ADMIN AUTHENTICATED:",
+        "⛔ UNAUTHORIZED USER:",
         user.email
       );
 
 
-      if (loginScreen) {
-
-        loginScreen.style.display =
-          "none";
-
-      }
+      isAdminAuthenticated =
+        false;
 
 
-      if (adminDashboard) {
+      /*
+        Sign out unauthorized user.
+      */
 
-        adminDashboard.style.display =
-          "flex";
-
-      }
-
-
-    } else {
-
-      console.log(
-        "🔒 ADMIN NOT AUTHENTICATED"
+      await signOut(
+        auth
       );
 
 
-      if (loginScreen) {
-
-        loginScreen.style.display =
-          "flex";
-
-      }
-
+      /*
+        Keep dashboard hidden.
+      */
 
       if (adminDashboard) {
 
@@ -315,6 +153,43 @@ onAuthStateChanged(
           "none";
 
       }
+
+
+      /*
+        Redirect to login.
+      */
+
+      window.location.href =
+        "login.html";
+
+
+      return;
+
+    }
+
+
+    /* ==========================================
+       ADMIN AUTHENTICATED
+    ========================================== */
+
+    console.log(
+      "✅ ADMIN AUTHENTICATED:",
+      user.email
+    );
+
+
+    isAdminAuthenticated =
+      true;
+
+
+    /*
+      Show admin dashboard.
+    */
+
+    if (adminDashboard) {
+
+      adminDashboard.style.display =
+        "flex";
 
     }
 
@@ -323,27 +198,54 @@ onAuthStateChanged(
 
 
 /* =========================================================
-   LOGIN ERROR
+   LOGOUT
 ========================================================= */
 
-function showLoginError(
-  message
-) {
+if (logoutBtn) {
 
-  if (!loginError) {
+  logoutBtn.addEventListener(
+    "click",
+    async function () {
 
-    return;
+      try {
 
-  }
+        console.log(
+          "🚪 Logging out..."
+        );
 
 
-  loginError.textContent =
-    message;
+        await signOut(
+          auth
+        );
 
-  loginError.style.display =
-    "block";
+
+        console.log(
+          "👋 ADMIN LOGGED OUT"
+        );
+
+
+        window.location.href =
+          "login.html";
+
+
+      } catch (error) {
+
+        console.error(
+          "❌ LOGOUT ERROR:",
+          error
+        );
+
+        alert(
+          "Failed to logout. Please try again."
+        );
+
+      }
+
+    }
+  );
 
 }
+
 
 /* =========================================================
    ANILIST
@@ -400,11 +302,16 @@ query ($search: String) {
    STATE
 ========================================================= */
 
-let selectedAnime = null;
+let selectedAnime =
+  null;
 
-let searchTimer = null;
 
-let searchRequestId = 0;
+let searchTimer =
+  null;
+
+
+let searchRequestId =
+  0;
 
 
 /* =========================================================
@@ -416,85 +323,102 @@ const input =
     "animeSearch"
   );
 
+
 const results =
   document.getElementById(
     "searchResults"
   );
+
 
 const selectedCard =
   document.getElementById(
     "selectedAnimeCard"
   );
 
+
 const selectedPoster =
   document.getElementById(
     "selectedPoster"
   );
+
 
 const selectedTitle =
   document.getElementById(
     "selectedTitle"
   );
 
+
 const selectedMeta =
   document.getElementById(
     "selectedMeta"
   );
+
 
 const selectedSlug =
   document.getElementById(
     "selectedSlug"
   );
 
+
 const epNumber =
   document.getElementById(
     "epNumber"
   );
+
 
 const epTitle =
   document.getElementById(
     "epTitle"
   );
 
+
 const epVideo =
   document.getElementById(
     "epVideo"
   );
+
 
 const uploadBtn =
   document.getElementById(
     "uploadBtn"
   );
 
+
 const clearBtn =
   document.getElementById(
     "clearBtn"
   );
+
 
 const uploadedEpList =
   document.getElementById(
     "uploadedEpList"
   );
 
+
 const uploadedCount =
   document.getElementById(
     "uploadedCount"
   );
+
 
 const successBanner =
   document.getElementById(
     "successBanner"
   );
 
+
 const toast =
   document.getElementById(
     "toast"
   );
 
+
 const urlHistory =
   document.getElementById(
     "urlHistory"
   );
+
 
 const clearHistoryBtn =
   document.getElementById(
@@ -506,9 +430,13 @@ const clearHistoryBtn =
    ESCAPE HTML
 ========================================================= */
 
-function escapeHtml(value) {
+function escapeHtml(
+  value
+) {
 
-  return String(value || "")
+  return String(
+    value || ""
+  )
 
     .replace(
       /&/g,
@@ -548,18 +476,24 @@ function showToast(
 ) {
 
   if (!toast) {
+
     return;
+
   }
+
 
   toast.textContent =
     message;
 
+
   toast.className =
     "";
+
 
   toast.classList.add(
     "show"
   );
+
 
   if (type) {
 
@@ -568,6 +502,7 @@ function showToast(
     );
 
   }
+
 
   setTimeout(
     () => {
@@ -740,7 +675,6 @@ function renderSearchResults(
           return `
 
             <div
-
               class="search-result-item"
 
               data-mal-id="${anime.idMal}"
@@ -752,7 +686,6 @@ function renderSearchResults(
               data-type="${escapeHtml(type)}"
 
               data-year="${year}"
-
             >
 
               ${
@@ -761,11 +694,8 @@ function renderSearchResults(
                   ? `
 
                     <img
-
                       src="${escapeHtml(image)}"
-
                       alt="${escapeHtml(title)}"
-
                     >
 
                   `
@@ -773,7 +703,6 @@ function renderSearchResults(
                   : `
 
                     <div
-
                       style="
                         width:40px;
                         height:54px;
@@ -852,17 +781,33 @@ async function selectAnime(
   element
 ) {
 
+  if (!isAdminAuthenticated) {
+
+    showToast(
+      "You must be logged in as admin.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
   const malId =
     element.dataset.malId;
+
 
   const title =
     element.dataset.title;
 
+
   const image =
     element.dataset.image;
 
+
   const type =
     element.dataset.type;
+
 
   const year =
     element.dataset.year;
@@ -958,16 +903,11 @@ async function selectAnime(
   window.dispatchEvent(
 
     new CustomEvent(
-
       "danimeverseAnimeSelected",
-
       {
-
         detail:
           selectedAnime
-
       }
-
     )
 
   );
@@ -979,7 +919,10 @@ async function selectAnime(
    SEARCH INPUT
 ========================================================= */
 
-if (input && results) {
+if (
+  input &&
+  results
+) {
 
   input.addEventListener(
     "input",
@@ -999,8 +942,10 @@ if (input && results) {
         results.innerHTML =
           "";
 
+
         results.style.display =
           "none";
+
 
         return;
 
@@ -1033,36 +978,26 @@ if (input && results) {
           async function () {
 
             const requestId =
-
               ++searchRequestId;
 
 
             try {
 
               console.log(
-
                 "🔎 SEARCHING ANILIST:",
-
                 queryText
-
               );
 
 
               const animeList =
-
                 await searchAniList(
-
                   queryText
-
                 );
 
 
               if (
-
                 requestId !==
-
                 searchRequestId
-
               ) {
 
                 return;
@@ -1070,37 +1005,22 @@ if (input && results) {
               }
 
 
-              console.log(
-
-                "✅ ANIME RESULTS:",
-
-                animeList
-
-              );
-
-
               renderSearchResults(
-
                 animeList
-
               );
 
 
             } catch (error) {
 
               console.error(
-
                 "❌ ANILIST SEARCH ERROR:",
-
                 error
-
               );
 
 
               results.innerHTML = `
 
                 <div
-
                   style="
                     padding:12px;
                     text-align:center;
@@ -1121,24 +1041,18 @@ if (input && results) {
         );
 
     }
-
   );
 
 
   /* SELECT SEARCH RESULT */
 
   results.addEventListener(
-
     "click",
-
     function (event) {
 
       const item =
-
         event.target.closest(
-
           ".search-result-item"
-
         );
 
 
@@ -1150,13 +1064,10 @@ if (input && results) {
 
 
       selectAnime(
-
         item
-
       );
 
     }
-
   );
 
 }
@@ -1208,6 +1119,15 @@ function clearForm() {
 
 async function saveAnimeDocument() {
 
+  if (!isAdminAuthenticated) {
+
+    throw new Error(
+      "You must be logged in as admin."
+    );
+
+  }
+
+
   if (!selectedAnime) {
 
     throw new Error(
@@ -1218,24 +1138,17 @@ async function saveAnimeDocument() {
 
 
   const animeRef =
-
     doc(
-
       db,
-
       "animes",
-
       String(
         selectedAnime.malId
       )
-
     );
 
 
   await setDoc(
-
     animeRef,
-
     {
 
       title:
@@ -1257,14 +1170,10 @@ async function saveAnimeDocument() {
         new Date()
 
     },
-
     {
-
       merge:
         true
-
     }
-
   );
 
 }
@@ -1276,14 +1185,23 @@ async function saveAnimeDocument() {
 
 async function uploadEpisode() {
 
+  if (!isAdminAuthenticated) {
+
+    showToast(
+      "You must be logged in as admin.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
   if (!selectedAnime) {
 
     showToast(
-
       "Please select an anime first.",
-
       "error"
-
     );
 
     return;
@@ -1292,38 +1210,27 @@ async function uploadEpisode() {
 
 
   const episodeNumber =
-
     Number(
-
       epNumber.value
-
     );
 
 
   const title =
-
     epTitle.value.trim();
 
 
   const videoUrl =
-
     epVideo.value.trim();
 
 
   if (
-
     !episodeNumber ||
-
     episodeNumber < 1
-
   ) {
 
     showToast(
-
       "Enter a valid episode number.",
-
       "error"
-
     );
 
     return;
@@ -1334,11 +1241,8 @@ async function uploadEpisode() {
   if (!videoUrl) {
 
     showToast(
-
       "Paste the Febbox URL.",
-
       "error"
-
     );
 
     return;
@@ -1347,21 +1251,14 @@ async function uploadEpisode() {
 
 
   if (
-
     !videoUrl.startsWith(
-
       "http"
-
     )
-
   ) {
 
     showToast(
-
       "Enter a valid video URL.",
-
       "error"
-
     );
 
     return;
@@ -1387,30 +1284,19 @@ async function uploadEpisode() {
     /* EPISODE DOCUMENT */
 
     const episodeRef =
-
       doc(
-
         db,
-
         "animes",
-
         String(
-
           selectedAnime.malId
-
         ),
-
         "episodes",
-
         `ep_${episodeNumber}`
-
       );
 
 
     await setDoc(
-
       episodeRef,
-
       {
 
         episode:
@@ -1432,32 +1318,22 @@ async function uploadEpisode() {
           selectedAnime.title
 
       },
-
       {
-
         merge:
           true
-
       }
-
     );
 
 
     console.log(
-
       "✅ EPISODE SAVED:",
-
       episodeNumber
-
     );
 
 
     showToast(
-
       `Episode ${episodeNumber} uploaded successfully!`,
-
       "success"
-
     );
 
 
@@ -1472,9 +1348,7 @@ async function uploadEpisode() {
     /* SAVE URL HISTORY */
 
     saveUrlToHistory(
-
       videoUrl
-
     );
 
 
@@ -1498,22 +1372,15 @@ async function uploadEpisode() {
   } catch (error) {
 
     console.error(
-
       "❌ UPLOAD ERROR:",
-
       error
-
     );
 
 
     showToast(
-
       error.message ||
-
       "Failed to upload episode.",
-
       "error"
-
     );
 
   } finally {
@@ -1537,11 +1404,8 @@ async function uploadEpisode() {
 if (uploadBtn) {
 
   uploadBtn.addEventListener(
-
     "click",
-
     uploadEpisode
-
   );
 
 }
@@ -1554,12 +1418,16 @@ if (uploadBtn) {
 async function loadUploadedEpisodes() {
 
   if (
-
     !selectedAnime ||
-
     !uploadedEpList
-
   ) {
+
+    return;
+
+  }
+
+
+  if (!isAdminAuthenticated) {
 
     return;
 
@@ -1580,30 +1448,19 @@ async function loadUploadedEpisodes() {
   try {
 
     const episodesRef =
-
       collection(
-
         db,
-
         "animes",
-
         String(
-
           selectedAnime.malId
-
         ),
-
         "episodes"
-
       );
 
 
     const snapshot =
-
       await getDocs(
-
         episodesRef
-
       );
 
 
@@ -1611,11 +1468,9 @@ async function loadUploadedEpisodes() {
 
 
     snapshot.forEach(
-
       episodeDoc => {
 
         const data =
-
           episodeDoc.data();
 
 
@@ -1626,9 +1481,7 @@ async function loadUploadedEpisodes() {
 
           episode:
             Number(
-
               data.episode
-
             ),
 
           title:
@@ -1648,24 +1501,23 @@ async function loadUploadedEpisodes() {
         });
 
       }
-
     );
 
 
     episodes.sort(
-
       (a, b) =>
-
         a.episode -
-
         b.episode
-
     );
 
 
-    uploadedCount.textContent =
+    if (uploadedCount) {
 
-      `${episodes.length} episode${episodes.length === 1 ? "" : "s"}`;
+      uploadedCount.textContent =
+
+        `${episodes.length} episode${episodes.length === 1 ? "" : "s"}`;
+
+    }
 
 
     if (!episodes.length) {
@@ -1690,15 +1542,11 @@ async function loadUploadedEpisodes() {
       episodes
 
         .map(
-
           episode => `
 
             <div
-
               class="ep-item"
-
               data-episode="${episode.episode}"
-
             >
 
               <span class="ep-num">
@@ -1711,31 +1559,23 @@ async function loadUploadedEpisodes() {
               <span class="ep-title">
 
                 ${escapeHtml(
-
                   episode.title
-
                 )}
 
               </span>
 
 
               <span
-
                 class="${
                   episode.video
-
                     ? "ep-link"
-
                     : "ep-link missing"
                 }"
-
               >
 
                 ${
                   episode.video
-
                     ? "✓ Link"
-
                     : "✕ Missing"
                 }
 
@@ -1744,7 +1584,6 @@ async function loadUploadedEpisodes() {
             </div>
 
           `
-
         )
 
         .join("");
@@ -1753,42 +1592,27 @@ async function loadUploadedEpisodes() {
     /* CLICK EPISODE TO EDIT */
 
     uploadedEpList
-
       .querySelectorAll(
-
         ".ep-item"
-
       )
-
       .forEach(
-
         item => {
 
           item.addEventListener(
-
             "click",
-
             () => {
 
               const episodeNumber =
-
                 Number(
-
                   item.dataset.episode
-
                 );
 
 
               const episode =
-
                 episodes.find(
-
                   ep =>
-
                     ep.episode ===
-
                     episodeNumber
-
                 );
 
 
@@ -1800,43 +1624,33 @@ async function loadUploadedEpisodes() {
 
 
               epNumber.value =
-
                 episode.episode;
 
 
               epTitle.value =
-
                 episode.title;
 
 
               epVideo.value =
-
                 episode.video;
 
 
               showToast(
-
                 `Episode ${episodeNumber} loaded for editing.`
-
               );
 
             }
-
           );
 
         }
-
       );
 
 
   } catch (error) {
 
     console.error(
-
       "❌ LOAD EPISODES ERROR:",
-
       error
-
     );
 
 
@@ -1862,11 +1676,8 @@ async function loadUploadedEpisodes() {
 if (clearBtn) {
 
   clearBtn.addEventListener(
-
     "click",
-
     clearForm
-
   );
 
 }
@@ -1881,15 +1692,10 @@ function getUrlHistory() {
   try {
 
     return JSON.parse(
-
       localStorage.getItem(
-
         "danimeverseFebboxHistory"
-
       ) ||
-
       "[]"
-
     );
 
   } catch {
@@ -1902,51 +1708,33 @@ function getUrlHistory() {
 
 
 function saveUrlToHistory(
-
   url
-
 ) {
 
   let history =
-
     getUrlHistory();
 
 
-  history =
+  history = [
 
-    [
+    url,
 
-      url,
+    ...history.filter(
+      item =>
+        item !== url
+    )
 
-      ...history.filter(
-
-        item =>
-
-          item !== url
-
-      )
-
-    ]
-
-    .slice(
-
-      0,
-
-      10
-
-    );
+  ].slice(
+    0,
+    10
+  );
 
 
   localStorage.setItem(
-
     "danimeverseFebboxHistory",
-
     JSON.stringify(
-
       history
-
     )
-
   );
 
 
@@ -1965,7 +1753,6 @@ function renderUrlHistory() {
 
 
   const history =
-
     getUrlHistory();
 
 
@@ -1991,15 +1778,11 @@ function renderUrlHistory() {
     history
 
       .map(
-
         url => `
 
           <div
-
             class="url-item"
-
             data-url="${escapeHtml(url)}"
-
           >
 
             <span class="url-text">
@@ -2018,47 +1801,38 @@ function renderUrlHistory() {
           </div>
 
         `
-
       )
 
       .join("");
 
 
   urlHistory
-
     .querySelectorAll(
-
       ".url-item"
-
     )
-
     .forEach(
-
       item => {
 
         item.addEventListener(
-
           "click",
-
           () => {
 
-            epVideo.value =
+            if (epVideo) {
 
-              item.dataset.url;
+              epVideo.value =
+                item.dataset.url;
+
+            }
 
 
             showToast(
-
               "Febbox URL added to form."
-
             );
 
           }
-
         );
 
       }
-
     );
 
 }
@@ -2067,21 +1841,17 @@ function renderUrlHistory() {
 if (clearHistoryBtn) {
 
   clearHistoryBtn.addEventListener(
-
     "click",
-
     () => {
 
       localStorage.removeItem(
-
         "danimeverseFebboxHistory"
-
       );
+
 
       renderUrlHistory();
 
     }
-
   );
 
 }
@@ -2092,25 +1862,16 @@ if (clearHistoryBtn) {
 ========================================================= */
 
 document.addEventListener(
-
   "click",
-
   event => {
 
     if (
-
       results &&
-
       input &&
-
       !results.contains(
-
         event.target
-
       ) &&
-
       event.target !== input
-
     ) {
 
       results.style.display =
@@ -2119,7 +1880,6 @@ document.addEventListener(
     }
 
   }
-
 );
 
 
@@ -2133,3 +1893,4 @@ renderUrlHistory();
 console.log(
   "✅ ADMIN READY"
 );
+```
