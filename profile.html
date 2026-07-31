@@ -1,20 +1,38 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-     <link rel="icon" type="image/png" href="https://i.pinimg.com/736x/fc/8d/c0/fc8dc0a1f0db8842d9c58373acd655a8.jpg">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="https://i.pinimg.com/736x/fc/8d/c0/fc8dc0a1f0db8842d9c58373acd655a8.jpg"
+  />
+
   <title>Danimeverse | Profile Settings</title>
+
   <link rel="stylesheet" href="tailwind.min.css">
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       background: #0d0d1a;
       color: white;
       font-family: 'Inter', system-ui, sans-serif;
       min-height: 100vh;
+      margin: 0;
     }
 
-    /* NAV */
+    /* =====================================================
+       NAV
+    ===================================================== */
+
     .prof-nav {
       display: flex;
       align-items: center;
@@ -25,7 +43,9 @@
       position: sticky;
       top: 0;
       z-index: 50;
+      backdrop-filter: blur(15px);
     }
+
     .prof-nav-logo {
       font-size: 1.4rem;
       font-weight: 900;
@@ -34,7 +54,10 @@
       text-decoration: none;
     }
 
-    /* CARD */
+    /* =====================================================
+       PROFILE CARD
+    ===================================================== */
+
     .prof-card {
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.08);
@@ -43,26 +66,30 @@
       backdrop-filter: blur(16px);
     }
 
-    /* AVATAR CIRCLE */
+    /* =====================================================
+       AVATAR
+    ===================================================== */
+
     .prof-avatar {
-      width: 96px;
-      height: 96px;
+      width: 110px;
+      height: 110px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 8px;
+      margin: 0 auto 12px;
       position: relative;
       box-shadow: 0 0 0 3px rgba(255,255,255,0.12);
-      transition: box-shadow 0.2s;
       overflow: hidden;
+      background: linear-gradient(135deg,#3b82f6,#1d4ed8);
     }
+
     .prof-avatar img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: 50%;
     }
+
     .prof-avatar-icon {
       width: 100%;
       height: 100%;
@@ -71,7 +98,10 @@
       justify-content: center;
     }
 
-    /* INPUTS */
+    /* =====================================================
+       INPUTS
+    ===================================================== */
+
     .prof-input {
       width: 100%;
       background: rgba(255,255,255,0.06);
@@ -83,11 +113,73 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    .prof-input:focus { border-color: #ec4899; }
-    .prof-input::placeholder { color: rgba(255,255,255,0.3); }
 
-    /* GENDER PILLS */
-    .gender-opt { display: none; }
+    .prof-input:focus {
+      border-color: #ec4899;
+    }
+
+    .prof-input::placeholder {
+      color: rgba(255,255,255,0.3);
+    }
+
+    /* =====================================================
+       USERNAME STATUS
+    ===================================================== */
+
+    .username-status {
+      min-height: 20px;
+      margin-top: 7px;
+      font-size: 12px;
+    }
+
+    .username-status.checking {
+      color: #94a3b8;
+    }
+
+    .username-status.available {
+      color: #34d399;
+    }
+
+    .username-status.taken {
+      color: #f87171;
+    }
+
+    .username-status.error {
+      color: #f87171;
+    }
+
+    .username-suggestions {
+      display: none;
+      margin-top: 10px;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .suggestion-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #e2e8f0;
+      padding: 7px 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .suggestion-btn:hover {
+      background: rgba(236,72,153,0.15);
+      border-color: #ec4899;
+      color: white;
+    }
+
+    /* =====================================================
+       GENDER
+    ===================================================== */
+
+    .gender-opt {
+      display: none;
+    }
+
     .gender-lbl {
       display: flex;
       align-items: center;
@@ -103,19 +195,28 @@
       font-size: 13px;
       font-weight: 600;
     }
-    .gender-lbl:hover { border-color: rgba(236,72,153,0.4); color: white; }
+
+    .gender-lbl:hover {
+      border-color: rgba(236,72,153,0.4);
+      color: white;
+    }
+
     .gender-opt:checked + .gender-lbl {
       border-color: #ec4899;
       color: white;
       background: rgba(236,72,153,0.12);
     }
+
     #profGenderMale:checked + .gender-lbl {
       border-color: #60a5fa;
       background: rgba(96,165,250,0.12);
       color: #93c5fd;
     }
 
-    /* SAVE BUTTON */
+    /* =====================================================
+       SAVE BUTTON
+    ===================================================== */
+
     .prof-save-btn {
       width: 100%;
       background: #ec4899;
@@ -128,11 +229,24 @@
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
     }
-    .prof-save-btn:hover { background: #db2777; }
-    .prof-save-btn:active { transform: scale(0.98); }
-    .prof-save-btn:disabled { background: #6b7280; cursor: not-allowed; }
 
-    /* TOAST */
+    .prof-save-btn:hover {
+      background: #db2777;
+    }
+
+    .prof-save-btn:active {
+      transform: scale(0.98);
+    }
+
+    .prof-save-btn:disabled {
+      background: #6b7280;
+      cursor: not-allowed;
+    }
+
+    /* =====================================================
+       TOAST
+    ===================================================== */
+
     #prof-toast {
       position: fixed;
       bottom: 28px;
@@ -148,137 +262,507 @@
       pointer-events: none;
       transition: all 0.28s ease;
       z-index: 9999;
+      max-width: calc(100vw - 40px);
+      text-align: center;
     }
+
     #prof-toast.show {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
+
     #prof-toast.error {
       background: #ef4444;
     }
 
-    /* DANGER ZONE */
+    /* =====================================================
+       DANGER ZONE
+    ===================================================== */
+
     .danger-card {
       background: rgba(239,68,68,0.05);
       border: 1px solid rgba(239,68,68,0.2);
       border-radius: 16px;
       padding: 24px;
     }
+
+    @media (max-width: 600px) {
+      .prof-nav {
+        padding: 16px 20px;
+      }
+
+      .prof-card {
+        padding: 22px;
+      }
+    }
   </style>
+
 </head>
+
 <body>
 
-  <!-- NAV -->
+  <!-- =====================================================
+       NAV
+  ====================================================== -->
+
   <nav class="prof-nav">
-    <a href="index.html" class="prof-nav-logo">DANIMEVERSE</a>
-    <div id="userProfile" class="flex items-center gap-2 text-sm"></div>
+
+```
+<a href="index.html" class="prof-nav-logo">
+  DANIMEVERSE
+</a>
+
+<div
+  id="userProfile"
+  class="flex items-center gap-2 text-sm"
+></div>
+```
+
   </nav>
 
-  <!-- LOADING STATE -->
-  <div id="profLoading" class="flex items-center justify-center" style="min-height: 60vh;">
-    <div style="text-align:center; color:#94a3b8;">
-      <div style="font-size:40px; margin-bottom:12px;">⏳</div>
-      <p>Loading your profile...</p>
-    </div>
+  <!-- =====================================================
+       LOADING
+  ====================================================== -->
+
+  <div
+    id="profLoading"
+    class="flex items-center justify-center"
+    style="min-height:60vh;"
+  >
+
+```
+<div style="text-align:center;color:#94a3b8;">
+
+  <div style="font-size:40px;margin-bottom:12px;">
+    ⏳
   </div>
 
-  <!-- NOT SIGNED IN -->
-  <div id="profNotSignedIn" class="hidden flex items-center justify-center" style="min-height:60vh;">
-    <div style="text-align:center;">
-      <div style="font-size:48px; margin-bottom:16px;">🔐</div>
-      <h2 style="font-size:1.5rem; font-weight:800; margin-bottom:8px;">Sign in first</h2>
-      <p style="color:#94a3b8; margin-bottom:24px;">You need to be signed in to edit your profile.</p>
-      <a href="sign-in.html" style="background:#ec4899; color:white; padding:12px 32px; border-radius:8px; font-weight:700; text-decoration:none;">Sign In</a>
-    </div>
-  </div>
+  <p>
+    Loading your profile...
+  </p>
 
-  <!-- PROFILE FORM -->
-  <div id="profContent" class="hidden" style="max-width:520px; margin:48px auto; padding:0 20px 80px;">
-
-    <h1 style="font-size:1.8rem; font-weight:900; margin-bottom:6px;">Profile Settings</h1>
-    <p style="color:#94a3b8; font-size:14px; margin-bottom:32px;">Manage your Danimeverse account.</p>
-
-    <!-- AVATAR PREVIEW -->
-    <div style="text-align:center; margin-bottom:32px;">
-      <div id="profAvatarPreview" class="prof-avatar" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
-        <div class="prof-avatar-icon" id="profAvatarInner"></div>
-      </div>
-      <p style="font-size:12px; color:#64748b; margin-top:8px;">Avatar updates when you save</p>
-    </div>
-
-    <div class="prof-card" style="margin-bottom:20px;">
-
-      <!-- USERNAME -->
-      <div style="margin-bottom:20px;">
-        <label style="font-size:13px; color:#94a3b8; display:block; margin-bottom:8px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;">Username</label>
-        <input type="text" id="profUsername" class="prof-input" placeholder="Your username" />
-      </div>
-
-      <!-- PROFILE PICTURE URL -->
-      <div style="margin-bottom:20px;">
-        <label style="font-size:13px; color:#94a3b8; display:block; margin-bottom:8px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;">Profile Picture URL</label>
-        <input type="url" id="profPicUrl" class="prof-input" placeholder="https://example.com/your-photo.jpg" />
-        <p style="font-size:11px; color:#475569; margin-top:6px;">Paste a direct image link (jpg, png, webp)</p>
-      </div>
-
-      <!-- GENDER -->
-      <div style="margin-bottom:24px;">
-        <label style="font-size:13px; color:#94a3b8; display:block; margin-bottom:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;">Gender</label>
-        <div style="display:flex; gap:10px;">
-          <input type="radio" name="profGender" id="profGenderMale" value="male" class="gender-opt" />
-          <label for="profGenderMale" class="gender-lbl">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="6" r="4"/><path d="M12 13c-4 0-7 2.2-7 5v1h14v-1c0-2.8-3-5-7-5z"/></svg>
-            Male
-          </label>
-          <input type="radio" name="profGender" id="profGenderFemale" value="female" class="gender-opt" />
-          <label for="profGenderFemale" class="gender-lbl">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="6" r="4"/><path d="M12 13c-4 0-7 2.2-7 5v1h14v-1c0-2.8-3-5-7-5z"/><path d="M9 12.5c-.5 2 0 4 1 5.5h4c1-1.5 1.5-3.5 1-5.5" opacity="0.4"/></svg>
-            Female
-          </label>
-        </div>
-      </div>
-
-      <button id="profSaveBtn" class="prof-save-btn">Save Changes</button>
-    </div>
-
-    <!-- ACCOUNT INFO (read-only) -->
-    <div class="prof-card" style="margin-bottom:20px;">
-      <h3 style="font-size:14px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:16px;">Account</h3>
-      <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06);">
-        <span style="font-size:13px; color:#64748b;">Email</span>
-        <span id="profEmail" style="font-size:13px; color:#e2e8f0;"></span>
-      </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;">
-        <span style="font-size:13px; color:#64748b;">Member since</span>
-        <span id="profJoined" style="font-size:13px; color:#e2e8f0;"></span>
-      </div>
-    </div>
-
-    <!-- DANGER ZONE -->
-    <div class="danger-card">
-      <h3 style="font-size:14px; font-weight:700; color:#ef4444; margin-bottom:8px;">Sign Out</h3>
-      <p style="font-size:13px; color:#94a3b8; margin-bottom:16px;">Sign out from your Danimeverse account on this device.</p>
-      <button id="profLogoutBtn" style="
-        background: transparent;
-        border: 1.5px solid rgba(239,68,68,0.4);
-        color: #f87171;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-      ">Sign Out</button>
-    </div>
+</div>
+```
 
   </div>
+
+  <!-- =====================================================
+       NOT SIGNED IN
+  ====================================================== -->
+
+  <div
+    id="profNotSignedIn"
+    class="hidden flex items-center justify-center"
+    style="min-height:60vh;"
+  >
+
+```
+<div style="text-align:center;">
+
+  <div style="font-size:48px;margin-bottom:16px;">
+    🔐
+  </div>
+
+  <h2
+    style="
+      font-size:1.5rem;
+      font-weight:800;
+      margin-bottom:8px;
+    "
+  >
+    Sign in first
+  </h2>
+
+  <p
+    style="
+      color:#94a3b8;
+      margin-bottom:24px;
+    "
+  >
+    You need to be signed in to edit your profile.
+  </p>
+
+  <a
+    href="sign-in.html"
+    style="
+      background:#ec4899;
+      color:white;
+      padding:12px 32px;
+      border-radius:8px;
+      font-weight:700;
+      text-decoration:none;
+    "
+  >
+    Sign In
+  </a>
+
+</div>
+```
+
+  </div>
+
+  <!-- =====================================================
+       PROFILE CONTENT
+  ====================================================== -->
+
+  <div
+    id="profContent"
+    class="hidden"
+    style="
+      max-width:520px;
+      margin:48px auto;
+      padding:0 20px 80px;
+    "
+  >
+
+```
+<h1
+  style="
+    font-size:1.8rem;
+    font-weight:900;
+    margin-bottom:6px;
+  "
+>
+  Profile Settings
+</h1>
+
+<p
+  style="
+    color:#94a3b8;
+    font-size:14px;
+    margin-bottom:32px;
+  "
+>
+  Manage your Danimeverse account.
+</p>
+
+
+<!-- =================================================
+     DEFAULT AVATAR
+================================================== -->
+
+<div
+  style="
+    text-align:center;
+    margin-bottom:32px;
+  "
+>
+
+  <div
+    id="profAvatarPreview"
+    class="prof-avatar"
+    aria-label="Profile avatar"
+  >
+
+    <div
+      class="prof-avatar-icon"
+      id="profAvatarInner"
+    ></div>
+
+  </div>
+
+  <p
+    style="
+      font-size:13px;
+      color:#64748b;
+      margin-top:9px;
+    "
+  >
+    Your profile avatar is based on your gender.
+  </p>
+
+</div>
+
+
+<!-- =================================================
+     PROFILE FORM
+================================================== -->
+
+<div
+  class="prof-card"
+  style="margin-bottom:20px;"
+>
+
+  <!-- NICKNAME -->
+
+  <div style="margin-bottom:20px;">
+
+    <label
+      style="
+        font-size:13px;
+        color:#94a3b8;
+        display:block;
+        margin-bottom:8px;
+        font-weight:600;
+        text-transform:uppercase;
+        letter-spacing:0.06em;
+      "
+    >
+      Username / Nickname
+    </label>
+
+    <input
+      type="text"
+      id="profUsername"
+      class="prof-input"
+      placeholder="Choose your nickname"
+      maxlength="20"
+      autocomplete="off"
+    />
+
+    <div
+      id="usernameStatus"
+      class="username-status"
+    ></div>
+
+    <div
+      id="usernameSuggestions"
+      class="username-suggestions"
+    ></div>
+
+  </div>
+
+
+  <!-- GENDER -->
+
+  <div style="margin-bottom:24px;">
+
+    <label
+      style="
+        font-size:13px;
+        color:#94a3b8;
+        display:block;
+        margin-bottom:10px;
+        font-weight:600;
+        text-transform:uppercase;
+        letter-spacing:0.06em;
+      "
+    >
+      Gender
+    </label>
+
+    <div style="display:flex;gap:10px;">
+
+      <input
+        type="radio"
+        name="profGender"
+        id="profGenderMale"
+        value="male"
+        class="gender-opt"
+      />
+
+      <label
+        for="profGenderMale"
+        class="gender-lbl"
+      >
+        👨 Male
+      </label>
+
+
+      <input
+        type="radio"
+        name="profGender"
+        id="profGenderFemale"
+        value="female"
+        class="gender-opt"
+      />
+
+      <label
+        for="profGenderFemale"
+        class="gender-lbl"
+      >
+        👩 Female
+      </label>
+
+    </div>
+
+  </div>
+
+
+  <button
+    id="profSaveBtn"
+    class="prof-save-btn"
+  >
+    Save Changes
+  </button>
+
+</div>
+
+
+<!-- =================================================
+     ACCOUNT
+================================================== -->
+
+<div
+  class="prof-card"
+  style="margin-bottom:20px;"
+>
+
+  <h3
+    style="
+      font-size:14px;
+      font-weight:700;
+      color:#94a3b8;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      margin-bottom:16px;
+    "
+  >
+    Account
+  </h3>
+
+
+  <div
+    style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:10px 0;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      gap:20px;
+    "
+  >
+
+    <span
+      style="
+        font-size:13px;
+        color:#64748b;
+      "
+    >
+      Email
+    </span>
+
+    <span
+      id="profEmail"
+      style="
+        font-size:13px;
+        color:#e2e8f0;
+        word-break:break-all;
+        text-align:right;
+      "
+    ></span>
+
+  </div>
+
+
+  <div
+    style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:10px 0;
+    "
+  >
+
+    <span
+      style="
+        font-size:13px;
+        color:#64748b;
+      "
+    >
+      Member since
+    </span>
+
+    <span
+      id="profJoined"
+      style="
+        font-size:13px;
+        color:#e2e8f0;
+      "
+    ></span>
+
+  </div>
+
+</div>
+
+
+<!-- =================================================
+     SIGN OUT
+================================================== -->
+
+<div class="danger-card">
+
+  <h3
+    style="
+      font-size:14px;
+      font-weight:700;
+      color:#ef4444;
+      margin-bottom:8px;
+    "
+  >
+    Sign Out
+  </h3>
+
+  <p
+    style="
+      font-size:13px;
+      color:#94a3b8;
+      margin-bottom:16px;
+    "
+  >
+    Sign out from your Danimeverse account on this device.
+  </p>
+
+  <button
+    id="profLogoutBtn"
+    style="
+      background:transparent;
+      border:1.5px solid rgba(239,68,68,0.4);
+      color:#f87171;
+      padding:10px 20px;
+      border-radius:8px;
+      font-size:13px;
+      font-weight:600;
+      cursor:pointer;
+    "
+  >
+    Sign Out
+  </button>
+
+</div>
+```
+
+  </div>
+
+  <!-- =====================================================
+       TOAST
+  ====================================================== -->
 
   <div id="prof-toast"></div>
 
+  <!-- =====================================================
+       FIREBASE
+  ====================================================== -->
+
   <script type="module">
-    import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    import {
+      initializeApp,
+      getApps
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+    import {
+      getAuth,
+      onAuthStateChanged,
+      updateProfile,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      collection,
+      query,
+      where,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+    /* =========================================================
+       FIREBASE
+    ========================================================= */
 
     const firebaseConfig = {
       apiKey: "AIzaSyC9mOlwqobv6V8O50BWADbkhRNQpDRNYQ4",
@@ -286,128 +770,1188 @@
       projectId: "danimeverse-c1fa3",
       storageBucket: "danimeverse-c1fa3.firebasestorage.app",
       messagingSenderId: "626679123848",
-      appId: "1:626679123848:web:dec7eeffb63885fa48343d"
+      appId: "1:626679123848:web:dec7eeffb63885fa48343d",
+      measurementId: "G-ZQC0SFQR4Q"
     };
 
-    const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+
+    const app = getApps().length
+      ? getApps()[0]
+      : initializeApp(firebaseConfig);
+
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const MALE_SVG = `<svg width="48" height="48" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="7" r="4"/><path d="M4 21v-1c0-3.3 3.6-6 8-6s8 2.7 8 6v1H4z"/><rect x="11" y="16" width="2" height="6" rx="1"/><rect x="8" y="20" width="8" height="2" rx="1"/></svg>`;
-    const FEMALE_SVG = `<svg width="48" height="48" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="7" r="4"/><path d="M4 21v-1c0-3.3 3.6-6 8-6s8 2.7 8 6v1H4z"/><path d="M9.5 14.5c0 0-1 3 2.5 4s2.5-4 2.5-4" opacity="0.4"/></svg>`;
 
-    function showToast(msg, isError = false) {
-      const t = document.getElementById("prof-toast");
-      t.textContent = msg;
-      t.className = isError ? "error show" : "show";
-      clearTimeout(t._t);
-      t._t = setTimeout(() => t.className = "", 3000);
+    /* =========================================================
+       ELEMENTS
+    ========================================================= */
+
+    const loading =
+      document.getElementById("profLoading");
+
+    const notSignedIn =
+      document.getElementById("profNotSignedIn");
+
+    const content =
+      document.getElementById("profContent");
+
+    const usernameInput =
+      document.getElementById("profUsername");
+
+    const usernameStatus =
+      document.getElementById("usernameStatus");
+
+    const usernameSuggestions =
+      document.getElementById("usernameSuggestions");
+
+    const saveBtn =
+      document.getElementById("profSaveBtn");
+
+    const avatarPreview =
+      document.getElementById("profAvatarPreview");
+
+    const avatarInner =
+      document.getElementById("profAvatarInner");
+
+    const toast =
+      document.getElementById("prof-toast");
+
+    const profEmail =
+      document.getElementById("profEmail");
+
+    const profJoined =
+      document.getElementById("profJoined");
+
+    const logoutBtn =
+      document.getElementById("profLogoutBtn");
+
+
+    /* =========================================================
+       STATE
+    ========================================================= */
+
+    let currentUser = null;
+
+    let currentUsername = "";
+
+    let currentGender = "male";
+
+    let usernameCheckTimer = null;
+
+    let usernameCheckToken = 0;
+
+
+    /* =========================================================
+       DEFAULT AVATARS
+    ========================================================= */
+
+    const MALE_SVG = `
+      <svg
+        width="58"
+        height="58"
+        viewBox="0 0 24 24"
+        fill="white"
+      >
+        <circle cx="12" cy="7" r="4"/>
+        <path d="M4 21v-1c0-3.3 3.6-6 8-6s8 2.7 8 6v1H4z"/>
+      </svg>
+    `;
+
+
+    const FEMALE_SVG = `
+      <svg
+        width="58"
+        height="58"
+        viewBox="0 0 24 24"
+        fill="white"
+      >
+        <circle cx="12" cy="7" r="4"/>
+        <path d="M4 21v-1c0-3.3 3.6-6 8-6s8 2.7 8 6v1H4z"/>
+      </svg>
+    `;
+
+
+    /* =========================================================
+       TOAST
+    ========================================================= */
+
+    function showToast(
+      message,
+      isError = false
+    ) {
+
+      toast.textContent =
+        message;
+
+      toast.className =
+        isError
+          ? "error show"
+          : "show";
+
+      clearTimeout(
+        toast._timer
+      );
+
+      toast._timer =
+        setTimeout(() => {
+
+          toast.className =
+            "";
+
+        }, 4000);
     }
 
-    function updateAvatarPreview(gender, picUrl) {
-      const preview = document.getElementById("profAvatarPreview");
-      const inner = document.getElementById("profAvatarInner");
-      const isMale = gender === "male";
 
-      if (picUrl && picUrl.trim()) {
-        preview.style.background = "transparent";
-        inner.innerHTML = `<img src="${picUrl.trim()}" alt="avatar" onerror="this.style.display='none'" />`;
-      } else {
-        preview.style.background = isMale
-          ? "linear-gradient(135deg, #3b82f6, #1d4ed8)"
-          : "linear-gradient(135deg, #ec4899, #9333ea)";
-        inner.innerHTML = isMale ? MALE_SVG : FEMALE_SVG;
-      }
+    /* =========================================================
+       AVATAR
+    ========================================================= */
+
+    function updateAvatarPreview(
+      gender
+    ) {
+
+      avatarPreview.style.background =
+        gender === "female"
+          ? "linear-gradient(135deg,#ec4899,#9333ea)"
+          : "linear-gradient(135deg,#3b82f6,#1d4ed8)";
+
+
+      avatarInner.innerHTML =
+        gender === "female"
+          ? FEMALE_SVG
+          : MALE_SVG;
     }
 
-    onAuthStateChanged(auth, async (user) => {
-      document.getElementById("profLoading").classList.add("hidden");
 
-      if (!user) {
-        document.getElementById("profNotSignedIn").classList.remove("hidden");
-        return;
+    /* =========================================================
+       USERNAME HELPERS
+    ========================================================= */
+
+    function normalizeUsername(
+      value
+    ) {
+
+      return value
+        .trim()
+        .replace(/\s+/g, " ");
+    }
+
+
+    function isValidUsername(
+      value
+    ) {
+
+      return /^[a-zA-Z0-9_ ]{2,20}$/
+        .test(value);
+    }
+
+
+    /* =========================================================
+       CHECK USERNAME
+    ========================================================= */
+
+    async function checkUsername(
+      username,
+      showSuggestions = true
+    ) {
+
+      const normalized =
+        normalizeUsername(username);
+
+
+      if (!normalized) {
+
+        usernameStatus.textContent =
+          "";
+
+        usernameStatus.className =
+          "username-status";
+
+        usernameSuggestions.style.display =
+          "none";
+
+        return {
+          available: false,
+          invalid: true
+        };
       }
 
-      document.getElementById("profContent").classList.remove("hidden");
 
-      // Fill email + joined date
-      document.getElementById("profEmail").textContent = user.email;
-      const joined = user.metadata?.creationTime
-        ? new Date(user.metadata.creationTime).toLocaleDateString("en-US", { year:"numeric", month:"long" })
-        : "—";
-      document.getElementById("profJoined").textContent = joined;
+      if (!isValidUsername(normalized)) {
 
-      // Load Firestore profile
-      let gender = "male";
-      let picUrl = "";
+        usernameStatus.textContent =
+          "Use 2–20 characters: letters, numbers, spaces or underscores.";
+
+        usernameStatus.className =
+          "username-status error";
+
+        usernameSuggestions.style.display =
+          "none";
+
+        return {
+          available: false,
+          invalid: true
+        };
+      }
+
+
+      /*
+        If username has not changed,
+        don't query Firestore.
+      */
+
+      if (
+        currentUsername &&
+        normalized.toLowerCase() ===
+        currentUsername.toLowerCase()
+      ) {
+
+        usernameStatus.textContent =
+          "✓ This is your current nickname.";
+
+        usernameStatus.className =
+          "username-status available";
+
+        usernameSuggestions.style.display =
+          "none";
+
+        return {
+          available: true,
+          invalid: false
+        };
+      }
+
+
+      usernameStatus.textContent =
+        "Checking nickname...";
+
+      usernameStatus.className =
+        "username-status checking";
+
+
       try {
-        const snap = await getDoc(doc(db, "users", user.uid));
-        if (snap.exists()) {
-          const data = snap.data();
-          gender = data.gender || "male";
-          picUrl = data.picUrl || "";
+
+        const usersRef =
+          collection(
+            db,
+            "users"
+          );
+
+
+        const usernameQuery =
+          query(
+            usersRef,
+            where(
+              "username",
+              "==",
+              normalized
+            )
+          );
+
+
+        const snapshot =
+          await getDocs(
+            usernameQuery
+          );
+
+
+        let takenByOtherUser =
+          false;
+
+
+        snapshot.forEach(
+          userDoc => {
+
+            if (
+              userDoc.id !==
+              currentUser.uid
+            ) {
+
+              takenByOtherUser =
+                true;
+            }
+
+          }
+        );
+
+
+        if (!takenByOtherUser) {
+
+          usernameStatus.textContent =
+            "✓ This nickname is available.";
+
+          usernameStatus.className =
+            "username-status available";
+
+          usernameSuggestions.style.display =
+            "none";
+
+          return {
+            available: true,
+            invalid: false
+          };
         }
-      } catch (_) {}
 
-      // Pre-fill form
-      document.getElementById("profUsername").value = user.displayName || "";
-      document.getElementById("profPicUrl").value = picUrl;
-      const genderRadio = document.querySelector(`input[name="profGender"][value="${gender}"]`);
-      if (genderRadio) genderRadio.checked = true;
-      updateAvatarPreview(gender, picUrl);
 
-      // Live avatar preview on input change
-      document.getElementById("profPicUrl").addEventListener("input", () => {
-        const g = document.querySelector('input[name="profGender"]:checked')?.value || gender;
-        updateAvatarPreview(g, document.getElementById("profPicUrl").value);
-      });
-      document.querySelectorAll('input[name="profGender"]').forEach(r => {
-        r.addEventListener("change", () => {
-          updateAvatarPreview(r.value, document.getElementById("profPicUrl").value);
-        });
-      });
+        usernameStatus.textContent =
+          "✕ This nickname is already taken.";
 
-      // SAVE
-      document.getElementById("profSaveBtn").addEventListener("click", async () => {
-        const btn = document.getElementById("profSaveBtn");
-        const username = document.getElementById("profUsername").value.trim();
-        const newPicUrl = document.getElementById("profPicUrl").value.trim();
-        const newGender = document.querySelector('input[name="profGender"]:checked')?.value || gender;
+        usernameStatus.className =
+          "username-status taken";
 
-        if (!username) { showToast("Username cannot be empty.", true); return; }
 
-        btn.disabled = true;
-        btn.textContent = "Saving...";
+        if (showSuggestions) {
+
+          await generateSuggestions(
+            normalized
+          );
+        }
+
+
+        return {
+          available: false,
+          invalid: false
+        };
+
+
+      } catch (error) {
+
+        console.error(
+          "USERNAME CHECK ERROR:",
+          error
+        );
+
+
+        usernameStatus.textContent =
+          "Unable to check nickname right now.";
+
+        usernameStatus.className =
+          "username-status error";
+
+
+        return {
+          available: false,
+          invalid: false,
+          error: true
+        };
+      }
+    }
+
+
+    /* =========================================================
+       USERNAME SUGGESTIONS
+    ========================================================= */
+
+    async function generateSuggestions(
+      base
+    ) {
+
+      usernameSuggestions.innerHTML =
+        "";
+
+      usernameSuggestions.style.display =
+        "flex";
+
+
+      const candidates = [
+
+        `${base}01`,
+
+        `${base}07`,
+
+        `${base}123`,
+
+        `${base}_1`,
+
+        `${base}_7`,
+
+        `${base}Anime`,
+
+        `${base}Ack`,
+
+        `${base}TV`
+
+      ];
+
+
+      const available = [];
+
+
+      for (
+        const candidate of candidates
+      ) {
+
+        if (
+          available.length >= 4
+        ) {
+
+          break;
+        }
+
+
+        if (
+          !isValidUsername(
+            candidate
+          )
+        ) {
+
+          continue;
+        }
+
 
         try {
-          await updateProfile(user, { displayName: username });
-          await setDoc(doc(db, "users", user.uid), {
-            username,
-            gender: newGender,
-            email: user.email,
-            picUrl: newPicUrl,
-            updatedAt: Date.now()
-          }, { merge: true });
 
-          updateAvatarPreview(newGender, newPicUrl);
-          showToast("Profile saved successfully ✓");
-        } catch (err) {
-          showToast(err.message, true);
-        } finally {
-          btn.disabled = false;
-          btn.textContent = "Save Changes";
+          const q =
+            query(
+              collection(
+                db,
+                "users"
+              ),
+              where(
+                "username",
+                "==",
+                candidate
+              )
+            );
+
+
+          const snap =
+            await getDocs(q);
+
+
+          let taken =
+            false;
+
+
+          snap.forEach(
+            docSnap => {
+
+              if (
+                docSnap.id !==
+                currentUser.uid
+              ) {
+
+                taken =
+                  true;
+              }
+
+            }
+          );
+
+
+          if (!taken) {
+
+            available.push(
+              candidate
+            );
+          }
+
+
+        } catch (error) {
+
+          console.error(
+            "SUGGESTION CHECK ERROR:",
+            error
+          );
         }
-      });
+      }
 
-      // LOGOUT
-      document.getElementById("profLogoutBtn").addEventListener("click", async () => {
-        await signOut(auth);
-        window.location.href = "index.html";
-      });
-    });
+
+      usernameSuggestions.innerHTML =
+        available
+          .map(
+            suggestion => `
+
+              <button
+                type="button"
+                class="suggestion-btn"
+                data-username="${suggestion}"
+              >
+                ${suggestion}
+              </button>
+
+            `
+          )
+          .join("");
+
+
+      usernameSuggestions
+        .querySelectorAll(
+          ".suggestion-btn"
+        )
+        .forEach(
+          button => {
+
+            button.addEventListener(
+              "click",
+              () => {
+
+                usernameInput.value =
+                  button.dataset.username;
+
+
+                usernameSuggestions.style.display =
+                  "none";
+
+
+                checkUsername(
+                  button.dataset.username,
+                  false
+                );
+              }
+            );
+
+          }
+        );
+    }
+
+
+    /* =========================================================
+       USERNAME INPUT
+    ========================================================= */
+
+    usernameInput.addEventListener(
+      "input",
+      () => {
+
+        clearTimeout(
+          usernameCheckTimer
+        );
+
+
+        const token =
+          ++usernameCheckToken;
+
+
+        usernameCheckTimer =
+          setTimeout(
+            async () => {
+
+              if (
+                token !==
+                usernameCheckToken
+              ) {
+
+                return;
+              }
+
+
+              await checkUsername(
+                usernameInput.value
+              );
+
+            },
+            600
+          );
+
+      }
+    );
+
+
+    /* =========================================================
+       GENDER CHANGE
+    ========================================================= */
+
+    document
+      .querySelectorAll(
+        'input[name="profGender"]'
+      )
+      .forEach(
+        radio => {
+
+          radio.addEventListener(
+            "change",
+            () => {
+
+              currentGender =
+                radio.value;
+
+
+              updateAvatarPreview(
+                currentGender
+              );
+
+            }
+          );
+
+        }
+      );
+
+
+    /* =========================================================
+       AUTH STATE
+    ========================================================= */
+
+    onAuthStateChanged(
+      auth,
+      async user => {
+
+        loading.classList.add(
+          "hidden"
+        );
+
+
+        if (!user) {
+
+          notSignedIn.classList.remove(
+            "hidden"
+          );
+
+          content.classList.add(
+            "hidden"
+          );
+
+          return;
+        }
+
+
+        currentUser =
+          user;
+
+
+        content.classList.remove(
+          "hidden"
+        );
+
+
+        notSignedIn.classList.add(
+          "hidden"
+        );
+
+
+        profEmail.textContent =
+          user.email ||
+          "—";
+
+
+        const joined =
+          user.metadata?.creationTime
+
+            ? new Date(
+                user.metadata.creationTime
+              ).toLocaleDateString(
+                "en-US",
+                {
+                  year:
+                    "numeric",
+
+                  month:
+                    "long"
+                }
+              )
+
+            : "—";
+
+
+        profJoined.textContent =
+          joined;
+
+
+        /* ==============================================
+           LOAD PROFILE
+        ============================================== */
+
+        try {
+
+          const snap =
+            await getDoc(
+              doc(
+                db,
+                "users",
+                user.uid
+              )
+            );
+
+
+          if (
+            snap.exists()
+          ) {
+
+            const data =
+              snap.data();
+
+
+            currentUsername =
+              data.username ||
+              user.displayName ||
+              "";
+
+
+            currentGender =
+              data.gender ||
+              "male";
+
+          } else {
+
+            currentUsername =
+              user.displayName ||
+              "";
+
+            currentGender =
+              "male";
+          }
+
+
+        } catch (error) {
+
+          console.error(
+            "PROFILE LOAD ERROR:",
+            error
+          );
+
+
+          currentUsername =
+            user.displayName ||
+            "";
+
+
+          currentGender =
+            "male";
+        }
+
+
+        /* ==============================================
+           UPDATE UI
+        ============================================== */
+
+        usernameInput.value =
+          currentUsername;
+
+
+        const genderRadio =
+          document.querySelector(
+            `input[name="profGender"][value="${currentGender}"]`
+          );
+
+
+        if (
+          genderRadio
+        ) {
+
+          genderRadio.checked =
+            true;
+        }
+
+
+        updateAvatarPreview(
+          currentGender
+        );
+
+
+        if (
+          currentUsername
+        ) {
+
+          usernameStatus.textContent =
+            "✓ This is your current nickname.";
+
+          usernameStatus.className =
+            "username-status available";
+        }
+
+      }
+    );
+
+
+    /* =========================================================
+       SAVE PROFILE
+    ========================================================= */
+
+    saveBtn.addEventListener(
+      "click",
+      async function () {
+
+        if (
+          !currentUser
+        ) {
+
+          showToast(
+            "You must be signed in.",
+            true
+          );
+
+          return;
+        }
+
+
+        const username =
+          normalizeUsername(
+            usernameInput.value
+          );
+
+
+        const gender =
+          document.querySelector(
+            'input[name="profGender"]:checked'
+          )?.value ||
+          "male";
+
+
+        /* ================================================
+           BASIC VALIDATION
+        ================================================ */
+
+        if (
+          !username
+        ) {
+
+          showToast(
+            "Please choose a nickname.",
+            true
+          );
+
+
+          usernameInput.focus();
+
+
+          return;
+        }
+
+
+        if (
+          !isValidUsername(
+            username
+          )
+        ) {
+
+          showToast(
+            "Nickname must be 2–20 characters.",
+            true
+          );
+
+
+          usernameInput.focus();
+
+
+          return;
+        }
+
+
+        /* ================================================
+           PREVENT DOUBLE CLICK
+        ================================================ */
+
+        if (
+          saveBtn.disabled
+        ) {
+
+          return;
+        }
+
+
+        saveBtn.disabled =
+          true;
+
+
+        try {
+
+          /* ==============================================
+             1. CHECK NICKNAME
+          ============================================== */
+
+          saveBtn.textContent =
+            "Checking nickname...";
+
+
+          usernameStatus.textContent =
+            "Checking nickname...";
+
+
+          usernameStatus.className =
+            "username-status checking";
+
+
+          const usernameQuery =
+            query(
+              collection(
+                db,
+                "users"
+              ),
+              where(
+                "username",
+                "==",
+                username
+              )
+            );
+
+
+          const snapshot =
+            await getDocs(
+              usernameQuery
+            );
+
+
+          let nicknameTaken =
+            false;
+
+
+          snapshot.forEach(
+            userDoc => {
+
+              if (
+                userDoc.id !==
+                currentUser.uid
+              ) {
+
+                nicknameTaken =
+                  true;
+              }
+
+            }
+          );
+
+
+          /* ==============================================
+             NICKNAME TAKEN
+          ============================================== */
+
+          if (
+            nicknameTaken
+          ) {
+
+            usernameStatus.textContent =
+              "✕ This nickname is already taken.";
+
+            usernameStatus.className =
+              "username-status taken";
+
+
+            await generateSuggestions(
+              username
+            );
+
+
+            showToast(
+              "Please choose another nickname.",
+              true
+            );
+
+
+            return;
+          }
+
+
+          /* ==============================================
+             2. SAVE PROFILE TO FIRESTORE
+          ============================================== */
+
+          saveBtn.textContent =
+            "Saving profile...";
+
+
+          await setDoc(
+            doc(
+              db,
+              "users",
+              currentUser.uid
+            ),
+            {
+
+              username:
+                username,
+
+              gender:
+                gender,
+
+              email:
+                currentUser.email ||
+                "",
+
+              updatedAt:
+                Date.now()
+
+            },
+            {
+              merge:
+                true
+            }
+          );
+
+
+          /* ==============================================
+             3. UPDATE FIREBASE AUTH
+          ============================================== */
+
+          saveBtn.textContent =
+            "Updating account...";
+
+
+          await updateProfile(
+            currentUser,
+            {
+
+              displayName:
+                username
+
+            }
+          );
+
+
+          /* ==============================================
+             4. UPDATE LOCAL STATE
+          ============================================== */
+
+          currentUsername =
+            username;
+
+
+          currentGender =
+            gender;
+
+
+          /* ==============================================
+             5. UPDATE AVATAR
+          ============================================== */
+
+          updateAvatarPreview(
+            gender
+          );
+
+
+          /* ==============================================
+             6. SUCCESS
+          ============================================== */
+
+          usernameStatus.textContent =
+            "✓ Profile saved successfully.";
+
+
+          usernameStatus.className =
+            "username-status available";
+
+
+          usernameSuggestions.style.display =
+            "none";
+
+
+          showToast(
+            "Profile saved successfully ✓"
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "PROFILE SAVE ERROR:",
+            error
+          );
+
+
+          console.error(
+            "Error code:",
+            error?.code
+          );
+
+
+          console.error(
+            "Error message:",
+            error?.message
+          );
+
+
+          let errorMessage =
+            "Failed to save profile.";
+
+
+          if (
+            error?.code ===
+            "permission-denied"
+          ) {
+
+            errorMessage =
+              "Permission denied. Check your Firestore rules.";
+
+          }
+
+
+          else if (
+            error?.code ===
+            "failed-precondition"
+          ) {
+
+            errorMessage =
+              "Firestore request failed. Check your Firebase configuration.";
+
+          }
+
+
+          else if (
+            error?.message
+          ) {
+
+            errorMessage =
+              error.message;
+          }
+
+
+          showToast(
+            errorMessage,
+            true
+          );
+
+
+        } finally {
+
+          saveBtn.disabled =
+            false;
+
+
+          saveBtn.textContent =
+            "Save Changes";
+
+        }
+
+      }
+    );
+
+
+    /* =========================================================
+       LOGOUT
+    ========================================================= */
+
+    logoutBtn.addEventListener(
+      "click",
+      async () => {
+
+        try {
+
+          await signOut(
+            auth
+          );
+
+
+          window.location.href =
+            "index.html";
+
+
+        } catch (error) {
+
+          console.error(
+            "LOGOUT ERROR:",
+            error
+          );
+
+
+          showToast(
+            "Failed to sign out.",
+            true
+          );
+        }
+
+      }
+    );
+
   </script>
 
-  <script type="module" src="auth-state.js"></script>
+  <!-- =====================================================
+       GLOBAL AUTH STATE
+  ====================================================== -->
+
+  <script
+    type="module"
+    src="auth-state.js"
+  ></script>
 
 </body>
 </html>

@@ -1,195 +1,277 @@
-// =====================================================
-// DANIMEVERSE — GENRE PAGE
-// Only runs on genre.html
-// =====================================================
+document.addEventListener("DOMContentLoaded", () => {
 
-// Make sure this script does NOT run on index.html
-const title = document.getElementById("genreTitle");
-const container = document.getElementById("genreAnimeContainer");
-
-// Stop immediately if this is not the genre page
-if (!title || !container) {
-  console.log("Genre page not detected. genre.js stopped.");
-} else {
-
-  // Get genre information from URL
   const params = new URLSearchParams(window.location.search);
 
-  const genreName = params.get("genre");
+  const genre = params.get("genre");
   const genreId = params.get("id");
 
+  const genreTitle = document.getElementById("genreTitle");
+  const animeContainer = document.getElementById("genreAnimeContainer");
+
+  // Check if genre exists
+  if (!genre || !genreId) {
+
+    genreTitle.textContent = "Genre Not Found";
+
+    animeContainer.innerHTML = `
+      <p class="text-slate-400 col-span-full text-center">
+        No genre was selected.
+      </p>
+    `;
+
+    return;
+  }
+
   // Format genre name
-  const formattedGenre = genreName
-    ? genreName
-        .replace(/-/g, " ")
-        .replace(/\b\w/g, letter => letter.toUpperCase())
-    : "Anime";
+  const formattedGenre =
+    genre.charAt(0).toUpperCase() + genre.slice(1).replace("-", " ");
+
+  // Update page title
+  genreTitle.textContent = `${formattedGenre} Anime`;
+
+  // =========================
+  // PAGINATION SETTINGS
+  // =========================
+
+  let currentPage = 1;
+
+  const limit = 24;
+
+  let isLoading = false;
+
+  let hasMore = true;
 
 
-  // Set page title
-  title.textContent = `${formattedGenre} Anime`;
+  // =========================
+  // CREATE LOAD MORE BUTTON
+  // =========================
+
+  const loadMoreButton = document.createElement("button");
+
+  loadMoreButton.textContent = "Load More";
+
+  loadMoreButton.className = `
+    mt-10
+    px-6
+    py-3
+    rounded-full
+    bg-pink-500
+    hover:bg-pink-600
+    text-white
+    font-semibold
+    transition
+    duration-300
+    hover:scale-105
+  `;
+
+  // Put button below the anime grid
+  const buttonWrapper = document.createElement("div");
+
+  buttonWrapper.className =
+    "flex justify-center pb-16";
+
+  buttonWrapper.appendChild(loadMoreButton);
+
+  animeContainer.parentNode.appendChild(buttonWrapper);
 
 
-  // Load anime
-  async function loadGenreAnime() {
+  // =========================
+  // LOAD ANIME
+  // =========================
 
-    if (!genreId) {
+  async function loadAnime(page) {
 
-      container.innerHTML = `
-        <p class="col-span-full text-center text-red-400">
-          Genre not found.
+    if (isLoading || !hasMore) return;
+
+    isLoading = true;
+
+    loadMoreButton.textContent = "Loading...";
+    loadMoreButton.disabled = true;
+
+
+    // Show loading message only on first load
+    if (page === 1) {
+
+      animeContainer.innerHTML = `
+        <p class="text-slate-400 col-span-full text-center">
+          Loading ${formattedGenre} anime...
         </p>
       `;
 
-      return;
     }
-
-
-    container.innerHTML = `
-      <div class="col-span-full text-center py-16">
-        <p class="text-slate-400 animate-pulse">
-          Loading ${formattedGenre} anime...
-        </p>
-      </div>
-    `;
 
 
     try {
 
-      const response = await fetch(
-        `https://api.jikan.moe/v4/anime?genres=${genreId}&order_by=score&sort=desc&limit=12`
-      );
+      const apiUrl =
+        `https://api.jikan.moe/v4/anime?genres=${genreId}&order_by=score&sort=desc&page=${page}&limit=${limit}`;
 
+      const response = await fetch(apiUrl);
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        throw new Error("Failed to fetch anime");
       }
 
+      const result = await response.json();
 
-      const data = await response.json();
-
-      const animeList = data.data || [];
+      const animeList = result.data || [];
 
 
-      if (!animeList.length) {
+      // =========================
+      // CHECK IF RESULTS EXIST
+      // =========================
 
-        container.innerHTML = `
-          <p class="col-span-full text-center text-slate-400">
-            No anime found in this genre.
+      if (page === 1 && animeList.length === 0) {
+
+        animeContainer.innerHTML = `
+          <p class="text-slate-400 col-span-full text-center">
+            No anime found for this genre.
           </p>
         `;
+
+        hasMore = false;
+
+        buttonWrapper.remove();
 
         return;
       }
 
 
-      container.innerHTML = animeList.map(anime => {
+      // =========================
+      // ADD ANIME CARDS
+      // =========================
 
-        const animeTitle =
-          anime.title_english ||
-          anime.title ||
-          "Unknown Anime";
+      animeList.forEach(anime => {
 
+        const card = document.createElement("div");
 
-        const image =
-          anime.images?.jpg?.large_image_url ||
-          anime.images?.jpg?.image_url ||
-          "https://via.placeholder.com/400x600?text=No+Image";
-
-
-        const score =
-          anime.score
-            ? anime.score.toFixed(1)
-            : "N/A";
-
-
-        const genres =
-          anime.genres
-            ?.slice(0, 3)
-            .map(g => g.name)
-            .join(", ") ||
-          "Unknown";
-
-
-        return `
-          <article
-            class="glass-card group overflow-hidden rounded-[2rem] border border-white/10 p-5 shadow-soft transition duration-500 hover:-translate-y-1 hover:shadow-glow"
-          >
-
-            <img
-              src="${image}"
-              alt="${animeTitle}"
-              class="w-full h-[320px] object-cover rounded-2xl"
-              loading="lazy"
-            />
-
-
-            <div class="space-y-3 mt-4">
-
-              <div class="flex flex-wrap gap-2">
-
-                <span class="bg-pink-600 text-white text-xs px-3 py-1 rounded-full">
-                  ⭐ ${score}
-                </span>
-
-                <span class="bg-indigo-600 text-white text-xs px-3 py-1 rounded-full">
-                  ${genres}
-                </span>
-
-              </div>
-
-
-              <h3 class="text-xl font-semibold text-white">
-                ${animeTitle}
-              </h3>
-
-
-              <div class="pt-3">
-
-                <a
-                  href="anime.html?malId=${anime.mal_id}"
-                  class="inline-block bg-pink-700 text-white px-5 py-2 rounded-full hover:bg-pink-500 transition text-sm font-semibold"
-                >
-                  ▶ Episodes
-                </a>
-
-              </div>
-
-            </div>
-
-          </article>
+        card.className = `
+          glass-card
+          rounded-2xl
+          overflow-hidden
+          cursor-pointer
+          transition
+          duration-300
+          hover:-translate-y-2
+          hover:shadow-glow
         `;
 
-      }).join("");
+
+        card.innerHTML = `
+
+          <img
+            src="${
+              anime.images?.jpg?.large_image_url ||
+              anime.images?.jpg?.image_url ||
+              ""
+            }"
+            alt="${anime.title}"
+            class="w-full h-64 object-cover"
+            loading="lazy"
+          >
+
+          <div class="p-4">
+
+            <h3 class="text-white font-semibold text-base line-clamp-2">
+              ${anime.title}
+            </h3>
+
+            <p class="text-sm text-slate-400 mt-2">
+              ${anime.type || "Anime"}
+              ${anime.score ? ` • ⭐ ${anime.score}` : ""}
+            </p>
+
+          </div>
+
+        `;
+
+
+        // =========================
+        // CLICK ANIME
+        // =========================
+
+        card.addEventListener("click", () => {
+
+          window.location.href =
+            `watch.html?id=${anime.mal_id}`;
+
+        });
+
+
+        animeContainer.appendChild(card);
+
+      });
+
+
+      // =========================
+      // CHECK FOR MORE RESULTS
+      // =========================
+
+      if (
+        !result.pagination ||
+        !result.pagination.has_next_page ||
+        animeList.length < limit
+      ) {
+
+        hasMore = false;
+
+        buttonWrapper.remove();
+
+      } else {
+
+        currentPage++;
+
+        loadMoreButton.textContent = "Load More";
+
+        loadMoreButton.disabled = false;
+
+      }
 
 
     } catch (error) {
 
       console.error("Genre API Error:", error);
 
-      container.innerHTML = `
-        <div class="col-span-full text-center py-16">
 
-          <p class="text-red-400">
-            ⚠️ Unable to load anime right now.
+      if (page === 1) {
+
+        animeContainer.innerHTML = `
+          <p class="text-red-400 col-span-full text-center">
+            Failed to load anime.
+            Please refresh the page and try again.
           </p>
+        `;
 
-          <button
-            onclick="location.reload()"
-            class="mt-4 bg-pink-600 text-white px-5 py-2 rounded-full"
-          >
-            Try Again
-          </button>
+      }
 
-        </div>
-      `;
+
+      loadMoreButton.textContent = "Load More";
+
+      loadMoreButton.disabled = false;
 
     }
+
+
+    isLoading = false;
 
   }
 
 
-  // Start loading
-  loadGenreAnime();
+  // =========================
+  // LOAD MORE CLICK
+  // =========================
 
-}
+  loadMoreButton.addEventListener("click", () => {
+
+    loadAnime(currentPage);
+
+  });
+
+
+  // =========================
+  // INITIAL LOAD
+  // =========================
+
+  loadAnime(currentPage);
+
+});

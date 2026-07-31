@@ -124,160 +124,114 @@ function showLoginError(
    AUTHENTICATION CHECK
 ========================================================= */
 
-onAuthStateChanged(
+onAuthStateChanged(auth, function (user) {
 
-  auth,
+  console.log("🔍 Checking authentication...");
 
-  function (user) {
+  // ==========================================
+  // USER IS NOT LOGGED IN
+  // ==========================================
+  if (!user) {
 
-    console.log(
-      "🔍 Checking authentication..."
-    );
+    console.log("🔒 USER NOT LOGGED IN");
 
+    isAdminAuthenticated = false;
 
-    /* =====================================================
-       NO USER LOGGED IN
-    ===================================================== */
-
-    if (!user) {
-
-      console.log(
-        "🔒 USER NOT LOGGED IN"
-      );
-
-
-      if (loginScreen) {
-
-        loginScreen.style.display =
-          "flex";
-
-      }
-
-
-      if (adminDashboard) {
-
-        adminDashboard.style.display =
-          "none";
-
-      }
-
-
-      return;
-
+    // Show login
+    if (loginScreen) {
+      loginScreen.style.display = "flex";
+      loginScreen.style.visibility = "visible";
+      loginScreen.style.opacity = "1";
+      loginScreen.style.pointerEvents = "auto";
     }
 
-
-    /* =====================================================
-       CHECK ADMIN EMAIL
-    ===================================================== */
-
-    const userEmail =
-      user.email?.toLowerCase();
-
-
-    if (
-      userEmail !==
-      ADMIN_EMAIL.toLowerCase()
-    ) {
-
-      console.log(
-        "⛔ UNAUTHORIZED USER:",
-        user.email
-      );
-
-
-      signOut(
-        auth
-      );
-
-
-      showLoginError(
-        "Access denied. This account is not an admin."
-      );
-
-
-      return;
-
+    // Hide dashboard
+    if (adminDashboard) {
+      adminDashboard.style.display = "none";
+      adminDashboard.style.visibility = "hidden";
+      adminDashboard.style.opacity = "0";
+      adminDashboard.style.pointerEvents = "none";
     }
 
-    /* ==========================================
-       ADMIN AUTHENTICATED
-    ========================================== */
+    return;
+  }
+
+
+  // ==========================================
+  // CHECK ADMIN EMAIL
+  // ==========================================
+
+  const userEmail = user.email?.toLowerCase();
+
+  if (userEmail !== ADMIN_EMAIL.toLowerCase()) {
 
     console.log(
-      "✅ ADMIN AUTHENTICATED:",
+      "⛔ UNAUTHORIZED USER:",
       user.email
     );
 
-    isAdminAuthenticated = true;
+    isAdminAuthenticated = false;
 
-    /* =========================================================
-       HIDE LOGIN SCREEN
-    ========================================================= */
+    signOut(auth);
 
-    if (loginScreen) {
-      loginScreen.style.display = "none";
-      loginScreen.style.visibility = "hidden";
-      loginScreen.style.opacity = "0";
-      loginScreen.style.pointerEvents = "none";
-    }
+    showLoginError(
+      "Access denied. This account is not an admin."
+    );
+
+    return;
+  }
 
 
-    /* =========================================================
-       SHOW ADMIN DASHBOARD
-    ========================================================= */
+  // ==========================================
+  // ADMIN IS AUTHENTICATED
+  // ==========================================
 
-    if (adminDashboard) {
-      adminDashboard.style.display = "block";
-      adminDashboard.style.visibility = "visible";
-      adminDashboard.style.opacity = "1";
-      adminDashboard.style.pointerEvents = "auto";
+  console.log(
+    "✅ ADMIN AUTHENTICATED:",
+    user.email
+  );
 
-      console.log(
-        "📊 ADMIN DASHBOARD DISPLAYED:",
-        adminDashboard
-      );
-    }
-    /* =====================================================
-       HIDE LOGIN SCREEN
-    ===================================================== */
+  isAdminAuthenticated = true;
 
-    if (loginScreen) {
-      loginScreen.style.display = "none";
-    }
 
-    /* =====================================================
-       SHOW ADMIN DASHBOARD
-    ===================================================== */
+  // ==========================================
+  // HIDE LOGIN SCREEN
+  // ==========================================
 
-    if (adminDashboard) {
+  if (loginScreen) {
 
-      adminDashboard.style.display = "block";
-      adminDashboard.style.visibility = "visible";
-      adminDashboard.style.opacity = "1";
+    loginScreen.style.display = "none";
+    loginScreen.style.visibility = "hidden";
+    loginScreen.style.opacity = "0";
+    loginScreen.style.pointerEvents = "none";
 
-      console.log(
-        "📊 ADMIN DASHBOARD DISPLAYED:",
-        adminDashboard
-      );
+  }
 
-    } else {
 
-      console.error(
-        "❌ #adminDashboard NOT FOUND"
-      );
+  // ==========================================
+  // SHOW ADMIN DASHBOARD
+  // ==========================================
 
-    }
+  if (adminDashboard) {
+
+    adminDashboard.style.display = "flex";
+    adminDashboard.style.visibility = "visible";
+    adminDashboard.style.opacity = "1";
+    adminDashboard.style.pointerEvents = "auto";
 
     console.log(
       "📊 ADMIN DASHBOARD DISPLAYED"
     );
 
+  } else {
+
+    console.error(
+      "❌ #adminDashboard NOT FOUND"
+    );
+
   }
 
-);
-
-
+});
 /* =========================================================
    LOGIN
 ========================================================= */
