@@ -1,597 +1,2662 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<link rel="icon" type="image/png" href="https://i.pinimg.com/736x/fc/8d/c0/fc8dc0a1f0db8842d9c58373acd655a8.jpg">
-<title>Danimeverse Admin</title>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #050816; --surface: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.08);
-    --pink: #ec4899; --purple: #9333ea; --text: #f1f5f9; --muted: #94a3b8;
-  }
-  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; display: flex; }
 
-  /* ── SIDEBAR ── */
-  .sidebar { width: 220px; background: rgba(255,255,255,.025); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 14px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; }
-  .logo { font-size: 18px; font-weight: 900; background: linear-gradient(135deg,var(--pink),var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 28px; }
-  .nav-label { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 6px; }
-  .nav-item { display: flex; align-items: center; gap: 8px; padding: 9px 10px; border-radius: 9px; cursor: pointer; font-size: 13px; color: var(--muted); transition: all .2s; text-decoration: none; margin-bottom: 2px; }
-  .nav-item:hover, .nav-item.active { background: rgba(236,72,153,.15); color: var(--pink); }
-  .sidebar-sep { height: 1px; background: var(--border); margin: 14px 0; }
-  .stat-mini-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; margin-top: 10px; }
-  .stat-mini-val { font-size: 20px; font-weight: 900; color: var(--pink); }
+  <meta charset="UTF-8">
 
-  /* ── MAIN ── */
-  .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; min-width: 0; }
-  .topbar { padding: 16px 24px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,.02); display: flex; align-items: center; gap: 12px; }
-  .topbar h1 { font-size: 17px; font-weight: 700; flex: 1; }
-  .topbar a { color: var(--muted); font-size: 13px; text-decoration: none; }
-  .topbar a:hover { color: var(--pink); }
-  .content { padding: 22px; flex: 1; }
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
 
-  /* ── STATS ── */
-  .stats-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); gap: 12px; margin-bottom: 22px; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; text-align: center; }
-  .stat-num { font-size: 30px; font-weight: 900; background: linear-gradient(135deg,var(--pink),var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .stat-label { font-size: 11px; color: var(--muted); margin-top: 3px; }
+>
 
-  /* ── PANELS ── */
-  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 20px; }
-  .section-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 12px; }
+  <link
+    rel="icon"
+    type="image/png"
+    href="https://i.pinimg.com/736x/fc/8d/c0/fc8dc0a1f0db8842d9c58373acd655a8.jpg"
+  >
 
-  /* ── LAYOUT ── */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  @media (max-width: 1024px) { .two-col { grid-template-columns: 1fr; } }
+  <title>Danimeverse Admin</title>
 
-  /* ── SEARCH ── */
-  .search-wrap { position: relative; }
-  .search-input { width: 100%; padding: 12px 14px 12px 40px; background: rgba(255,255,255,.06); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 14px; outline: none; transition: border .2s; }
-  .search-input:focus { border-color: var(--pink); }
-  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; pointer-events: none; }
-  .search-results { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: #0f0f1e; border: 1px solid var(--border); border-radius: 12px; max-height: 320px; overflow-y: auto; z-index: 100; display: none; padding: 4px; }
-  .search-result-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; cursor: pointer; transition: background .15s; }
-  .search-result-item:hover { background: rgba(236,72,153,.15); }
-  .search-result-item img { width: 40px; height: 54px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
-  .search-result-item .info h4 { font-size: 13px; font-weight: 600; }
-  .search-result-item .info p { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  <style>
 
-  /* ── SELECTED ANIME CARD ── */
-  .selected-anime-card { display: none; gap: 12px; margin-top: 14px; padding: 14px; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 12px; }
-  .selected-anime-card img { width: 54px; height: 76px; object-fit: cover; border-radius: 8px; border: 2px solid var(--pink); flex-shrink: 0; }
-  .selected-anime-card .meta h2 { font-size: 16px; font-weight: 800; }
-  .selected-anime-card .meta p { font-size: 11px; color: var(--muted); margin-top: 3px; }
-  .badge { display: inline-block; background: rgba(236,72,153,.15); color: var(--pink); border: 1px solid rgba(236,72,153,.3); font-size: 10px; padding: 2px 8px; border-radius: 999px; margin-top: 5px; }
+    /* =====================================================
+       RESET
+    ===================================================== */
 
-  /* ── JIKAN EPISODE LIST ── */
-  #jikanEpSection { display: none; }
-  .ep-pagination { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-  .page-info { font-size: 11px; color: var(--muted); flex: 1; }
-  .jikan-ep-list { max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
-  .jikan-ep-item { display: flex; align-items: center; gap: 8px; padding: 9px 10px; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all .15s; }
-  .jikan-ep-item:hover { border-color: rgba(236,72,153,.4); background: rgba(236,72,153,.08); }
-  .jikan-ep-item.active { border-color: var(--pink); background: rgba(236,72,153,.12); }
-  .jikan-ep-item.uploaded { border-color: rgba(34,197,94,.3); }
-  .jep-num { font-size: 11px; font-weight: 700; color: var(--pink); min-width: 52px; }
-  .jep-title { font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .jep-status { font-size: 10px; color: #22c55e; white-space: nowrap; }
-  .jep-status.empty-status { color: #475569; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  /* ── UPLOADED EPISODE LIST ── */
-  .ep-list { display: flex; flex-direction: column; gap: 6px; max-height: 280px; overflow-y: auto; }
-  .ep-item { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; transition: all .2s; }
-  .ep-item:hover { border-color: rgba(236,72,153,.4); background: rgba(236,72,153,.08); }
-  .ep-num { font-size: 11px; font-weight: 700; color: var(--pink); min-width: 52px; }
-  .ep-title { font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .ep-date { font-size: 10px; color: var(--muted); }
-  .ep-link { font-size: 11px; color: #22c55e; }
-  .ep-link.missing { color: #ef4444; }
 
-  /* ── FORM ── */
-  .form-row { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin-bottom: 10px; }
-  @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
-  .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
-  .form-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
-  .form-input { padding: 11px 12px; background: rgba(255,255,255,.06); border: 1px solid var(--border); border-radius: 9px; color: var(--text); font-size: 13px; outline: none; transition: border .2s; width: 100%; }
-  .form-input:focus { border-color: var(--pink); }
-  .form-input::placeholder { color: #475569; }
+    /* =====================================================
+       VARIABLES
+    ===================================================== */
 
-  /* ── BUTTONS ── */
-  .btn { padding: 11px 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; transition: all .2s; display: inline-flex; align-items: center; gap: 7px; }
-  .btn-primary { background: linear-gradient(135deg,var(--pink),var(--purple)); color: white; }
-  .btn-primary:hover { opacity: .85; transform: translateY(-1px); }
-  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
-  .btn-ghost:hover { border-color: var(--pink); color: var(--pink); }
-  .btn-sm { padding: 7px 14px; font-size: 11px; border-radius: 7px; }
-  .btn-page { padding: 6px 14px; font-size: 12px; border-radius: 7px; border: 1px solid var(--border); background: rgba(255,255,255,.04); color: var(--text); cursor: pointer; transition: all .2s; }
-  .btn-page:hover:not([disabled]) { border-color: var(--pink); color: var(--pink); }
-  .btn-page[disabled] { opacity: .3; cursor: not-allowed; }
+    :root {
 
-  /* ── URL HISTORY ── */
-  .url-history { display: flex; flex-direction: column; gap: 5px; }
-  .url-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; transition: background .15s; font-size: 11px; }
-  .url-item:hover { background: rgba(236,72,153,.08); border-color: rgba(236,72,153,.3); }
-  .url-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
-  .url-use { color: var(--pink); font-size: 10px; font-weight: 600; white-space: nowrap; }
+      --bg: #050816;
 
-  /* ── RECENT TABLE ── */
-  .recent-table { width: 100%; border-collapse: collapse; }
-  .recent-table th { text-align: left; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; padding: 7px 10px; border-bottom: 1px solid var(--border); }
-  .recent-table td { padding: 10px 10px; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,.04); vertical-align: middle; }
-  .recent-table tr:last-child td { border-bottom: none; }
-  .recent-table tr:hover td { background: rgba(255,255,255,.02); cursor: pointer; }
-  .link-ok { color: #22c55e; font-size: 11px; }
-  .link-miss { color: #ef4444; font-size: 11px; }
+      --surface:
+        rgba(255,255,255,0.04);
 
-  /* ── MISC ── */
-  .empty { color: var(--muted); font-size: 12px; text-align: center; padding: 16px; }
-  .success-banner { display: none; background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.3); border-radius: 9px; color: #22c55e; padding: 10px 14px; font-size: 13px; margin-top: 10px; align-items: center; gap: 8px; }
-  #toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 18px; background: #1e1e2e; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; transform: translateY(80px); opacity: 0; transition: all .3s cubic-bezier(.34,1.56,.64,1); z-index: 1000; max-width: 300px; }
-  #toast.show { transform: translateY(0); opacity: 1; }
-  #toast.success { border-color: #22c55e; color: #22c55e; }
-  #toast.error { border-color: #ef4444; color: #ef4444; }
-  /* ── ADMIN LOGIN ── */
-  #loginScreen {
-    position: fixed;
-    inset: 0;
-    background: #050816;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 9999;
-  }
+      --surface-hover:
+        rgba(255,255,255,0.07);
 
-  .login-card {
-    width: 100%;
-    max-width: 400px;
-    background: rgba(255,255,255,.04);
-    border: 1px solid rgba(255,255,255,.08);
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 20px 60px rgba(0,0,0,.4);
-  }
+      --border:
+        rgba(255,255,255,0.08);
 
-  .login-logo {
-    text-align: center;
-    font-size: 24px;
-    font-weight: 900;
-    margin-bottom: 8px;
-    background: linear-gradient(135deg,#ec4899,#9333ea);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
+      --pink:
+        #ec4899;
 
-  .login-subtitle {
-    text-align: center;
-    color: #94a3b8;
-    font-size: 13px;
-    margin-bottom: 25px;
-  }
+      --purple:
+        #9333ea;
 
-  .login-group {
-    margin-bottom: 15px;
-  }
+      --text:
+        #f1f5f9;
 
-  .login-label {
-    display: block;
-    font-size: 11px;
-    color: #94a3b8;
-    font-weight: 600;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
+      --muted:
+        #94a3b8;
 
-  .login-input {
-    width: 100%;
-    padding: 12px;
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.08);
-    border-radius: 9px;
-    color: white;
-    outline: none;
-    font-size: 14px;
-  }
+      --green:
+        #22c55e;
 
-  .login-input:focus {
-    border-color: #ec4899;
-  }
+      --red:
+        #ef4444;
 
-  #loginBtn {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 10px;
-    background: linear-gradient(135deg,#ec4899,#9333ea);
-    color: white;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 5px;
-  }
+    }
 
-  #loginBtn:hover {
-    opacity: .85;
-  }
 
-  #loginBtn:disabled {
-    opacity: .5;
-    cursor: not-allowed;
-  }
+    /* =====================================================
+       BODY
+    ===================================================== */
 
-  #loginError {
-    display: none;
-    color: #ef4444;
-    background: rgba(239,68,68,.1);
-    border: 1px solid rgba(239,68,68,.2);
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 12px;
-    margin-top: 12px;
-    text-align: center;
-  }
+    body {
 
-  #logoutBtn {
-    padding: 7px 12px;
-    border: 1px solid rgba(255,255,255,.1);
-    background: transparent;
-    color: #94a3b8;
-    border-radius: 7px;
-    cursor: pointer;
-    font-size: 11px;
-  }
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(147,51,234,.10),
+          transparent 35%
+        ),
+        radial-gradient(
+          circle at bottom left,
+          rgba(236,72,153,.08),
+          transparent 35%
+        ),
+        var(--bg);
 
-  #logoutBtn:hover {
-    border-color: #ec4899;
-    color: #ec4899;
-  }
+      color:
+        var(--text);
 
-  /* Hide dashboard until authenticated */
-  #adminDashboard {
-    display: none;
-  }
-</style>
-</head>
-  <body>
+      font-family:
+        'Segoe UI',
+        system-ui,
+        sans-serif;
 
-  <!-- ═══════════════════════════════════════
+      min-height:
+        100vh;
+
+    }
+
+
+    /* =====================================================
        LOGIN SCREEN
-  ════════════════════════════════════════ -->
+    ===================================================== */
+
+    #loginScreen {
+
+      position:
+        fixed;
+
+      inset:
+        0;
+
+      background:
+        #050816;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      padding:
+        20px;
+
+      z-index:
+        9999;
+
+    }
+
+
+    .login-card {
+
+      width:
+        100%;
+
+      max-width:
+        420px;
+
+      background:
+        rgba(255,255,255,.04);
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        20px;
+
+      padding:
+        32px;
+
+      box-shadow:
+        0 20px 60px
+        rgba(0,0,0,.4);
+
+    }
+
+
+    .login-logo {
+
+      text-align:
+        center;
+
+      font-size:
+        26px;
+
+      font-weight:
+        900;
+
+      margin-bottom:
+        8px;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--pink),
+          var(--purple)
+        );
+
+      -webkit-background-clip:
+        text;
+
+      -webkit-text-fill-color:
+        transparent;
+
+    }
+
+
+    .login-subtitle {
+
+      text-align:
+        center;
+
+      color:
+        var(--muted);
+
+      font-size:
+        13px;
+
+      margin-bottom:
+        28px;
+
+    }
+
+
+    .login-group {
+
+      margin-bottom:
+        16px;
+
+    }
+
+
+    .login-label {
+
+      display:
+        block;
+
+      font-size:
+        11px;
+
+      color:
+        var(--muted);
+
+      font-weight:
+        600;
+
+      text-transform:
+        uppercase;
+
+      margin-bottom:
+        7px;
+
+    }
+
+
+    .login-input {
+
+      width:
+        100%;
+
+      padding:
+        13px;
+
+      background:
+        rgba(255,255,255,.06);
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        10px;
+
+      color:
+        white;
+
+      outline:
+        none;
+
+      font-size:
+        14px;
+
+    }
+
+
+    .login-input:focus {
+
+      border-color:
+        var(--pink);
+
+    }
+
+
+    #loginBtn {
+
+      width:
+        100%;
+
+      padding:
+        13px;
+
+      border:
+        none;
+
+      border-radius:
+        10px;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--pink),
+          var(--purple)
+        );
+
+      color:
+        white;
+
+      font-size:
+        14px;
+
+      font-weight:
+        700;
+
+      cursor:
+        pointer;
+
+      margin-top:
+        5px;
+
+    }
+
+
+    #loginBtn:hover {
+
+      opacity:
+        .88;
+
+    }
+
+
+    #loginBtn:disabled {
+
+      opacity:
+        .5;
+
+      cursor:
+        not-allowed;
+
+    }
+
+
+    #loginError {
+
+      display:
+        none;
+
+      color:
+        var(--red);
+
+      background:
+        rgba(239,68,68,.1);
+
+      border:
+        1px solid
+        rgba(239,68,68,.2);
+
+      padding:
+        10px;
+
+      border-radius:
+        8px;
+
+      font-size:
+        12px;
+
+      margin-top:
+        12px;
+
+      text-align:
+        center;
+
+    }
+
+
+    /* =====================================================
+       ADMIN DASHBOARD
+    ===================================================== */
+
+    #adminDashboard {
+
+      display:
+        none;
+
+      min-height:
+        100vh;
+
+      width:
+        100%;
+
+    }
+
+
+    /* =====================================================
+       SIDEBAR
+    ===================================================== */
+
+    .sidebar {
+
+      width:
+        220px;
+
+      background:
+        rgba(255,255,255,.025);
+
+      border-right:
+        1px solid var(--border);
+
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      padding:
+        20px 14px;
+
+      position:
+        fixed;
+
+      left:
+        0;
+
+      top:
+        0;
+
+      height:
+        100vh;
+
+      overflow-y:
+        auto;
+
+      z-index:
+        100;
+
+    }
+
+
+    .logo {
+
+      font-size:
+        18px;
+
+      font-weight:
+        900;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--pink),
+          var(--purple)
+        );
+
+      -webkit-background-clip:
+        text;
+
+      -webkit-text-fill-color:
+        transparent;
+
+      margin-bottom:
+        28px;
+
+    }
+
+
+    .nav-label {
+
+      font-size:
+        10px;
+
+      text-transform:
+        uppercase;
+
+      letter-spacing:
+        .1em;
+
+      color:
+        var(--muted);
+
+      margin-bottom:
+        6px;
+
+    }
+
+
+    .nav-item {
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      gap:
+        8px;
+
+      padding:
+        9px 10px;
+
+      border-radius:
+        9px;
+
+      font-size:
+        13px;
+
+      color:
+        var(--muted);
+
+      transition:
+        all .2s;
+
+      text-decoration:
+        none;
+
+      margin-bottom:
+        2px;
+
+    }
+
+
+    .nav-item:hover,
+    .nav-item.active {
+
+      background:
+        rgba(236,72,153,.15);
+
+      color:
+        var(--pink);
+
+    }
+
+
+    .sidebar-sep {
+
+      height:
+        1px;
+
+      background:
+        var(--border);
+
+      margin:
+        14px 0;
+
+    }
+
+
+    .stat-mini-label {
+
+      font-size:
+        11px;
+
+      color:
+        var(--muted);
+
+      margin-top:
+        10px;
+
+      margin-bottom:
+        4px;
+
+    }
+
+
+    .stat-mini-val {
+
+      font-size:
+        20px;
+
+      font-weight:
+        900;
+
+      color:
+        var(--pink);
+
+    }
+
+
+    /* =====================================================
+       MAIN
+    ===================================================== */
+
+    .main {
+
+      margin-left:
+        220px;
+
+      min-height:
+        100vh;
+
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      min-width:
+        0;
+
+    }
+
+
+    /* =====================================================
+       TOPBAR
+    ===================================================== */
+
+    .topbar {
+
+      padding:
+        16px 24px;
+
+      border-bottom:
+        1px solid var(--border);
+
+      background:
+        rgba(255,255,255,.02);
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      gap:
+        12px;
+
+      position:
+        sticky;
+
+      top:
+        0;
+
+      z-index:
+        50;
+
+      backdrop-filter:
+        blur(15px);
+
+    }
+
+
+    .topbar h1 {
+
+      font-size:
+        17px;
+
+      font-weight:
+        700;
+
+      flex:
+        1;
+
+    }
+
+
+    .topbar a {
+
+      color:
+        var(--muted);
+
+      font-size:
+        13px;
+
+      text-decoration:
+        none;
+
+    }
+
+
+    .topbar a:hover {
+
+      color:
+        var(--pink);
+
+    }
+
+
+    #logoutBtn {
+
+      padding:
+        7px 12px;
+
+      border:
+        1px solid
+        rgba(255,255,255,.1);
+
+      background:
+        transparent;
+
+      color:
+        var(--muted);
+
+      border-radius:
+        7px;
+
+      cursor:
+        pointer;
+
+      font-size:
+        11px;
+
+    }
+
+
+    #logoutBtn:hover {
+
+      border-color:
+        var(--pink);
+
+      color:
+        var(--pink);
+
+    }
+
+
+    /* =====================================================
+       CONTENT
+    ===================================================== */
+
+    .content {
+
+      padding:
+        22px;
+
+      max-width:
+        1500px;
+
+      width:
+        100%;
+
+    }
+
+
+    .page-heading {
+
+      margin-bottom:
+        20px;
+
+    }
+
+
+    .page-heading h2 {
+
+      font-size:
+        24px;
+
+      font-weight:
+        800;
+
+    }
+
+
+    .page-heading p {
+
+      color:
+        var(--muted);
+
+      font-size:
+        13px;
+
+      margin-top:
+        5px;
+
+    }
+
+
+    /* =====================================================
+       STATS
+    ===================================================== */
+
+    .stats-grid {
+
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(160px,1fr)
+        );
+
+      gap:
+        12px;
+
+      margin-bottom:
+        22px;
+
+    }
+
+
+    .stat-card {
+
+      background:
+        var(--surface);
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        14px;
+
+      padding:
+        18px;
+
+    }
+
+
+    .stat-icon {
+
+      font-size:
+        22px;
+
+      margin-bottom:
+        8px;
+
+    }
+
+
+    .stat-num {
+
+      font-size:
+        28px;
+
+      font-weight:
+        900;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--pink),
+          var(--purple)
+        );
+
+      -webkit-background-clip:
+        text;
+
+      -webkit-text-fill-color:
+        transparent;
+
+    }
+
+
+    .stat-label {
+
+      font-size:
+        11px;
+
+      color:
+        var(--muted);
+
+      margin-top:
+        3px;
+
+    }
+
+
+    /* =====================================================
+       PANELS
+    ===================================================== */
+
+    .panel {
+
+      background:
+        var(--surface);
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        18px;
+
+      padding:
+        20px;
+
+      margin-bottom:
+        20px;
+
+    }
+
+
+    .section-title {
+
+      font-size:
+        12px;
+
+      font-weight:
+        700;
+
+      color:
+        var(--muted);
+
+      text-transform:
+        uppercase;
+
+      letter-spacing:
+        .08em;
+
+      margin-bottom:
+        12px;
+
+    }
+
+
+    .section-description {
+
+      font-size:
+        12px;
+
+      color:
+        var(--muted);
+
+      margin-bottom:
+        15px;
+
+    }
+
+
+    /* =====================================================
+       TWO COLUMN
+    ===================================================== */
+
+    .two-col {
+
+      display:
+        grid;
+
+      grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
+      gap:
+        20px;
+
+    }
+
+
+    /* =====================================================
+       SEARCH
+    ===================================================== */
+
+    .search-wrap {
+
+      position:
+        relative;
+
+    }
+
+
+    .search-input {
+
+      width:
+        100%;
+
+      padding:
+        13px 14px 13px 42px;
+
+      background:
+        rgba(255,255,255,.06);
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        10px;
+
+      color:
+        var(--text);
+
+      font-size:
+        14px;
+
+      outline:
+        none;
+
+    }
+
+
+    .search-input:focus {
+
+      border-color:
+        var(--pink);
+
+    }
+
+
+    .search-icon {
+
+      position:
+        absolute;
+
+      left:
+        14px;
+
+      top:
+        50%;
+
+      transform:
+        translateY(-50%);
+
+      pointer-events:
+        none;
+
+    }
+
+
+    .search-results {
+
+      position:
+        absolute;
+
+      top:
+        calc(100% + 6px);
+
+      left:
+        0;
+
+      right:
+        0;
+
+      background:
+        #0f0f1e;
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        12px;
+
+      max-height:
+        320px;
+
+      overflow-y:
+        auto;
+
+      z-index:
+        200;
+
+      display:
+        none;
+
+      padding:
+        4px;
+
+    }
+
+
+    .search-result-item {
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      gap:
+        10px;
+
+      padding:
+        9px 10px;
+
+      border-radius:
+        8px;
+
+      cursor:
+        pointer;
+
+    }
+
+
+    .search-result-item:hover {
+
+      background:
+        rgba(236,72,153,.15);
+
+    }
+
+
+    .search-result-item img {
+
+      width:
+        40px;
+
+      height:
+        54px;
+
+      object-fit:
+        cover;
+
+      border-radius:
+        6px;
+
+      flex-shrink:
+        0;
+
+    }
+
+
+    .search-result-item .info {
+
+      min-width:
+        0;
+
+    }
+
+
+    .search-result-item .info h4 {
+
+      font-size:
+        13px;
+
+      font-weight:
+        600;
+
+      overflow:
+        hidden;
+
+      text-overflow:
+        ellipsis;
+
+      white-space:
+        nowrap;
+
+    }
+
+
+    .search-result-item .info p {
+
+      font-size:
+        11px;
+
+      color:
+        var(--muted);
+
+      margin-top:
+        3px;
+
+    }
+
+
+    /* =====================================================
+       SELECTED ANIME
+    ===================================================== */
+
+    .selected-anime-card {
+
+      display:
+        none;
+
+      gap:
+        12px;
+
+      margin-top:
+        14px;
+
+      padding:
+        14px;
+
+      background:
+        rgba(255,255,255,.03);
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        12px;
+
+    }
+
+
+    .selected-anime-card img {
+
+      width:
+        60px;
+
+      height:
+        84px;
+
+      object-fit:
+        cover;
+
+      border-radius:
+        8px;
+
+      border:
+        2px solid var(--pink);
+
+      flex-shrink:
+        0;
+
+    }
+
+
+    .selected-anime-card .meta {
+
+      min-width:
+        0;
+
+    }
+
+
+    .selected-anime-card .meta h2 {
+
+      font-size:
+        16px;
+
+      font-weight:
+        800;
+
+    }
+
+
+    .selected-anime-card .meta p {
+
+      font-size:
+        11px;
+
+      color:
+        var(--muted);
+
+      margin-top:
+        4px;
+
+    }
+
+
+    .badge {
+
+      display:
+        inline-block;
+
+      background:
+        rgba(236,72,153,.15);
+
+      color:
+        var(--pink);
+
+      border:
+        1px solid
+        rgba(236,72,153,.3);
+
+      font-size:
+        10px;
+
+      padding:
+        3px 8px;
+
+      border-radius:
+        999px;
+
+      margin-top:
+        7px;
+
+    }
+
+
+    /* =====================================================
+       FORM
+    ===================================================== */
+
+    .form-group {
+
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      gap:
+        6px;
+
+      margin-bottom:
+        12px;
+
+    }
+
+
+    .form-label {
+
+      font-size:
+        11px;
+
+      color:
+        var(--muted);
+
+      font-weight:
+        600;
+
+      text-transform:
+        uppercase;
+
+      letter-spacing:
+        .06em;
+
+    }
+
+
+    .form-input {
+
+      padding:
+        12px;
+
+      background:
+        rgba(255,255,255,.06);
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        9px;
+
+      color:
+        var(--text);
+
+      font-size:
+        13px;
+
+      outline:
+        none;
+
+      width:
+        100%;
+
+    }
+
+
+    .form-input:focus {
+
+      border-color:
+        var(--pink);
+
+    }
+
+
+    .form-input::placeholder {
+
+      color:
+        #475569;
+
+    }
+
+
+    .form-row {
+
+      display:
+        grid;
+
+      grid-template-columns:
+        120px 1fr;
+
+      gap:
+        10px;
+
+    }
+
+
+    /* =====================================================
+       BUTTONS
+    ===================================================== */
+
+    .btn {
+
+      padding:
+        11px 20px;
+
+      border:
+        none;
+
+      border-radius:
+        10px;
+
+      cursor:
+        pointer;
+
+      font-size:
+        13px;
+
+      font-weight:
+        700;
+
+      transition:
+        all .2s;
+
+    }
+
+
+    .btn-primary {
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--pink),
+          var(--purple)
+        );
+
+      color:
+        white;
+
+    }
+
+
+    .btn-primary:hover {
+
+      opacity:
+        .85;
+
+      transform:
+        translateY(-1px);
+
+    }
+
+
+    .btn-primary:disabled {
+
+      opacity:
+        .5;
+
+      cursor:
+        not-allowed;
+
+      transform:
+        none;
+
+    }
+
+
+    .btn-ghost {
+
+      background:
+        transparent;
+
+      border:
+        1px solid var(--border);
+
+      color:
+        var(--muted);
+
+    }
+
+
+    .btn-ghost:hover {
+
+      border-color:
+        var(--pink);
+
+      color:
+        var(--pink);
+
+    }
+
+
+    .button-row {
+
+      display:
+        flex;
+
+      gap:
+        8px;
+
+      flex-wrap:
+        wrap;
+
+      margin-top:
+        5px;
+
+    }
+
+
+    /* =====================================================
+       UPLOADED EPISODES
+    ===================================================== */
+
+    .episode-header {
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        space-between;
+
+      gap:
+        10px;
+
+      margin-bottom:
+        12px;
+
+    }
+
+
+    .episode-count {
+
+      color:
+        var(--pink);
+
+      font-size:
+        11px;
+
+      font-weight:
+        700;
+
+    }
+
+
+    .ep-list {
+
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      gap:
+        6px;
+
+      max-height:
+        360px;
+
+      overflow-y:
+        auto;
+
+    }
+
+
+    .ep-item {
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      gap:
+        8px;
+
+      padding:
+        10px 12px;
+
+      background:
+        rgba(255,255,255,.03);
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        10px;
+
+      cursor:
+        pointer;
+
+      transition:
+        all .2s;
+
+    }
+
+
+    .ep-item:hover {
+
+      border-color:
+        rgba(236,72,153,.4);
+
+      background:
+        rgba(236,72,153,.08);
+
+    }
+
+
+    .ep-num {
+
+      font-size:
+        11px;
+
+      font-weight:
+        700;
+
+      color:
+        var(--pink);
+
+      min-width:
+        52px;
+
+    }
+
+
+    .ep-title {
+
+      font-size:
+        12px;
+
+      flex:
+        1;
+
+      overflow:
+        hidden;
+
+      text-overflow:
+        ellipsis;
+
+      white-space:
+        nowrap;
+
+    }
+
+
+    .ep-link {
+
+      font-size:
+        11px;
+
+      color:
+        var(--green);
+
+    }
+
+
+    .ep-link.missing {
+
+      color:
+        var(--red);
+
+    }
+
+
+    /* =====================================================
+       URL HISTORY
+    ===================================================== */
+
+    .url-history {
+
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      gap:
+        5px;
+
+      max-height:
+        250px;
+
+      overflow-y:
+        auto;
+
+    }
+
+
+    .url-item {
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      gap:
+        8px;
+
+      padding:
+        8px 10px;
+
+      background:
+        rgba(255,255,255,.03);
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        7px;
+
+      cursor:
+        pointer;
+
+      font-size:
+        11px;
+
+    }
+
+
+    .url-item:hover {
+
+      background:
+        rgba(236,72,153,.08);
+
+      border-color:
+        rgba(236,72,153,.3);
+
+    }
+
+
+    .url-text {
+
+      flex:
+        1;
+
+      overflow:
+        hidden;
+
+      text-overflow:
+        ellipsis;
+
+      white-space:
+        nowrap;
+
+      color:
+        var(--muted);
+
+    }
+
+
+    .url-use {
+
+      color:
+        var(--pink);
+
+      font-size:
+        10px;
+
+      font-weight:
+        600;
+
+    }
+
+
+    /* =====================================================
+       SUCCESS
+    ===================================================== */
+
+    .success-banner {
+
+      display:
+        none;
+
+      background:
+        rgba(34,197,94,.12);
+
+      border:
+        1px solid
+        rgba(34,197,94,.3);
+
+      border-radius:
+        9px;
+
+      color:
+        var(--green);
+
+      padding:
+        10px 14px;
+
+      font-size:
+        13px;
+
+      margin-top:
+        10px;
+
+    }
+
+
+    /* =====================================================
+       EMPTY
+    ===================================================== */
+
+    .empty {
+
+      color:
+        var(--muted);
+
+      font-size:
+        12px;
+
+      text-align:
+        center;
+
+      padding:
+        16px;
+
+    }
+
+
+    /* =====================================================
+       TOAST
+    ===================================================== */
+
+    #toast {
+
+      position:
+        fixed;
+
+      bottom:
+        20px;
+
+      right:
+        20px;
+
+      padding:
+        12px 18px;
+
+      background:
+        #1e1e2e;
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        10px;
+
+      font-size:
+        13px;
+
+      transform:
+        translateY(80px);
+
+      opacity:
+        0;
+
+      transition:
+        all .3s;
+
+      z-index:
+        10000;
+
+      max-width:
+        300px;
+
+    }
+
+
+    #toast.show {
+
+      transform:
+        translateY(0);
+
+      opacity:
+        1;
+
+    }
+
+
+    #toast.success {
+
+      border-color:
+        var(--green);
+
+      color:
+        var(--green);
+
+    }
+
+
+    #toast.error {
+
+      border-color:
+        var(--red);
+
+      color:
+        var(--red);
+
+    }
+
+
+    /* =====================================================
+       MOBILE
+    ===================================================== */
+
+    @media (
+      max-width: 800px
+    ) {
+
+      .sidebar {
+
+        position:
+          relative;
+
+        width:
+          100%;
+
+        height:
+          auto;
+
+        border-right:
+          none;
+
+        border-bottom:
+          1px solid var(--border);
+
+      }
+
+
+      #adminDashboard {
+
+        flex-direction:
+          column;
+
+      }
+
+
+      .main {
+
+        margin-left:
+          0;
+
+      }
+
+
+      .two-col {
+
+        grid-template-columns:
+          1fr;
+
+      }
+
+
+      .topbar {
+
+        padding:
+          14px;
+
+      }
+
+
+      .topbar h1 {
+
+        font-size:
+          15px;
+
+      }
+
+
+      .topbar a {
+
+        display:
+          none;
+
+      }
+
+
+      .content {
+
+        padding:
+          14px;
+
+      }
+
+
+      .form-row {
+
+        grid-template-columns:
+          1fr;
+
+      }
+
+    }
+
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- =====================================================
+       ADMIN LOGIN
+  ====================================================== -->
+
   <div id="loginScreen">
 
-    <div class="login-card">
+```
+<div class="login-card">
 
-      <div class="login-logo">
-        🎬 Danimeverse
-      </div>
+  <div class="login-logo">
+    🎬 Danimeverse
+  </div>
 
-      <div class="login-subtitle">
-        Admin Dashboard Login
-      </div>
+  <div class="login-subtitle">
+    Admin Dashboard Login
+  </div>
 
-      <form id="loginForm">
+  <form id="loginForm">
 
-        <div class="login-group">
-          <label class="login-label">
-            Email
-          </label>
+    <div class="login-group">
 
-          <input
-            id="loginEmail"
-            class="login-input"
-            type="email"
-            placeholder="Enter admin email"
-            required
-          />
-        </div>
+      <label class="login-label">
+        Email
+      </label>
 
-        <div class="login-group">
-          <label class="login-label">
-            Password
-          </label>
-
-          <input
-            id="loginPassword"
-            class="login-input"
-            type="password"
-            placeholder="Enter password"
-            required
-          />
-        </div>
-
-        <button
-          id="loginBtn"
-          type="submit"
-        >
-          🔐 Sign In
-        </button>
-
-        <div id="loginError"></div>
-
-      </form>
+      <input
+        id="loginEmail"
+        class="login-input"
+        type="email"
+        placeholder="Enter admin email"
+        required
+      >
 
     </div>
 
+
+    <div class="login-group">
+
+      <label class="login-label">
+        Password
+      </label>
+
+      <input
+        id="loginPassword"
+        class="login-input"
+        type="password"
+        placeholder="Enter password"
+        required
+      >
+
+    </div>
+
+
+    <button
+      id="loginBtn"
+      type="submit"
+    >
+      🔐 Sign In
+    </button>
+
+
+    <div id="loginError"></div>
+
+  </form>
+
+</div>
+```
+
+  </div>
+
+  <!-- =====================================================
+       ADMIN DASHBOARD
+  ====================================================== -->
+
+  <div id="adminDashboard">
+
+```
+<!-- ===================================================
+     SIDEBAR
+==================================================== -->
+
+<aside class="sidebar">
+
+  <div class="logo">
+    🎬 Danimeverse
   </div>
 
 
-  <!-- ═══════════════════════════════════════
-       ADMIN DASHBOARD
-  ════════════════════════════════════════ -->
-  <div id="adminDashboard">
+  <div class="nav-label">
+    Menu
+  </div>
 
-    <!-- YOUR EXISTING SIDEBAR STARTS HERE -->
 
-    <!-- ═══ SIDEBAR ═══ -->
-    <aside class="sidebar">
-  <div class="logo">🎬 Danimeverse</div>
-  <div class="nav-label">Menu</div>
-  <a class="nav-item active" href="admin.html">📊 Dashboard</a>
-  <a class="nav-item" href="index.html">🏠 Home</a>
-  <a class="nav-item" href="watchlist.html">📋 Watchlist</a>
+  <a
+    class="nav-item active"
+    href="admin.html"
+  >
+    📊 Dashboard
+  </a>
+
+
+  <a
+    class="nav-item"
+    href="index.html"
+  >
+    🏠 Home
+  </a>
+
+
+  <a
+    class="nav-item"
+    href="watchlist.html"
+  >
+    📋 Watchlist
+  </a>
+
+
   <div class="sidebar-sep"></div>
-  <div class="nav-label">Live Stats</div>
-  <div class="stat-mini-label">Anime Uploaded</div>
-  <div id="sidebarTotalAnime" class="stat-mini-val">—</div>
-  <div class="stat-mini-label">Total Episodes</div>
-  <div id="sidebarTotalEps" class="stat-mini-val" style="color:var(--purple)">—</div>
+
+
+  <div class="nav-label">
+    Live Stats
+  </div>
+
+
+  <div class="stat-mini-label">
+    Anime Uploaded
+  </div>
+
+
+  <div
+    id="sidebarTotalAnime"
+    class="stat-mini-val"
+  >
+    —
+  </div>
+
+
+  <div class="stat-mini-label">
+    Total Episodes
+  </div>
+
+
+  <div
+    id="sidebarTotalEps"
+    class="stat-mini-val"
+  >
+    —
+  </div>
+
 </aside>
 
-<!-- ═══ MAIN ═══ -->
-<div class="main">
+
+
+<!-- ===================================================
+     MAIN
+==================================================== -->
+
+<main class="main">
+
+
+  <!-- TOPBAR -->
+
   <div class="topbar">
-    <h1>Admin Dashboard</h1>
+
+    <h1>
+      Admin Dashboard
+    </h1>
+
 
     <button id="logoutBtn">
       🚪 Logout
     </button>
 
+
     <a href="index.html">
       ← Back to site
     </a>
+
   </div>
+
+
+
+  <!-- CONTENT -->
 
   <div class="content">
 
-    <!-- STATS -->
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-num" id="statTotalAnime">—</div><div class="stat-label">Anime Uploaded</div></div>
-      <div class="stat-card"><div class="stat-num" id="statTotalEps">—</div><div class="stat-label">Total Episodes</div></div>
-      <div class="stat-card"><div class="stat-num" id="statRecent">—</div><div class="stat-label">Added Today</div></div>
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-heading">
+
+      <h2>
+        Manage Anime
+      </h2>
+
+      <p>
+        Search for anime, select a title, and upload episodes to Danimeverse.
+      </p>
+
     </div>
+
+
+
+    <!-- STATS -->
+
+    <div class="stats-grid">
+
+
+      <div class="stat-card">
+
+        <div class="stat-icon">
+          🎬
+        </div>
+
+        <div
+          id="totalAnime"
+          class="stat-num"
+        >
+          —
+        </div>
+
+        <div class="stat-label">
+          Anime Uploaded
+        </div>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <div class="stat-icon">
+          📺
+        </div>
+
+        <div
+          id="totalEpisodes"
+          class="stat-num"
+        >
+          —
+        </div>
+
+        <div class="stat-label">
+          Total Episodes
+        </div>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <div class="stat-icon">
+          🔐
+        </div>
+
+        <div
+          class="stat-num"
+          style="font-size:20px;"
+        >
+          ADMIN
+        </div>
+
+        <div class="stat-label">
+          Access Level
+        </div>
+
+      </div>
+
+
+    </div>
+
+
+
+    <!-- =================================================
+         SEARCH + UPLOAD
+    ================================================== -->
 
     <div class="two-col">
 
-      <!-- ─── LEFT COLUMN ─── -->
-      <div>
 
-        <!-- SEARCH -->
-        <div class="panel">
-          <div class="section-title">Search Anime (Jikan)</div>
-          <div class="search-wrap">
-            <span class="search-icon">🔍</span>
-            <input id="animeSearch" class="search-input" type="text" placeholder="Search any anime…" autocomplete="off"/>
-            <div id="searchResults" class="search-results"></div>
-          </div>
+      <!-- SEARCH ANIME -->
 
-          <!-- SELECTED ANIME -->
-          <div id="selectedAnimeCard" class="selected-anime-card">
-            <img id="selectedPoster" src="" alt=""/>
-            <div class="meta">
-              <h2 id="selectedTitle">—</h2>
-              <p id="selectedMeta"></p>
-              <span class="badge" id="selectedSlug"></span>
-            </div>
-          </div>
+      <div class="panel">
+
+        <div class="section-title">
+          🔎 Search Anime
         </div>
 
-        <!-- JIKAN EPISODES -->
-        <div class="panel" id="jikanEpSection">
-          <div class="section-title">Episodes from Jikan — click to auto-fill form</div>
-          <div class="ep-pagination">
-            <button id="prevEpPage" class="btn-page" disabled>◀ Prev 100</button>
-            <span id="epPageInfo" class="page-info">—</span>
-            <button id="nextEpPage" class="btn-page" disabled>Next 100 ▶</button>
-          </div>
-          <div id="jikanEpList" class="jikan-ep-list">
-            <div class="empty">Select an anime to load episodes.</div>
-          </div>
+        <div class="section-description">
+          Search AniList and select the anime you want to manage.
         </div>
 
-        <!-- UPLOADED EPISODES -->
-        <div class="panel">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-            <div class="section-title" style="margin:0">Uploaded Episodes</div>
-            <span id="uploadedCount" style="font-size:11px;color:var(--muted)">—</span>
+
+        <div class="search-wrap">
+
+          <span class="search-icon">
+            🔎
+          </span>
+
+
+          <input
+            id="animeSearch"
+            class="search-input"
+            type="text"
+            placeholder="Search anime..."
+            autocomplete="off"
+          >
+
+
+          <div
+            id="searchResults"
+            class="search-results"
+          ></div>
+
+        </div>
+
+
+
+        <!-- SELECTED ANIME -->
+
+        <div
+          id="selectedAnimeCard"
+          class="selected-anime-card"
+        >
+
+          <img
+            id="selectedPoster"
+            src=""
+            alt="Selected anime"
+          >
+
+
+          <div class="meta">
+
+            <h2 id="selectedTitle">
+              Anime
+            </h2>
+
+
+            <p id="selectedMeta">
+              —
+            </p>
+
+
+            <span
+              id="selectedSlug"
+              class="badge"
+            >
+              MAL ID: —
+            </span>
+
           </div>
-          <div id="uploadedEpList" class="ep-list">
-            <div class="empty">Select an anime to see uploaded episodes.</div>
-          </div>
+
         </div>
 
       </div>
 
-      <!-- ─── RIGHT COLUMN ─── -->
-      <div>
 
-        <!-- UPLOAD FORM -->
-        <div class="panel">
-          <div class="section-title">Upload / Edit Episode</div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Episode #</label>
-              <input id="epNumber" class="form-input" type="number" min="1" placeholder="1"/>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Episode Title</label>
-              <input id="epTitle" class="form-input" type="text" placeholder="Enter: Naruto Uzumaki!"/>
-            </div>
-          </div>
+      <!-- UPLOAD EPISODE -->
+
+      <div class="panel">
+
+        <div class="section-title">
+          ⬆️ Upload Episode
+        </div>
+
+        <div class="section-description">
+          Select an anime first, then add the episode details and Febbox video URL.
+        </div>
+
+
+        <div class="form-row">
+
 
           <div class="form-group">
-            <label class="form-label">Febbox URL</label>
-            <input id="epVideo" class="form-input" type="url" placeholder="https://www.febbox.com/…"/>
+
+            <label class="form-label">
+              Episode
+            </label>
+
+            <input
+              id="epNumber"
+              class="form-input"
+              type="number"
+              min="1"
+              placeholder="1"
+            >
+
           </div>
 
-          <div style="display:flex;gap:8px;margin-top:4px">
-            <button id="uploadBtn" class="btn btn-primary">▶ Upload Episode</button>
-            <button id="clearBtn" class="btn btn-ghost btn-sm">Clear</button>
+
+          <div class="form-group">
+
+            <label class="form-label">
+              Episode Title
+            </label>
+
+            <input
+              id="epTitle"
+              class="form-input"
+              type="text"
+              placeholder="Episode title (optional)"
+            >
+
           </div>
 
-          <div id="successBanner" class="success-banner">
-            ✅ Episode uploaded successfully!
-          </div>
+
         </div>
 
-        <!-- FEBBOX URL HISTORY -->
-        <div class="panel">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-            <div class="section-title" style="margin:0">Recent Febbox Links</div>
-            <button id="clearHistoryBtn" class="btn btn-ghost btn-sm">Clear</button>
-          </div>
-          <div id="urlHistory" class="url-history">
-            <div class="empty">No URLs saved yet.</div>
-          </div>
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Febbox Video URL
+          </label>
+
+          <input
+            id="epVideo"
+            class="form-input"
+            type="url"
+            placeholder="Paste Febbox URL"
+          >
+
+        </div>
+
+
+        <div class="button-row">
+
+          <button
+            id="uploadBtn"
+            class="btn btn-primary"
+            type="button"
+          >
+            ▶ Upload Episode
+          </button>
+
+
+          <button
+            id="clearBtn"
+            class="btn btn-ghost"
+            type="button"
+          >
+            Clear
+          </button>
+
+        </div>
+
+
+        <div
+          id="successBanner"
+          class="success-banner"
+        >
+          ✅ Episode saved successfully!
         </div>
 
       </div>
+
+
     </div>
 
-    <!-- RECENT UPLOADS -->
+
+
+    <!-- =================================================
+         UPLOADED EPISODES + URL HISTORY
+    ================================================== -->
+
+    <div class="two-col">
+
+
+      <!-- UPLOADED EPISODES -->
+
+      <div class="panel">
+
+        <div class="episode-header">
+
+          <div class="section-title" style="margin:0;">
+            📺 Uploaded Episodes
+          </div>
+
+
+          <div
+            id="uploadedCount"
+            class="episode-count"
+          >
+            0 episodes
+          </div>
+
+        </div>
+
+
+        <div
+          id="uploadedEpList"
+          class="ep-list"
+        >
+
+          <div class="empty">
+            Search and select an anime to view uploaded episodes.
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- URL HISTORY -->
+
+      <div class="panel">
+
+        <div class="episode-header">
+
+          <div class="section-title" style="margin:0;">
+            🔗 Febbox URL History
+          </div>
+
+
+          <button
+            id="clearHistoryBtn"
+            class="btn btn-ghost"
+            type="button"
+            style="padding:6px 10px;font-size:10px;"
+          >
+            Clear History
+          </button>
+
+        </div>
+
+
+        <div
+          id="urlHistory"
+          class="url-history"
+        >
+
+          <div class="empty">
+            No URLs saved yet.
+          </div>
+
+        </div>
+
+      </div>
+
+
+    </div>
+
+
+
+    <!-- =================================================
+         INSTRUCTIONS
+    ================================================== -->
+
     <div class="panel">
-      <div class="section-title">Recent Uploads</div>
-      <div style="overflow-x:auto">
-        <table class="recent-table">
-          <thead>
-            <tr>
-              <th>Anime</th>
-              <th>Episode</th>
-              <th>Title</th>
-              <th>Uploaded</th>
-              <th>Link</th>
-            </tr>
-          </thead>
-          <tbody id="recentUploads">
-            <tr><td colspan="5" class="empty">Loading…</td></tr>
-          </tbody>
-        </table>
+
+      <div class="section-title">
+        💡 How to use the admin dashboard
       </div>
+
+
+      <div
+        style="
+          display:grid;
+          grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+          gap:12px;
+        "
+      >
+
+
+        <div
+          style="
+            padding:14px;
+            background:rgba(255,255,255,.03);
+            border:1px solid var(--border);
+            border-radius:10px;
+          "
+        >
+
+          <strong style="font-size:13px;">
+            1. Search
+          </strong>
+
+          <p
+            style="
+              color:var(--muted);
+              font-size:11px;
+              margin-top:6px;
+              line-height:1.6;
+            "
+          >
+            Search for an anime using the AniList search box.
+          </p>
+
+        </div>
+
+
+        <div
+          style="
+            padding:14px;
+            background:rgba(255,255,255,.03);
+            border:1px solid var(--border);
+            border-radius:10px;
+          "
+        >
+
+          <strong style="font-size:13px;">
+            2. Select
+          </strong>
+
+          <p
+            style="
+              color:var(--muted);
+              font-size:11px;
+              margin-top:6px;
+              line-height:1.6;
+            "
+          >
+            Click an anime from the search results to select it.
+          </p>
+
+        </div>
+
+
+        <div
+          style="
+            padding:14px;
+            background:rgba(255,255,255,.03);
+            border:1px solid var(--border);
+            border-radius:10px;
+          "
+        >
+
+          <strong style="font-size:13px;">
+            3. Upload
+          </strong>
+
+          <p
+            style="
+              color:var(--muted);
+              font-size:11px;
+              margin-top:6px;
+              line-height:1.6;
+            "
+          >
+            Enter an episode number and paste the Febbox URL, then upload.
+          </p>
+
+        </div>
+
+
+        <div
+          style="
+            padding:14px;
+            background:rgba(255,255,255,.03);
+            border:1px solid var(--border);
+            border-radius:10px;
+          "
+        >
+
+          <strong style="font-size:13px;">
+            4. Edit
+          </strong>
+
+          <p
+            style="
+              color:var(--muted);
+              font-size:11px;
+              margin-top:6px;
+              line-height:1.6;
+            "
+          >
+            Click an existing uploaded episode to load its details back into the form.
+          </p>
+
+        </div>
+
+
+      </div>
+
     </div>
 
+
   </div>
-    </div> <!-- END .main -->
 
-    </div> <!-- END #adminDashboard -->
+</main>
+```
 
-    <div id="toast"></div>
+  </div>
 
-    <script type="module" src="./admin.js"></script>
+  <!-- =====================================================
+       TOAST
+  ====================================================== -->
+
+  <div id="toast"></div>
+
+  <!-- =====================================================
+       ADMIN JAVASCRIPT
+  ====================================================== -->
+
+  <script
+    type="module"
+    src="admin.js"
+  ></script>
+
 </body>
-  <div id="loginScreen" style="
-    position:fixed;
-    inset:0;
-    background:#050816;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-    z-index:9999;
-  ">
-
-    <div style="
-      width:100%;
-      max-width:400px;
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:18px;
-      padding:30px;
-    ">
-
-      <div style="
-        font-size:24px;
-        font-weight:900;
-        background:linear-gradient(135deg,#ec4899,#9333ea);
-        -webkit-background-clip:text;
-        -webkit-text-fill-color:transparent;
-        margin-bottom:8px;
-      ">
-        🎬 Danimeverse
-      </div>
-
-      <h2 style="margin-bottom:6px;">
-        Admin Login
-      </h2>
-
-      <p style="
-        color:#94a3b8;
-        font-size:13px;
-        margin-bottom:20px;
-      ">
-        Sign in to manage your anime episodes.
-      </p>
-
-      <input
-        id="adminEmail"
-        type="email"
-        placeholder="Admin email"
-        style="
-          width:100%;
-          padding:12px;
-          margin-bottom:10px;
-          background:rgba(255,255,255,.06);
-          border:1px solid rgba(255,255,255,.08);
-          border-radius:9px;
-          color:white;
-          outline:none;
-        "
-      >
-
-      <input
-        id="adminPassword"
-        type="password"
-        placeholder="Password"
-        style="
-          width:100%;
-          padding:12px;
-          margin-bottom:12px;
-          background:rgba(255,255,255,.06);
-          border:1px solid rgba(255,255,255,.08);
-          border-radius:9px;
-          color:white;
-          outline:none;
-        "
-      >
-
-      <button
-        id="loginBtn"
-        style="
-          width:100%;
-          padding:12px;
-          border:none;
-          border-radius:9px;
-          background:linear-gradient(135deg,#ec4899,#9333ea);
-          color:white;
-          font-weight:700;
-          cursor:pointer;
-        "
-      >
-        🔐 Sign In
-      </button>
-
-      <p
-        id="loginError"
-        style="
-          display:none;
-          color:#ef4444;
-          font-size:12px;
-          margin-top:12px;
-          text-align:center;
-        "
-      ></p>
-
-    </div>
-
-  </div>
 </html>

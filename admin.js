@@ -1,4 +1,3 @@
-```js
 console.log("🎬 ADMIN JS LOADED");
 
 
@@ -22,8 +21,10 @@ import {
 
 import {
   onAuthStateChanged,
-  signOut
+  signOut,
+  signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 
 
 /* =========================================================
@@ -33,9 +34,45 @@ import {
 const ADMIN_EMAIL =
   "dennisackerman246@gmail.com";
 
+let isAdminAuthenticated = false;
+/* =========================================================
+   LOGIN SCREEN
+========================================================= */
 
-let isAdminAuthenticated =
-  false;
+const loginScreen =
+  document.getElementById(
+    "loginScreen"
+  );
+
+
+const loginForm =
+  document.getElementById(
+    "loginForm"
+  );
+
+
+const loginEmail =
+  document.getElementById(
+    "loginEmail"
+  );
+
+
+const loginPassword =
+  document.getElementById(
+    "loginPassword"
+  );
+
+
+const loginBtn =
+  document.getElementById(
+    "loginBtn"
+  );
+
+
+const loginError =
+  document.getElementById(
+    "loginError"
+  );
 
 
 /* =========================================================
@@ -43,8 +80,8 @@ let isAdminAuthenticated =
 ========================================================= */
 
 const adminDashboard =
-  document.querySelector(
-    ".main"
+  document.getElementById(
+    "adminDashboard"
   );
 
 
@@ -59,21 +96,48 @@ const logoutBtn =
 
 
 /* =========================================================
+   SHOW LOGIN ERROR
+========================================================= */
+
+function showLoginError(
+  message
+) {
+
+  if (!loginError) {
+
+    return;
+
+  }
+
+
+  loginError.textContent =
+    message;
+
+
+  loginError.style.display =
+    "block";
+
+}
+
+
+/* =========================================================
    AUTHENTICATION CHECK
 ========================================================= */
 
 onAuthStateChanged(
+
   auth,
-  async function (user) {
+
+  function (user) {
 
     console.log(
       "🔍 Checking authentication..."
     );
 
 
-    /* ==========================================
-       USER NOT LOGGED IN
-    ========================================== */
+    /* =====================================================
+       NO USER LOGGED IN
+    ===================================================== */
 
     if (!user) {
 
@@ -82,13 +146,13 @@ onAuthStateChanged(
       );
 
 
-      isAdminAuthenticated =
-        false;
+      if (loginScreen) {
 
+        loginScreen.style.display =
+          "flex";
 
-      /*
-        Hide dashboard immediately.
-      */
+      }
+
 
       if (adminDashboard) {
 
@@ -98,22 +162,14 @@ onAuthStateChanged(
       }
 
 
-      /*
-        Redirect to login page.
-      */
-
-      window.location.href =
-        "login.html";
-
-
       return;
 
     }
 
 
-    /* ==========================================
+    /* =====================================================
        CHECK ADMIN EMAIL
-    ========================================== */
+    ===================================================== */
 
     const userEmail =
       user.email?.toLowerCase();
@@ -130,43 +186,19 @@ onAuthStateChanged(
       );
 
 
-      isAdminAuthenticated =
-        false;
-
-
-      /*
-        Sign out unauthorized user.
-      */
-
-      await signOut(
+      signOut(
         auth
       );
 
 
-      /*
-        Keep dashboard hidden.
-      */
-
-      if (adminDashboard) {
-
-        adminDashboard.style.display =
-          "none";
-
-      }
-
-
-      /*
-        Redirect to login.
-      */
-
-      window.location.href =
-        "login.html";
+      showLoginError(
+        "Access denied. This account is not an admin."
+      );
 
 
       return;
 
     }
-
 
     /* ==========================================
        ADMIN AUTHENTICATED
@@ -177,24 +209,259 @@ onAuthStateChanged(
       user.email
     );
 
+    isAdminAuthenticated = true;
 
-    isAdminAuthenticated =
-      true;
+    /* =========================================================
+       HIDE LOGIN SCREEN
+    ========================================================= */
+
+    if (loginScreen) {
+      loginScreen.style.display = "none";
+      loginScreen.style.visibility = "hidden";
+      loginScreen.style.opacity = "0";
+      loginScreen.style.pointerEvents = "none";
+    }
 
 
-    /*
-      Show admin dashboard.
-    */
+    /* =========================================================
+       SHOW ADMIN DASHBOARD
+    ========================================================= */
+
+    if (adminDashboard) {
+      adminDashboard.style.display = "block";
+      adminDashboard.style.visibility = "visible";
+      adminDashboard.style.opacity = "1";
+      adminDashboard.style.pointerEvents = "auto";
+
+      console.log(
+        "📊 ADMIN DASHBOARD DISPLAYED:",
+        adminDashboard
+      );
+    }
+    /* =====================================================
+       HIDE LOGIN SCREEN
+    ===================================================== */
+
+    if (loginScreen) {
+      loginScreen.style.display = "none";
+    }
+
+    /* =====================================================
+       SHOW ADMIN DASHBOARD
+    ===================================================== */
 
     if (adminDashboard) {
 
-      adminDashboard.style.display =
-        "flex";
+      adminDashboard.style.display = "block";
+      adminDashboard.style.visibility = "visible";
+      adminDashboard.style.opacity = "1";
+
+      console.log(
+        "📊 ADMIN DASHBOARD DISPLAYED:",
+        adminDashboard
+      );
+
+    } else {
+
+      console.error(
+        "❌ #adminDashboard NOT FOUND"
+      );
 
     }
 
+    console.log(
+      "📊 ADMIN DASHBOARD DISPLAYED"
+    );
+
   }
+
 );
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+if (loginForm) {
+
+  loginForm.addEventListener(
+
+    "submit",
+
+    async function (event) {
+
+      event.preventDefault();
+
+
+      const email =
+        loginEmail.value.trim();
+
+
+      const password =
+        loginPassword.value;
+
+
+      if (
+        !email ||
+        !password
+      ) {
+
+        showLoginError(
+          "Please enter your email and password."
+        );
+
+        return;
+
+      }
+
+
+      try {
+
+        /* ================================================
+           DISABLE BUTTON
+        ================================================ */
+
+        if (loginBtn) {
+
+          loginBtn.disabled =
+            true;
+
+
+          loginBtn.textContent =
+            "⏳ Signing in...";
+
+        }
+
+
+        /* ================================================
+           SIGN IN
+        ================================================ */
+
+        const userCredential =
+
+          await signInWithEmailAndPassword(
+
+            auth,
+
+            email,
+
+            password
+
+          );
+
+
+        const user =
+          userCredential.user;
+
+
+        /* ================================================
+           CHECK ADMIN
+        ================================================ */
+
+        if (
+
+          user.email?.toLowerCase() !==
+
+          ADMIN_EMAIL.toLowerCase()
+
+        ) {
+
+          await signOut(
+            auth
+          );
+
+
+          showLoginError(
+            "Access denied. This account is not an admin."
+          );
+
+
+          return;
+
+        }
+
+
+        console.log(
+          "✅ ADMIN LOGIN SUCCESS:",
+          user.email
+        );
+
+
+        /*
+          The onAuthStateChanged listener
+          will now automatically hide
+          loginScreen and show adminDashboard.
+        */
+
+      } catch (error) {
+
+        console.error(
+          "❌ LOGIN ERROR:",
+          error
+        );
+
+
+        let message =
+          "Login failed. Check your email and password.";
+
+
+        if (
+          error.code ===
+          "auth/invalid-credential"
+        ) {
+
+          message =
+            "Incorrect email or password.";
+
+        }
+
+
+        if (
+          error.code ===
+          "auth/user-not-found"
+        ) {
+
+          message =
+            "No account exists with this email.";
+
+        }
+
+
+        if (
+          error.code ===
+          "auth/wrong-password"
+        ) {
+
+          message =
+            "Incorrect password.";
+
+        }
+
+
+        showLoginError(
+          message
+        );
+
+      } finally {
+
+        if (loginBtn) {
+
+          loginBtn.disabled =
+            false;
+
+
+          loginBtn.textContent =
+            "🔐 Sign In";
+
+        }
+
+      }
+
+    }
+
+  );
+
+}
 
 
 /* =========================================================
@@ -204,15 +471,12 @@ onAuthStateChanged(
 if (logoutBtn) {
 
   logoutBtn.addEventListener(
+
     "click",
+
     async function () {
 
       try {
-
-        console.log(
-          "🚪 Logging out..."
-        );
-
 
         await signOut(
           auth
@@ -224,10 +488,6 @@ if (logoutBtn) {
         );
 
 
-        window.location.href =
-          "login.html";
-
-
       } catch (error) {
 
         console.error(
@@ -235,13 +495,10 @@ if (logoutBtn) {
           error
         );
 
-        alert(
-          "Failed to logout. Please try again."
-        );
-
       }
 
     }
+
   );
 
 }
@@ -1893,4 +2150,3 @@ renderUrlHistory();
 console.log(
   "✅ ADMIN READY"
 );
-```
