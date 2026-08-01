@@ -1,158 +1,572 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
+
   <meta charset="UTF-8" />
-     <link rel="icon" type="image/png" href="https://i.pinimg.com/736x/fc/8d/c0/fc8dc0a1f0db8842d9c58373acd655a8.jpg">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="https://i.pinimg.com/736x/fc/8d/c0/fc8dc0a1f0db8842d9c58373acd655a8.jpg"
+  />
+
+<meta
+ name="viewport"
+ content="width=device-width, initial-scale=1.0"
+/>
+
   <title>Danimeverse | Create Account</title>
-  <link rel="stylesheet" href="tailwind.min.css">
+
+  <link
+    rel="stylesheet"
+    href="tailwind.min.css"
+  >
+
   <style>
+
     body {
+
       background:
-        linear-gradient(to bottom, rgba(5,5,20,.85), rgba(10,10,30,.95)),
+        linear-gradient(
+          to bottom,
+          rgba(5,5,20,.85),
+          rgba(10,10,30,.95)
+        ),
         url('https://images6.alphacoders.com/136/1369021.jpeg');
+
       background-size: cover;
+
       background-position: center;
+
       min-height: 100vh;
+
       font-family: Arial, sans-serif;
-    }
-    .glass {
-      backdrop-filter: blur(14px);
-      background: rgba(15,15,35,.75);
-      border: 1px solid rgba(255,255,255,.08);
-      box-shadow: 0 0 40px rgba(168,85,247,.15);
+
     }
 
-    /* Gender picker */
-    .gender-option { display: none; }
+
+    .glass {
+
+      backdrop-filter:
+        blur(14px);
+
+      background:
+        rgba(15,15,35,.75);
+
+      border:
+        1px solid rgba(255,255,255,.08);
+
+      box-shadow:
+        0 0 40px rgba(168,85,247,.15);
+
+    }
+
+
+    /* GENDER */
+
+    .gender-option {
+
+      display: none;
+
+    }
+
+
     .gender-label {
+
       display: flex;
+
       align-items: center;
+
       gap: 10px;
+
       flex: 1;
+
       justify-content: center;
+
       padding: 12px 0;
+
       border-radius: 12px;
-      border: 1.5px solid rgba(255,255,255,0.12);
-      color: #94a3b8;
+
+      border:
+        1.5px solid rgba(255,255,255,0.12);
+
+      color:
+        #94a3b8;
+
       cursor: pointer;
-      transition: all 0.2s ease;
+
+      transition:
+        all 0.2s ease;
+
       font-size: 14px;
+
       font-weight: 600;
+
     }
+
+
     .gender-label:hover {
-      border-color: rgba(236,72,153,0.4);
-      color: white;
+
+      border-color:
+        rgba(236,72,153,0.4);
+
+      color:
+        white;
+
     }
-    .gender-option:checked + .gender-label {
-      border-color: #ec4899;
-      color: white;
-      background: rgba(236,72,153,0.12);
+
+
+    .gender-option:checked +
+    .gender-label {
+
+      border-color:
+        #ec4899;
+
+      color:
+        white;
+
+      background:
+        rgba(236,72,153,0.12);
+
     }
-    .gender-option#genderMale:checked + .gender-label {
-      border-color: #60a5fa;
-      background: rgba(96,165,250,0.12);
-      color: #93c5fd;
+
+
+    .gender-option#genderMale:checked +
+    .gender-label {
+
+      border-color:
+        #60a5fa;
+
+      background:
+        rgba(96,165,250,0.12);
+
+      color:
+        #93c5fd;
+
     }
+
+
+    /* GOOGLE BUTTON */
+
+    .google-button {
+
+      width: 100%;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 12px;
+
+      background:
+        #ffffff;
+
+      color:
+        #1f2937;
+
+      border:
+        1px solid #d1d5db;
+
+      font-weight:
+        700;
+
+      padding:
+        14px 20px;
+
+      border-radius:
+        12px;
+
+      cursor:
+        pointer;
+
+      transition:
+        all 0.2s ease;
+
+    }
+
+
+    .google-button:hover {
+
+      background:
+        #f3f4f6;
+
+      box-shadow:
+        0 5px 20px rgba(0,0,0,.25);
+
+      transform:
+        translateY(-1px);
+
+    }
+
+
+    .google-button:disabled {
+
+      opacity:
+        .7;
+
+      cursor:
+        not-allowed;
+
+    }
+
+
+    .divider {
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      gap:
+        12px;
+
+      margin:
+        24px 0;
+
+      color:
+        #64748b;
+
+      font-size:
+        13px;
+
+    }
+
+
+    .divider::before,
+    .divider::after {
+
+      content:
+        "";
+
+      flex:
+        1;
+
+      height:
+        1px;
+
+      background:
+        rgba(255,255,255,.1);
+
+    }
+
   </style>
+
 </head>
 
-<body class="flex items-center justify-center p-6">
-  <div class="glass w-full max-w-md rounded-3xl p-8">
+<body
+  class="flex items-center justify-center p-6"
+>
 
-    <h1 class="text-4xl font-black text-pink-500 text-center">DANIMEVERSE</h1>
-    <p class="text-slate-400 text-center mt-2 mb-8">Create your anime universe account.</p>
+  <div
+    class="glass w-full max-w-md rounded-3xl p-8"
+  >
 
-    <form id="signUpForm">
+```
+<h1
+  class="text-4xl font-black text-pink-500 text-center"
+>
+  DANIMEVERSE
+</h1>
 
-      <!-- USERNAME -->
-      <div class="mb-5">
-        <label class="text-sm text-slate-300 mb-2 block">Username</label>
-        <input
-          type="text"
-          id="signupUsername"
-          placeholder="Choose a username"
-          required
-          class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
-                 text-white outline-none focus:border-pink-500"
-        />
-      </div>
 
-      <!-- EMAIL -->
-      <div class="mb-5">
-        <label class="text-sm text-slate-300 mb-2 block">Email Address</label>
-        <input
-          type="email"
-          id="email"
-          placeholder="Enter your email"
-          required
-          class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
-                 text-white outline-none focus:border-pink-500"
-        />
-      </div>
+<p
+  class="text-slate-400 text-center mt-2 mb-8"
+>
+  Create your anime universe account.
+</p>
 
-      <!-- PASSWORD -->
-      <div class="mb-6">
-        <label class="text-sm text-slate-300 mb-2 block">Password</label>
-        <input
-          type="password"
-          id="password"
-          placeholder="Create a password"
-          required
-          class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
-                 text-white outline-none focus:border-pink-500"
-        />
-      </div>
 
-      <!-- GENDER -->
-      <div class="mb-7">
-        <label class="text-sm text-slate-300 mb-3 block">I am a...</label>
-        <div class="flex gap-3">
+<!-- GOOGLE -->
 
-          <input type="radio" name="gender" id="genderMale" value="male" class="gender-option" required />
-          <label for="genderMale" class="gender-label">
-            <!-- Male icon -->
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="12" cy="6" r="4"/>
-              <path d="M12 13c-4 0-7 2.2-7 5v1h14v-1c0-2.8-3-5-7-5z"/>
-              <rect x="11" y="17" width="2" height="5" rx="1"/>
-              <rect x="8" y="20" width="8" height="2" rx="1"/>
-            </svg>
-            Male
-          </label>
+<button
+  type="button"
+  id="googleSignInButton"
+  class="google-button"
+>
 
-          <input type="radio" name="gender" id="genderFemale" value="female" class="gender-option" />
-          <label for="genderFemale" class="gender-label">
-            <!-- Female icon -->
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="12" cy="6" r="4"/>
-              <path d="M12 13c-4 0-7 2.2-7 5v1h14v-1c0-2.8-3-5-7-5z"/>
-              <path d="M9 12.5c-.5 2 0 4 1 5.5h4c1-1.5 1.5-3.5 1-5.5" opacity="0.35"/>
-            </svg>
-            Female
-          </label>
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+  >
 
-        </div>
-      </div>
+    <path
+      fill="#4285F4"
+      d="M21.35 12.27c0-.79-.07-1.55-.22-2.27H12v4.3h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.69 2.91-4.18 2.91-7.42z"
+    />
 
-      <!-- SUBMIT -->
-      <button
-        type="submit"
-        class="w-full bg-pink-600 hover:bg-pink-700 transition
-               text-white font-bold py-4 rounded-xl"
+    <path
+      fill="#34A853"
+      d="M12 21.75c2.63 0 4.84-.87 6.45-2.36l-3.14-2.45c-.87.58-1.98.93-3.31.93-2.54 0-4.69-1.72-5.46-4.03H3.3v2.53A9.75 9.75 0 0 0 12 21.75z"
+    />
+
+    <path
+      fill="#FBBC05"
+      d="M6.54 13.84A5.86 5.86 0 0 1 6.23 12c0-.64.11-1.26.31-1.84V7.63H3.3A9.75 9.75 0 0 0 2.25 12c0 1.57.38 3.05 1.05 4.37l3.24-2.53z"
+    />
+
+    <path
+      fill="#EA4335"
+      d="M12 6.13c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.84 3.18 14.63 2.25 12 2.25a9.75 9.75 0 0 0-8.7 5.38l3.24 2.53c.77-2.31 2.92-4.03 5.46-4.03z"
+    />
+
+  </svg>
+
+  Continue with Google
+
+</button>
+
+
+<!-- DIVIDER -->
+
+<div class="divider">
+  OR
+</div>
+
+
+<form id="signUpForm">
+
+
+  <!-- USERNAME -->
+
+  <div class="mb-5">
+
+    <label
+      class="text-sm text-slate-300 mb-2 block"
+    >
+      Username
+    </label>
+
+
+    <input
+      type="text"
+      id="signupUsername"
+      placeholder="Choose a username"
+      required
+      class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
+             text-white outline-none focus:border-pink-500"
+    />
+
+  </div>
+
+
+  <!-- EMAIL -->
+
+  <div class="mb-5">
+
+    <label
+      class="text-sm text-slate-300 mb-2 block"
+    >
+      Email Address
+    </label>
+
+
+    <input
+      type="email"
+      id="email"
+      placeholder="Enter your email"
+      required
+      class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
+             text-white outline-none focus:border-pink-500"
+    />
+
+  </div>
+
+
+  <!-- PASSWORD -->
+
+  <div class="mb-6">
+
+    <label
+      class="text-sm text-slate-300 mb-2 block"
+    >
+      Password
+    </label>
+
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Create a password"
+      required
+      class="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-4
+             text-white outline-none focus:border-pink-500"
+    />
+
+  </div>
+
+
+  <!-- GENDER -->
+
+  <div class="mb-7">
+
+    <label
+      class="text-sm text-slate-300 mb-3 block"
+    >
+      I am a...
+    </label>
+
+
+    <div class="flex gap-3">
+
+
+      <!-- MALE -->
+
+      <input
+        type="radio"
+        name="gender"
+        id="genderMale"
+        value="male"
+        class="gender-option"
+        required
+      />
+
+
+      <label
+        for="genderMale"
+        class="gender-label"
       >
-        Create Account
-      </button>
 
-    </form>
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
 
-    <div class="flex justify-between text-sm text-slate-400 mt-5">
-      <a href="sign-in.html" class="hover:text-pink-400 transition">Already have an account?</a>
-      <a href="index.html" class="hover:text-pink-400 transition">Back Home</a>
+          <circle
+            cx="12"
+            cy="6"
+            r="4"
+          />
+
+          <path
+            d="M12 13c-4 0-7 2.2-7 5v1h14v-1c0-2.8-3-5-7-5z"
+          />
+
+          <rect
+            x="11"
+            y="17"
+            width="2"
+            height="5"
+            rx="1"
+          />
+
+          <rect
+            x="8"
+            y="20"
+            width="8"
+            height="2"
+            rx="1"
+          />
+
+        </svg>
+
+        Male
+
+      </label>
+
+
+      <!-- FEMALE -->
+
+      <input
+        type="radio"
+        name="gender"
+        id="genderFemale"
+        value="female"
+        class="gender-option"
+      />
+
+
+      <label
+        for="genderFemale"
+        class="gender-label"
+      >
+
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+
+          <circle
+            cx="12"
+            cy="6"
+            r="4"
+          />
+
+          <path
+            d="M12 13c-4 0-7 2.2-7 5v1h14v-1c0-2.8-3-5-7-5z"
+          />
+
+          <path
+            d="M9 12.5c-.5 2 0 4 1 5.5h4c1-1.5 1.5-3.5 1-5.5"
+            opacity="0.35"
+          />
+
+        </svg>
+
+        Female
+
+      </label>
+
+
     </div>
 
   </div>
 
-  <script type="module" src="auth.js"></script>
+
+  <!-- SUBMIT -->
+
+  <button
+    type="submit"
+    class="w-full bg-pink-600 hover:bg-pink-700 transition
+           text-white font-bold py-4 rounded-xl"
+  >
+
+    Create Account
+
+  </button>
+
+
+</form>
+
+
+<!-- LINKS -->
+
+<div
+  class="flex justify-between text-sm text-slate-400 mt-5"
+>
+
+  <a
+    href="sign-in.html"
+    class="hover:text-pink-400 transition"
+  >
+    Already have an account?
+  </a>
+
+
+  <a
+    href="index.html"
+    class="hover:text-pink-400 transition"
+  >
+    Back Home
+  </a>
+
+</div>
+```
+
+  </div>
+
+  <script
+    type="module"
+    src="auth.js"
+  ></script>
+
 </body>
 </html>

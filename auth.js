@@ -1,4 +1,5 @@
 console.log("🔥 AUTH.JS LOADED");
+
 /* =========================================================
    FIREBASE AUTHENTICATION
 ========================================================= */
@@ -16,13 +17,16 @@ import {
   updateProfile,
   setPersistence,
   browserSessionPersistence,
-  browserLocalPersistence
+  browserLocalPersistence,
+  GoogleAuthProvider,
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
   getFirestore,
   doc,
-  setDoc
+  setDoc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
@@ -65,13 +69,23 @@ const app =
     ? getApps()[0]
     : initializeApp(firebaseConfig);
 
-
 const auth =
   getAuth(app);
 
-
 const db =
   getFirestore(app);
+
+
+/* =========================================================
+   GOOGLE AUTH PROVIDER
+========================================================= */
+
+const googleProvider =
+  new GoogleAuthProvider();
+
+googleProvider.setCustomParameters({
+  prompt: "select_account"
+});
 
 
 /* =========================================================
@@ -83,14 +97,37 @@ const ADMIN_EMAIL =
 
 
 /* =========================================================
-   SIGN IN
+   REDIRECT USER
+========================================================= */
+
+async function redirectUser(user) {
+
+  if (
+    user.email?.toLowerCase() ===
+    ADMIN_EMAIL.toLowerCase()
+  ) {
+
+    console.log("🔓 ADMIN LOGIN DETECTED");
+
+    window.location.href =
+      "admin.html";
+
+    return;
+  }
+
+  console.log("👤 NORMAL USER LOGIN");
+
+  window.location.href =
+    "index.html";
+}
+
+
+/* =========================================================
+   SIGN IN WITH EMAIL + PASSWORD
 ========================================================= */
 
 const signInForm =
-  document.getElementById(
-    "signInForm"
-  );
-
+  document.getElementById("signInForm");
 
 if (signInForm) {
 
@@ -100,19 +137,16 @@ if (signInForm) {
 
       e.preventDefault();
 
-
       const email =
         document
           .getElementById("loginEmail")
           .value
           .trim();
 
-
       const password =
         document
           .getElementById("loginPassword")
           .value;
-
 
       const rememberMe =
         document
@@ -120,57 +154,36 @@ if (signInForm) {
           ?.checked;
 
 
-      /* ==========================================
-         CHECK EMPTY FIELDS
-      ========================================== */
-
-      if (
-        !email ||
-        !password
-      ) {
+      if (!email || !password) {
 
         alert(
           "Please enter your email and password."
         );
 
         return;
-
       }
 
 
       try {
 
-        /* ========================================
-           SET LOGIN PERSISTENCE
-        ======================================== */
+        /* LOGIN PERSISTENCE */
 
         await setPersistence(
-
           auth,
-
           rememberMe
             ? browserLocalPersistence
             : browserSessionPersistence
-
         );
 
 
-        /* ========================================
-           SIGN IN
-        ======================================== */
+        /* SIGN IN */
 
         const userCredential =
-
           await signInWithEmailAndPassword(
-
             auth,
-
             email,
-
             password
-
           );
-
 
         const user =
           userCredential.user;
@@ -182,51 +195,7 @@ if (signInForm) {
         );
 
 
-        /* ========================================
-           CHECK IF USER IS ADMIN
-        ======================================== */
-
-        if (
-
-          user.email?.toLowerCase() ===
-
-          ADMIN_EMAIL.toLowerCase()
-
-        ) {
-
-          console.log(
-            "🔓 ADMIN LOGIN DETECTED"
-          );
-
-
-          /*
-            Admin goes to admin dashboard
-          */
-
-          window.location.href =
-            "admin.html";
-
-
-          return;
-
-        }
-
-
-        /* ========================================
-           NORMAL USER
-        ======================================== */
-
-        console.log(
-          "👤 NORMAL USER LOGIN"
-        );
-
-
-        /*
-          Normal users go to homepage
-        */
-
-        window.location.href =
-          "index.html";
+        await redirectUser(user);
 
 
       } catch (error) {
@@ -248,7 +217,6 @@ if (signInForm) {
 
           message =
             "Incorrect email or password.";
-
         }
 
 
@@ -259,7 +227,6 @@ if (signInForm) {
 
           message =
             "No account exists with this email.";
-
         }
 
 
@@ -270,7 +237,6 @@ if (signInForm) {
 
           message =
             "Incorrect password.";
-
         }
 
 
@@ -281,18 +247,231 @@ if (signInForm) {
 
           message =
             "Too many login attempts. Please try again later.";
+        }
+
+
+        alert(message);
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   GOOGLE SIGN-IN
+========================================================= */
+
+const googleSignInButton =
+  document.getElementById(
+    "googleSignInButton"
+  );
+
+
+if (googleSignInButton) {
+
+  googleSignInButton.addEventListener(
+    "click",
+    async function () {
+
+      try {
+
+        googleSignInButton.disabled =
+          true;
+
+        googleSignInButton.innerHTML =
+          `
+          <span class="google-spinner"></span>
+          Signing in with Google...
+          `;
+
+
+        /* =========================================
+           GOOGLE POPUP
+        ========================================= */
+
+        const result =
+          await signInWithPopup(
+            auth,
+            googleProvider
+          );
+
+
+        const user =
+          result.user;
+
+
+        console.log(
+          "✅ GOOGLE LOGIN:",
+          user.email
+        );
+
+
+        /* =========================================
+           CHECK IF USER PROFILE EXISTS
+        ========================================= */
+
+        const userRef =
+          doc(
+            db,
+            "users",
+            user.uid
+          );
+
+        const userSnapshot =
+          await getDoc(userRef);
+
+
+        /* =========================================
+           CREATE PROFILE FOR NEW GOOGLE USER
+        ========================================= */
+
+        if (!userSnapshot.exists()) {
+
+          await setDoc(
+            userRef,
+            {
+
+              username:
+                user.displayName ||
+                user.email
+                  ?.split("@")[0] ||
+                "Anime Fan",
+
+              email:
+                user.email || "",
+
+              gender:
+                "not-specified",
+
+              photoURL:
+                user.photoURL || "",
+
+              provider:
+                "google",
+
+              createdAt:
+                Date.now()
+
+            }
+          );
+
+          console.log(
+            "✅ GOOGLE USER PROFILE CREATED"
+          );
 
         }
 
 
+        /* =========================================
+           REDIRECT
+        ========================================= */
+
+        await redirectUser(user);
+
+
+      } catch (error) {
+
+        console.error(
+          "❌ GOOGLE SIGN-IN ERROR:",
+          error
+        );
+
+
+        googleSignInButton.disabled =
+          false;
+
+        googleSignInButton.innerHTML =
+          `
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="#4285F4"
+              d="M21.35 12.27c0-.79-.07-1.55-.22-2.27H12v4.3h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.69 2.91-4.18 2.91-7.42z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 21.75c2.63 0 4.84-.87 6.45-2.36l-3.14-2.45c-.87.58-1.98.93-3.31.93-2.54 0-4.69-1.72-5.46-4.03H3.3v2.53A9.75 9.75 0 0 0 12 21.75z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M6.54 13.84A5.86 5.86 0 0 1 6.23 12c0-.64.11-1.26.31-1.84V7.63H3.3A9.75 9.75 0 0 0 2.25 12c0 1.57.38 3.05 1.05 4.37l3.24-2.53z"
+            />
+            <path
+              fill="#EA4335"
+              d="M12 6.13c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.84 3.18 14.63 2.25 12 2.25a9.75 9.75 0 0 0-8.7 5.38l3.24 2.53c.77-2.31 2.92-4.03 5.46-4.03z"
+            />
+          </svg>
+
+          Continue with Google
+          `;
+
+
+        if (
+          error.code ===
+          "auth/popup-closed-by-user"
+        ) {
+
+          alert(
+            "Google sign-in was cancelled."
+          );
+
+          return;
+        }
+
+
+        if (
+          error.code ===
+          "auth/popup-blocked"
+        ) {
+
+          alert(
+            "Your browser blocked the Google sign-in popup. Please allow popups for Danimeverse."
+          );
+
+          return;
+        }
+
+
+        if (
+          error.code ===
+          "auth/unauthorized-domain"
+        ) {
+
+          alert(
+            "This website domain is not authorized in Firebase Authentication."
+          );
+
+          return;
+        }
+
+
+        if (
+          error.code ===
+          "auth/operation-not-allowed"
+        ) {
+
+          alert(
+            "Google Sign-In is not enabled in Firebase. Enable Google under Authentication → Sign-in method."
+          );
+
+          return;
+        }
+
+
         alert(
-          message
+          "Google Sign-In failed: " +
+          error.message
         );
 
       }
 
     }
-
   );
 
 }
@@ -362,7 +541,6 @@ if (signUpForm) {
         );
 
         return;
-
       }
 
 
@@ -371,38 +549,28 @@ if (signUpForm) {
         const {
           user
         } =
-
           await createUserWithEmailAndPassword(
-
             auth,
-
             email,
-
             password
-
           );
 
 
         await updateProfile(
-
           user,
-
           {
             displayName:
               username
           }
-
         );
 
 
         await setDoc(
-
           doc(
             db,
             "users",
             user.uid
           ),
-
           {
 
             username,
@@ -411,11 +579,16 @@ if (signUpForm) {
 
             email,
 
+            photoURL:
+              "",
+
+            provider:
+              "password",
+
             createdAt:
               Date.now()
 
           }
-
         );
 
 
@@ -437,14 +610,48 @@ if (signUpForm) {
         );
 
 
-        alert(
-          error.message
-        );
+        let message =
+          error.message;
+
+
+        if (
+          error.code ===
+          "auth/email-already-in-use"
+        ) {
+
+          message =
+            "An account already exists with this email.";
+
+        }
+
+
+        if (
+          error.code ===
+          "auth/weak-password"
+        ) {
+
+          message =
+            "Password must be at least 6 characters.";
+
+        }
+
+
+        if (
+          error.code ===
+          "auth/invalid-email"
+        ) {
+
+          message =
+            "Please enter a valid email address.";
+
+        }
+
+
+        alert(message);
 
       }
 
     }
-
   );
 
 }
@@ -481,27 +688,29 @@ if (forgotPassword) {
       if (!email) {
 
         alert(
-          "Enter your email first."
+          "Enter your email first, then click Forgot Password."
         );
 
-        return;
+        document
+          .getElementById(
+            "loginEmail"
+          )
+          .focus();
 
+        return;
       }
 
 
       try {
 
         await sendPasswordResetEmail(
-
           auth,
-
           email
-
         );
 
 
         alert(
-          "Password reset email sent!"
+          "Password reset email sent! Check your inbox."
         );
 
 
@@ -513,14 +722,37 @@ if (forgotPassword) {
         );
 
 
-        alert(
-          error.message
-        );
+        let message =
+          "Could not send password reset email.";
+
+
+        if (
+          error.code ===
+          "auth/user-not-found"
+        ) {
+
+          message =
+            "No account exists with this email.";
+
+        }
+
+
+        if (
+          error.code ===
+          "auth/invalid-email"
+        ) {
+
+          message =
+            "Please enter a valid email address.";
+
+        }
+
+
+        alert(message);
 
       }
 
     }
-
   );
 
-};
+}
