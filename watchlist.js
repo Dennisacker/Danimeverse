@@ -541,10 +541,21 @@ async function renderWatchlistPage(uid) {
 
             <div class="wl-card-actions">
 
-              <a
-                href="${anime.href || "#"}"
-                class="wl-watch-btn"
-              >
+             <a
+  href="${anime.href || `watch.html?anime=${encodeURIComponent(anime.title)}`}"
+  class="wl-watch-btn"
+  onclick="event.stopPropagation();"
+>
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    width="14"
+    height="14"
+  >
+    <polygon points="5,3 19,12 5,21" />
+  </svg>
+  Watch
+</a>
 
                 <svg
                   viewBox="0 0 24 24"
