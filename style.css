@@ -435,3 +435,7 @@ body::before {
   }
 
 }
+/* Hide watchlist loading skeleton when loading is complete */
+#watchlist-loading.hidden {
+  display: none !important;
+}
