@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -609,981 +608,732 @@
 
 
 
-<script type="module">
+  <script type="module">
 
+  /* =========================================================
+     FIREBASE
+  ========================================================= */
 
-/* =========================================================
-   FIREBASE
-========================================================= */
+  import { db } from "./firebase-config.js";
 
-import { db } from "./firebase-config.js";
+  import {
+    doc,
+    getDoc,
+    collection,
+    getDocs
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import {
-  doc,
-  getDoc,
-  collection,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+  /* =========================================================
+     URL PARAMETERS
+  ========================================================= */
 
+  const params = new URLSearchParams(window.location.search);
 
-/* =========================================================
-   URL PARAMETERS
-========================================================= */
+  const anilistId = params.get("anilistId");
+  const animeParam = params.get("anime");
+  const malId = params.get("malId");
 
-const params =
-  new URLSearchParams(
-    window.location.search
-  );
+  const ep =
+    parseInt(params.get("ep"), 10) || 1;
 
 
-const anilistId =
-  params.get("anilistId");
+  /* =========================================================
+     ELEMENTS
+  ========================================================= */
 
+  const skeleton =
+    document.getElementById("skeleton");
 
-const animeParam =
-  params.get("anime");
+  const animeContent =
+    document.getElementById("animeContent");
 
+  const animeError =
+    document.getElementById("animeError");
 
-const malId =
-  params.get("malId");
+  const animePoster =
+    document.getElementById("animePoster");
 
+  const animeTitle =
+    document.getElementById("animeTitle");
 
-const ep =
-  parseInt(
-    params.get("ep")
-  ) || 1;
+  const animeNativeTitle =
+    document.getElementById("animeNativeTitle");
 
+  const animeRating =
+    document.getElementById("animeRating");
 
+  const animeStatus =
+    document.getElementById("animeStatus");
 
-/* =========================================================
-   ELEMENTS
-========================================================= */
+  const animeYear =
+    document.getElementById("animeYear");
 
-const skeleton =
-  document.getElementById(
-    "skeleton"
-  );
+  const animeEpisodes =
+    document.getElementById("animeEpisodes");
 
+  const animeDescription =
+    document.getElementById("animeDescription");
 
-const animeContent =
-  document.getElementById(
-    "animeContent"
-  );
+  const animeGenres =
+    document.getElementById("animeGenres");
 
+  const animeType =
+    document.getElementById("animeType");
 
-const animeError =
-  document.getElementById(
-    "animeError"
-  );
+  const animeFormat =
+    document.getElementById("animeFormat");
 
+  const animeSource =
+    document.getElementById("animeSource");
 
-const animePoster =
-  document.getElementById(
-    "animePoster"
-  );
+  const episodeAnimeName =
+    document.getElementById("episodeAnimeName");
 
+  const episodeNum =
+    document.getElementById("episodeNum");
 
-const animeTitle =
-  document.getElementById(
-    "animeTitle"
-  );
+  const episodeTitle =
+    document.getElementById("episodeTitle");
 
+  const watchArea =
+    document.getElementById("watchArea");
 
-const animeNativeTitle =
-  document.getElementById(
-    "animeNativeTitle"
-  );
+  const errorState =
+    document.getElementById("errorState");
 
+  const prevBtn =
+    document.getElementById("prevBtn");
 
-const animeRating =
-  document.getElementById(
-    "animeRating"
-  );
+  const nextBtn =
+    document.getElementById("nextBtn");
 
+  const epListWrap =
+    document.getElementById("epListWrap");
 
-const animeStatus =
-  document.getElementById(
-    "animeStatus"
-  );
+  const epList =
+    document.getElementById("epList");
 
+  const backLink =
+    document.getElementById("backLink");
 
-const animeYear =
-  document.getElementById(
-    "animeYear"
-  );
 
+  /* =========================================================
+     CHECK URL
+  ========================================================= */
 
-const animeEpisodes =
-  document.getElementById(
-    "animeEpisodes"
-  );
+  if (!anilistId && !animeParam && !malId) {
 
+    window.location.href = "index.html";
 
-const animeDescription =
-  document.getElementById(
-    "animeDescription"
-  );
+  }
 
 
-const animeGenres =
-  document.getElementById(
-    "animeGenres"
-  );
+  /* =========================================================
+     FETCH ANIME FROM ANILIST
+  ========================================================= */
 
+  async function loadAniListAnime() {
 
-const animeType =
-  document.getElementById(
-    "animeType"
-  );
+    try {
 
+      let query;
+      let variables;
 
-const animeFormat =
-  document.getElementById(
-    "animeFormat"
-  );
 
+      /* =====================================================
+         ANILIST ID
+      ===================================================== */
 
-const animeSource =
-  document.getElementById(
-    "animeSource"
-  );
+      if (anilistId) {
 
+        query = `
+          query ($id: Int) {
+            Media(
+              id: $id
+              type: ANIME
+            ) {
 
-const episodeAnimeName =
-  document.getElementById(
-    "episodeAnimeName"
-  );
+              id
+              idMal
 
+              title {
+                romaji
+                english
+                native
+              }
 
-const episodeNum =
-  document.getElementById(
-    "episodeNum"
-  );
+              coverImage {
+                extraLarge
+                large
+              }
 
+              bannerImage
 
-const episodeTitle =
-  document.getElementById(
-    "episodeTitle"
-  );
+              description(
+                asHtml: false
+              )
 
+              type
+              format
+              status
+              averageScore
+              episodes
+              seasonYear
+              source
+              genres
 
-const watchArea =
-  document.getElementById(
-    "watchArea"
-  );
-
-
-const errorState =
-  document.getElementById(
-    "errorState"
-  );
-
-
-const prevBtn =
-  document.getElementById(
-    "prevBtn"
-  );
-
-
-const nextBtn =
-  document.getElementById(
-    "nextBtn"
-  );
-
-
-const epListWrap =
-  document.getElementById(
-    "epListWrap"
-  );
-
-
-const epList =
-  document.getElementById(
-    "epList"
-  );
-
-
-const backLink =
-  document.getElementById(
-    "backLink"
-  );
-
-
-
-/* =========================================================
-   CHECK URL
-========================================================= */
-
-if (
-  !anilistId &&
-  !animeParam &&
-  !malId
-) {
-
-  window.location.href =
-    "index.html";
-
-}
-
-
-
-/* =========================================================
-   FETCH ANIME FROM ANILIST
-========================================================= */
-
-async function loadAniListAnime() {
-
-  try {
-
-    let query;
-
-    let variables;
-
-
-    /* =====================================================
-       BEST OPTION: ANILIST ID
-    ====================================================== */
-
-    if (anilistId) {
-
-      query = `
-        query ($id: Int) {
-
-          Media(
-            id: $id
-            type: ANIME
-          ) {
-
-            id
-
-            idMal
-
-            title {
-              romaji
-              english
-              native
             }
-
-            coverImage {
-              extraLarge
-              large
-            }
-
-            bannerImage
-
-            description(
-              asHtml: false
-            )
-
-            type
-
-            format
-
-            status
-
-            averageScore
-
-            episodes
-
-            seasonYear
-
-            source
-
-            genres
-
           }
+        `;
 
-        }
-      `;
+        variables = {
+          id: Number(anilistId)
+        };
 
-
-      variables = {
-
-        id:
-          Number(
-            anilistId
-          )
-
-      };
-
-    }
+      }
 
 
-    /* =====================================================
-       FALLBACK: MAL ID
-    ====================================================== */
+      /* =====================================================
+         MAL ID
+      ===================================================== */
 
-    else if (malId) {
+      else if (malId) {
 
-      query = `
-        query ($idMal: Int) {
+        query = `
+          query ($idMal: Int) {
+            Media(
+              idMal: $idMal
+              type: ANIME
+            ) {
 
-          Media(
-            idMal: $idMal
-            type: ANIME
-          ) {
+              id
+              idMal
 
-            id
+              title {
+                romaji
+                english
+                native
+              }
 
-            idMal
+              coverImage {
+                extraLarge
+                large
+              }
 
-            title {
-              romaji
-              english
-              native
+              bannerImage
+
+              description(
+                asHtml: false
+              )
+
+              type
+              format
+              status
+              averageScore
+              episodes
+              seasonYear
+              source
+              genres
+
             }
-
-            coverImage {
-              extraLarge
-              large
-            }
-
-            bannerImage
-
-            description(
-              asHtml: false
-            )
-
-            type
-
-            format
-
-            status
-
-            averageScore
-
-            episodes
-
-            seasonYear
-
-            source
-
-            genres
-
           }
+        `;
 
-        }
-      `;
+        variables = {
+          idMal: Number(malId)
+        };
 
-
-      variables = {
-
-        idMal:
-          Number(
-            malId
-          )
-
-      };
-
-    }
+      }
 
 
-    /* =====================================================
-       LAST FALLBACK: SEARCH BY TITLE
-    ====================================================== */
+      /* =====================================================
+         SEARCH BY TITLE
+      ===================================================== */
 
-    else {
+      else {
 
-      query = `
-        query ($search: String) {
+        query = `
+          query ($search: String) {
+            Media(
+              search: $search
+              type: ANIME
+              sort: SEARCH_MATCH
+            ) {
 
-          Media(
-            search: $search
-            type: ANIME
-            sort: SEARCH_MATCH
-          ) {
+              id
+              idMal
 
-            id
+              title {
+                romaji
+                english
+                native
+              }
 
-            idMal
+              coverImage {
+                extraLarge
+                large
+              }
 
-            title {
-              romaji
-              english
-              native
+              bannerImage
+
+              description(
+                asHtml: false
+              )
+
+              type
+              format
+              status
+              averageScore
+              episodes
+              seasonYear
+              source
+              genres
+
             }
-
-            coverImage {
-              extraLarge
-              large
-            }
-
-            bannerImage
-
-            description(
-              asHtml: false
-            )
-
-            type
-
-            format
-
-            status
-
-            averageScore
-
-            episodes
-
-            seasonYear
-
-            source
-
-            genres
-
           }
+        `;
 
-        }
-      `;
+        variables = {
+          search: animeParam
+        };
 
-
-      variables = {
-
-        search:
-          animeParam
-
-      };
-
-    }
+      }
 
 
+      /* =====================================================
+         SEND REQUEST
+      ===================================================== */
 
-    /* =====================================================
-       SEND REQUEST
-    ====================================================== */
+      const response =
+        await fetch(
+          "https://graphql.anilist.co",
+          {
+            method: "POST",
 
-    const response =
-      await fetch(
-        "https://graphql.anilist.co",
-        {
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+            },
 
-          method:
-            "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json",
-
-            "Accept":
-              "application/json"
-
-          },
-
-          body:
-            JSON.stringify({
-
-              query:
-                query,
-
-              variables:
-                variables
-
+            body: JSON.stringify({
+              query,
+              variables
             })
-
-        }
-      );
-
-
-    if (
-      !response.ok
-    ) {
-
-      throw new Error(
-        `AniList API Error: ${response.status}`
-      );
-
-    }
+          }
+        );
 
 
-    const result =
-      await response.json();
+      if (!response.ok) {
+
+        throw new Error(
+          `AniList API Error: ${response.status}`
+        );
+
+      }
 
 
-    if (
-      result.errors
-    ) {
+      const result =
+        await response.json();
+
+
+      if (result.errors) {
+
+        console.error(
+          "AniList error:",
+          result.errors
+        );
+
+        throw new Error(
+          "AniList returned an error"
+        );
+
+      }
+
+
+      const anime =
+        result.data?.Media;
+
+
+      if (!anime) {
+
+        throw new Error(
+          "Anime not found"
+        );
+
+      }
+
+
+      renderAnimeInfo(anime);
+
+      return anime;
+
+
+    } catch (error) {
 
       console.error(
-        "AniList error:",
-        result.errors
+        "Failed to load AniList anime:",
+        error
       );
 
-      throw new Error(
-        "AniList returned an error"
-      );
+      skeleton.style.display = "none";
+
+      animeError.style.display = "block";
+
+      return null;
 
     }
 
+  }
 
-    const anime =
-      result.data.Media;
 
+  /* =========================================================
+     RENDER ANIME INFORMATION
+  ========================================================= */
+
+  function renderAnimeInfo(anime) {
+
+    const title =
+      anime.title?.english ||
+      anime.title?.romaji ||
+      anime.title?.native ||
+      "Unknown Anime";
+
+
+    const nativeTitle =
+      anime.title?.native || "";
+
+
+    animeTitle.textContent =
+      title;
+
+
+    animeNativeTitle.textContent =
+      nativeTitle;
+
+
+    episodeAnimeName.textContent =
+      title;
+
+
+    /* =====================================================
+       POSTER
+    ===================================================== */
+
+    animePoster.src =
+      anime.coverImage?.extraLarge ||
+      anime.coverImage?.large ||
+      "";
+
+
+    animePoster.alt =
+      title;
+
+
+    /* =====================================================
+       RATING
+    ===================================================== */
+
+    animeRating.textContent =
+      anime.averageScore
+        ? `⭐ ${(anime.averageScore / 10).toFixed(1)} / 10`
+        : "Not Rated";
+
+
+    /* =====================================================
+       STATUS
+    ===================================================== */
+
+    animeStatus.textContent =
+      formatStatus(anime.status);
+
+
+    /* =====================================================
+       YEAR
+    ===================================================== */
+
+    animeYear.textContent =
+      anime.seasonYear ||
+      "Unknown";
+
+
+    /* =====================================================
+       EPISODES
+    ===================================================== */
+
+    animeEpisodes.textContent =
+      anime.episodes ||
+      "Unknown";
+
+
+    /* =====================================================
+       TYPE
+    ===================================================== */
+
+    animeType.textContent =
+      anime.type ||
+      "Unknown";
+
+
+    /* =====================================================
+       FORMAT
+    ===================================================== */
+
+    animeFormat.textContent =
+      anime.format ||
+      "Unknown";
+
+
+    /* =====================================================
+       SOURCE
+    ===================================================== */
+
+    animeSource.textContent =
+      formatSource(anime.source);
+
+
+    /* =====================================================
+       DESCRIPTION
+    ===================================================== */
+
+    animeDescription.textContent =
+      cleanDescription(
+        anime.description ||
+        "No description available for this anime."
+      );
+
+
+    /* =====================================================
+       GENRES
+    ===================================================== */
 
     if (
-      !anime
+      anime.genres &&
+      anime.genres.length
     ) {
 
-      throw new Error(
-        "Anime not found"
-      );
+      animeGenres.innerHTML =
+        anime.genres
+          .map(
+            genre => `
+              <span class="genre-tag">
+                ${escapeHtml(genre)}
+              </span>
+            `
+          )
+          .join("");
+
+    } else {
+
+      animeGenres.innerHTML = `
+        <span class="text-slate-500 text-sm">
+          No genres available
+        </span>
+      `;
 
     }
 
 
-    renderAnimeInfo(
-      anime
-    );
-
-
-    return anime;
-
-
-  } catch (error) {
-
-    console.error(
-      "Failed to load AniList anime:",
-      error
-    );
-
+    /* =====================================================
+       SHOW CONTENT
+    ===================================================== */
 
     skeleton.style.display =
       "none";
 
-
-    animeError.style.display =
+    animeContent.style.display =
       "block";
 
 
-    return null;
+    /* =====================================================
+       BACK LINK
+    ===================================================== */
+
+    if (anime.id) {
+
+      backLink.href =
+        `anime.html?anilistId=${anime.id}`;
+
+    }
 
   }
 
-}
 
+  /* =========================================================
+     LOAD EPISODE FROM FIRESTORE
+  ========================================================= */
 
+  async function loadEpisode(anime) {
 
-/* =========================================================
-   RENDER ANIME INFORMATION
-========================================================= */
+    try {
 
-function renderAnimeInfo(
-  anime
-) {
+      /*
+        Your Firestore structure:
 
+        animes
+          └── 20
+              └── episodes
+                  └── ep_1
 
-  /* =====================================================
-     TITLE
-  ====================================================== */
+        Naruto's AniList ID = 20
+      */
 
-  const title =
-    anime.title?.english ||
-    anime.title?.romaji ||
-    anime.title?.native ||
-    "Unknown Anime";
 
+      const firestoreAnimeId =
+        anime?.id
+          ? String(anime.id)
+          : anilistId
+            ? String(anilistId)
+            : null;
 
-  const nativeTitle =
-    anime.title?.native ||
-    "";
 
+      if (!firestoreAnimeId) {
 
-  animeTitle.textContent =
-    title;
+        showEpisodeError(
+          "Episode Not Available",
+          "Could not identify this anime in the episode database."
+        );
 
+        return;
 
-  animeNativeTitle.textContent =
-    nativeTitle;
+      }
 
 
-  episodeAnimeName.textContent =
-    title;
-
-
-
-  /* =====================================================
-     POSTER
-  ====================================================== */
-
-  animePoster.src =
-    anime.coverImage?.extraLarge ||
-    anime.coverImage?.large ||
-    "";
-
-
-  animePoster.alt =
-    title;
-
-
-
-  /* =====================================================
-     RATING
-  ====================================================== */
-
-  animeRating.textContent =
-    anime.averageScore
-      ? `⭐ ${(anime.averageScore / 10).toFixed(1)} / 10`
-      : "Not Rated";
-
-
-
-  /* =====================================================
-     STATUS
-  ====================================================== */
-
-  animeStatus.textContent =
-    formatStatus(
-      anime.status
-    );
-
-
-
-  /* =====================================================
-     YEAR
-  ====================================================== */
-
-  animeYear.textContent =
-    anime.seasonYear ||
-    "Unknown";
-
-
-
-  /* =====================================================
-     EPISODES
-  ====================================================== */
-
-  animeEpisodes.textContent =
-    anime.episodes ||
-    "Unknown";
-
-
-
-  /* =====================================================
-     TYPE
-  ====================================================== */
-
-  animeType.textContent =
-    anime.type ||
-    "Unknown";
-
-
-
-  /* =====================================================
-     FORMAT
-  ====================================================== */
-
-  animeFormat.textContent =
-    anime.format ||
-    "Unknown";
-
-
-
-  /* =====================================================
-     SOURCE
-  ====================================================== */
-
-  animeSource.textContent =
-    formatSource(
-      anime.source
-    );
-
-
-
-  /* =====================================================
-     DESCRIPTION
-  ====================================================== */
-
-  const description =
-    anime.description ||
-    "No description available for this anime.";
-
-
-  animeDescription.textContent =
-    cleanDescription(
-      description
-    );
-
-
-
-  /* =====================================================
-     GENRES
-  ====================================================== */
-
-  if (
-    anime.genres &&
-    anime.genres.length
-  ) {
-
-    animeGenres.innerHTML =
-      anime.genres
-        .map(
-          genre => `
-            <span class="genre-tag">
-              ${escapeHtml(
-                genre
-              )}
-            </span>
-          `
-        )
-        .join("");
-
-  } else {
-
-    animeGenres.innerHTML =
-      `<span class="text-slate-500 text-sm">
-        No genres available
-      </span>`;
-
-  }
-
-
-
-  /* =====================================================
-     SHOW CONTENT
-  ====================================================== */
-
-  skeleton.style.display =
-    "none";
-
-
-  animeContent.style.display =
-    "block";
-
-
-
-  /* =====================================================
-     BACK LINK
-  ====================================================== */
-
-  if (
-    anime.id
-  ) {
-
-    backLink.href =
-      `anime.html?anilistId=${anime.id}`;
-
-  }
-
-}
-
-
-
-/* =========================================================
-   LOAD FIRESTORE EPISODE
-========================================================= */
-
-async function loadEpisode(
-  anime
-) {
-
-  try {
-
-    /*
-      IMPORTANT:
-
-      Firestore currently uses your anime
-      document ID.
-
-      We try the following IDs:
-
-      1. anime title from URL
-      2. AniList title
-      3. MAL ID
-      4. AniList ID
-
-      This keeps compatibility with
-      your existing Firestore structure.
-    */
-
-
-    const title =
-      anime?.title?.english ||
-      anime?.title?.romaji ||
-      anime?.title?.native ||
-      animeParam;
-
-
-    const possibleIds = [
-
-      animeParam,
-
-      title,
-
-      malId,
-
-      anime?.idMal,
-
-      anilistId,
-
-      anime?.id
-
-    ]
-      .filter(
-        id => id !== null &&
-              id !== undefined &&
-              id !== ""
-      )
-      .map(
-        id => String(id)
+      console.log(
+        "🔥 Looking for Firestore anime:",
+        firestoreAnimeId
       );
 
 
-
-    /* =====================================================
-       REMOVE DUPLICATES
-    ====================================================== */
-
-    const uniqueIds =
-      [
-        ...new Set(
-          possibleIds
-        )
-      ];
-
-
-
-    let foundAnimeId =
-      null;
-
-    let animeData =
-      null;
-
-
-
-    /* =====================================================
-       FIND EXISTING FIRESTORE ANIME
-    ====================================================== */
-
-    for (
-      const id
-      of uniqueIds
-    ) {
+      /* =====================================================
+         GET ANIME DOCUMENT
+      ===================================================== */
 
       const animeRef =
         doc(
           db,
           "animes",
-          id
+          firestoreAnimeId
         );
 
 
       const animeSnap =
-        await getDoc(
-          animeRef
+        await getDoc(animeRef);
+
+
+      if (!animeSnap.exists()) {
+
+        console.error(
+          "❌ Anime document not found:",
+          firestoreAnimeId
         );
 
 
-      if (
-        animeSnap.exists()
-      ) {
+        episodeNum.textContent =
+          `Episode ${ep}`;
 
-        foundAnimeId =
-          id;
 
-        animeData =
-          animeSnap.data();
+        episodeTitle.textContent =
+          `Episode ${ep}`;
 
-        break;
+
+        showEpisodeError(
+          "Episode Not Uploaded Yet",
+          "This anime is available in the catalog, but no episodes have been uploaded to Danimeverse yet."
+        );
+
+
+        return;
 
       }
 
-    }
+
+      const animeData =
+        animeSnap.data();
 
 
-
-    /*
-      If no Firestore anime document
-      exists, we still show the AniList
-      information.
-
-      The episode section will simply
-      say that no episode has been
-      uploaded yet.
-    */
-
-    if (
-      !foundAnimeId
-    ) {
-
-      episodeNum.textContent =
-        `Episode ${ep}`;
-
-
-      episodeTitle.textContent =
-        `Episode ${ep}`;
-
-
-      showEpisodeError(
-        "Episode Not Uploaded Yet",
-        "This anime is available in the catalog, but no episodes have been uploaded to Danimeverse yet."
+      console.log(
+        "✅ Anime document found:",
+        animeData
       );
 
 
-      return;
+      /* =====================================================
+         DISPLAY FIRESTORE ANIME TITLE
+      ===================================================== */
 
-    }
+      if (animeData?.animeTitle) {
 
+        episodeAnimeName.textContent =
+          animeData.animeTitle;
 
+      }
 
-    /* =====================================================
-       ANIME NAME FROM FIRESTORE
-    ====================================================== */
+      else if (animeData?.title) {
 
-    if (
-      animeData?.title
-    ) {
+        episodeAnimeName.textContent =
+          animeData.title;
 
-      episodeAnimeName.textContent =
-        animeData.title;
-
-    }
-
+      }
 
 
-    /* =====================================================
-       LOAD EPISODE
-    ====================================================== */
+      /* =====================================================
+         GET EPISODE DOCUMENT
+      ===================================================== */
 
-    const episodeRef =
-      doc(
-        db,
-        "animes",
-        foundAnimeId,
-        "episodes",
-        `ep_${ep}`
-      );
-
-
-    const episodeSnap =
-      await getDoc(
-        episodeRef
-      );
+      const episodeRef =
+        doc(
+          db,
+          "animes",
+          firestoreAnimeId,
+          "episodes",
+          `ep_${ep}`
+        );
 
 
-
-    if (
-      !episodeSnap.exists()
-    ) {
-
-      episodeNum.textContent =
-        `Episode ${ep}`;
+      const episodeSnap =
+        await getDoc(episodeRef);
 
 
-      episodeTitle.textContent =
-        `Episode ${ep}`;
+      if (!episodeSnap.exists()) {
+
+        console.warn(
+          "⚠️ Episode not found:",
+          `animes/${firestoreAnimeId}/episodes/ep_${ep}`
+        );
 
 
-      showEpisodeError(
-        "Episode Not Uploaded Yet",
-        "This episode hasn't been uploaded yet. Check back later."
-      );
+        episodeNum.textContent =
+          `Episode ${ep}`;
 
 
-    } else {
+        episodeTitle.textContent =
+          `Episode ${ep}`;
 
+
+        showEpisodeError(
+          "Episode Not Uploaded Yet",
+          "This episode hasn't been uploaded yet. Check back later."
+        );
+
+
+        return;
+
+      }
+
+
+      /* =====================================================
+         EPISODE FOUND
+      ===================================================== */
 
       const data =
         episodeSnap.data();
+
+
+      console.log(
+        "✅ Episode data found:",
+        data
+      );
 
 
       episodeNum.textContent =
@@ -1595,83 +1345,265 @@ async function loadEpisode(
         `Episode ${ep}`;
 
 
-      const videoUrl =
-        data.febboxUrl ||
-        data.video ||
-        "";
+      /*
+        IMPORTANT:
+
+        We pass the ENTIRE Firestore object
+        into renderVideoPlayer().
+
+        This allows the function to choose:
+
+        1. playerUrl
+        2. video
+        3. febboxUrl
+      */
+
+      renderVideoPlayer(data);
 
 
-      renderWatchButton(
-        videoUrl
+      /* =====================================================
+         NAVIGATION
+      ===================================================== */
+
+      prevBtn.disabled =
+        ep <= 1;
+
+
+      nextBtn.disabled =
+        false;
+
+
+      /* =====================================================
+         EPISODE LIST
+      ===================================================== */
+
+      await loadEpisodeList(
+        firestoreAnimeId,
+        anime
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "❌ Firestore episode error:",
+        error
+      );
+
+
+      showEpisodeError(
+        "Error Loading Episode",
+        error.message ||
+        "Could not load episode data."
       );
 
     }
 
-
-
-    /* =====================================================
-       BACK BUTTON
-    ====================================================== */
-
-    backLink.href =
-      "index.html";
-
-
-
-    /* =====================================================
-       NAVIGATION
-    ====================================================== */
-
-    prevBtn.disabled =
-      ep <= 1;
-
-
-    nextBtn.disabled =
-      false;
-
-
-
-    /* =====================================================
-       EPISODE LIST
-    ====================================================== */
-
-    loadEpisodeList(
-      foundAnimeId,
-      anime
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "Firestore episode error:",
-      error
-    );
-
-
-    showEpisodeError(
-      "Error Loading Episode",
-      error.message ||
-      "Could not load episode data."
-    );
-
   }
 
-}
+
+  /* =========================================================
+     VIDEO / PLAYER HANDLER
+
+     SUPPORTED FIRESTORE FIELDS:
+
+     1. playerUrl
+        → iframe/player URL
+
+     2. video
+        → direct video URL such as .mp4
+
+     3. febboxUrl
+        → Febbox share URL
+
+     EXAMPLE 1:
+
+     {
+       episode: 1,
+       title: "Naruto Uzumaki",
+       febboxUrl: "https://www.febbox.com/share/IFre1X2q"
+     }
+
+     EXAMPLE 2:
+
+     {
+       episode: 1,
+       title: "Naruto Uzumaki",
+       video: "https://example.com/video.mp4"
+     }
+
+     EXAMPLE 3:
+
+     {
+       episode: 1,
+       title: "Naruto Uzumaki",
+       playerUrl: "https://example.com/player/123"
+     }
+
+  ========================================================= */
+
+  function renderVideoPlayer(data) {
+
+    /*
+      Clear old error state.
+    */
+
+    errorState.style.display =
+      "none";
 
 
+    /*
+      Get all possible links.
+    */
 
-/* =========================================================
-   WATCH BUTTON
-========================================================= */
+    const febboxUrl =
+      data?.febboxUrl ||
+      "";
 
-function renderWatchButton(
-  url
-) {
 
-  if (
-    !url
-  ) {
+    const directVideoUrl =
+      data?.video ||
+      "";
+
+
+    const playerUrl =
+      data?.playerUrl ||
+      "";
+
+
+    console.log(
+      "🎬 Video sources:",
+      {
+        febboxUrl,
+        directVideoUrl,
+        playerUrl
+      }
+    );
+
+
+    /* =====================================================
+       OPTION 1
+       PLAYER / IFRAME URL
+
+       This takes priority if available.
+    ===================================================== */
+
+    if (playerUrl) {
+
+      watchArea.innerHTML = `
+
+        <div
+          class="relative w-full overflow-hidden rounded-2xl bg-black"
+          style="aspect-ratio: 16 / 9;"
+        >
+
+          <iframe
+            src="${escapeAttribute(playerUrl)}"
+            class="absolute inset-0 w-full h-full"
+            frameborder="0"
+            scrolling="no"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowfullscreen
+            referrerpolicy="no-referrer"
+          ></iframe>
+
+        </div>
+
+        <p class="text-center text-xs text-slate-600 mt-3">
+          ▶ Playing from video player
+        </p>
+
+      `;
+
+      return;
+
+    }
+
+
+    /* =====================================================
+       OPTION 2
+       DIRECT VIDEO
+
+       Example:
+
+       https://example.com/video.mp4
+    ===================================================== */
+
+    if (directVideoUrl) {
+
+      watchArea.innerHTML = `
+
+        <div
+          class="relative w-full overflow-hidden rounded-2xl bg-black"
+          style="aspect-ratio: 16 / 9;"
+        >
+
+          <video
+            controls
+            playsinline
+            preload="metadata"
+            class="w-full h-full object-contain"
+          >
+
+            <source
+              src="${escapeAttribute(directVideoUrl)}"
+            >
+
+            Your browser does not support HTML5 video.
+
+          </video>
+
+        </div>
+
+        <p class="text-center text-xs text-slate-600 mt-3">
+          ▶ Direct video
+        </p>
+
+      `;
+
+      return;
+
+    }
+
+
+    /* =====================================================
+       OPTION 3
+       FEBBOX SHARE LINK
+
+       Example:
+
+       https://www.febbox.com/share/IFre1X2q
+    ===================================================== */
+
+    if (febboxUrl) {
+
+      watchArea.innerHTML = `
+
+        <a
+          href="${escapeAttribute(febboxUrl)}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="watch-btn"
+        >
+
+          ▶ WATCH EPISODE
+
+        </a>
+
+        <p class="text-center text-xs text-slate-600 mt-3">
+          Opens Febbox video
+        </p>
+
+      `;
+
+      return;
+
+    }
+
+
+    /* =====================================================
+       NO VIDEO LINK
+    ===================================================== */
 
     watchArea.innerHTML = `
 
@@ -1685,616 +1617,556 @@ function renderWatchButton(
 
     `;
 
-    return;
+  }
+
+
+  /* =========================================================
+     EPISODE ERROR
+  ========================================================= */
+
+  function showEpisodeError(
+    title,
+    message
+  ) {
+
+    watchArea.innerHTML =
+      "";
+
+
+    errorState.style.display =
+      "block";
+
+
+    document.getElementById(
+      "errorTitle"
+    ).textContent =
+      title;
+
+
+    document.getElementById(
+      "errorMsg"
+    ).textContent =
+      message;
 
   }
 
 
+  /* =========================================================
+     LOAD EPISODE LIST
+  ========================================================= */
 
-  watchArea.innerHTML = `
+  async function loadEpisodeList(
+    animeId,
+    anime
+  ) {
 
-    <a
-      href="${escapeAttribute(url)}"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="watch-btn"
-    >
+    try {
 
-      ▶ WATCH EPISODE
-
-    </a>
-
-
-    <p class="text-center text-xs text-slate-600 mt-3">
-
-      Opens video in a new tab
-
-    </p>
-
-  `;
-
-}
+      const episodesRef =
+        collection(
+          db,
+          "animes",
+          String(animeId),
+          "episodes"
+        );
 
 
-
-/* =========================================================
-   EPISODE ERROR
-========================================================= */
-
-function showEpisodeError(
-  title,
-  message
-) {
-
-  watchArea.innerHTML =
-    "";
+      const snapshot =
+        await getDocs(
+          episodesRef
+        );
 
 
-  errorState.style.display =
-    "block";
+      const allEpisodes =
+        [];
 
 
-  document.getElementById(
-    "errorTitle"
-  ).textContent =
-    title;
+      snapshot.forEach(
+        episodeDoc => {
+
+          const data =
+            episodeDoc.data();
 
 
-  document.getElementById(
-    "errorMsg"
-  ).textContent =
-    message;
-
-}
+          const episodeNumber =
+            Number(data.episode);
 
 
+          if (
+            !episodeNumber ||
+            episodeNumber < 1
+          ) {
 
-/* =========================================================
-   LOAD EPISODE LIST
-========================================================= */
+            return;
 
-async function loadEpisodeList(
-  animeId,
-  anime
-) {
-
-  try {
-
-    const episodesRef =
-      collection(
-        db,
-        "animes",
-        String(animeId),
-        "episodes"
-      );
+          }
 
 
-    const snapshot =
-      await getDocs(
-        episodesRef
-      );
+          allEpisodes.push({
 
+            episode:
+              episodeNumber,
 
-    const allEpisodes =
-      [];
+            title:
+              data.title ||
+              `Episode ${episodeNumber}`,
 
+            video:
+              data.playerUrl ||
+              data.video ||
+              data.febboxUrl ||
+              ""
 
-    snapshot.forEach(
-      episodeDoc => {
-
-        const data =
-          episodeDoc.data();
-
-
-        const episodeNumber =
-          Number(
-            data.episode
-          );
-
-
-        if (
-          !episodeNumber ||
-          episodeNumber < 1
-        ) {
-
-          return;
+          });
 
         }
+      );
 
 
-        allEpisodes.push({
+      allEpisodes.sort(
+        (a, b) =>
+          a.episode -
+          b.episode
+      );
 
-          episode:
-            episodeNumber,
 
-          title:
-            data.title ||
-            `Episode ${episodeNumber}`,
+      if (
+        allEpisodes.length <= 1
+      ) {
 
-          video:
-            data.febboxUrl ||
-            data.video ||
-            ""
-
-        });
+        return;
 
       }
-    );
 
 
-    allEpisodes.sort(
-      (a, b) =>
-        a.episode -
-        b.episode
-    );
+      renderEpisodeList(
+        allEpisodes
+      );
 
 
-    if (
-      allEpisodes.length <= 1
-    ) {
+    } catch (error) {
 
-      return;
+      console.error(
+        "Episode list error:",
+        error
+      );
 
     }
 
-
-    renderEpisodeList(
-      allEpisodes
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "Episode list error:",
-      error
-    );
-
   }
 
-}
 
+  /* =========================================================
+     RENDER EPISODE LIST
+  ========================================================= */
 
-
-/* =========================================================
-   RENDER EPISODE LIST
-========================================================= */
-
-function renderEpisodeList(
-  episodes
-) {
-
-  epListWrap.style.display =
-    "block";
-
-
-  epList.innerHTML =
+  function renderEpisodeList(
     episodes
-      .map(
-        episode => {
+  ) {
 
-          const current =
-            episode.episode === ep;
-
-
-          const params =
-            new URLSearchParams();
+    epListWrap.style.display =
+      "block";
 
 
-          if (
-            anilistId
-          ) {
+    epList.innerHTML =
+      episodes
+        .map(
+          episode => {
 
-            params.set(
-              "anilistId",
-              anilistId
+            const current =
+              episode.episode === ep;
+
+
+            const episodeParams =
+              new URLSearchParams();
+
+
+            if (anilistId) {
+
+              episodeParams.set(
+                "anilistId",
+                anilistId
+              );
+
+            }
+
+
+            if (animeParam) {
+
+              episodeParams.set(
+                "anime",
+                animeParam
+              );
+
+            }
+
+
+            if (malId) {
+
+              episodeParams.set(
+                "malId",
+                malId
+              );
+
+            }
+
+
+            episodeParams.set(
+              "ep",
+              episode.episode
             );
 
-          }
 
+            return `
 
-          if (
-            animeParam
-          ) {
-
-            params.set(
-              "anime",
-              animeParam
-            );
-
-          }
-
-
-          if (
-            malId
-          ) {
-
-            params.set(
-              "malId",
-              malId
-            );
-
-          }
-
-
-          params.set(
-            "ep",
-            episode.episode
-          );
-
-
-          return `
-
-            <a
-              href="watch.html?${params.toString()}"
-              class="ep-row ${
-                current
-                  ? "current"
-                  : ""
-              }"
-            >
-
-              <span
-                class="text-pink-400 font-bold text-sm min-w-[56px]"
-              >
-
-                Ep ${episode.episode}
-
-              </span>
-
-
-              <span
-                class="text-sm flex-1 ${
+              <a
+                href="watch.html?${episodeParams.toString()}"
+                class="ep-row ${
                   current
-                    ? "text-white font-semibold"
-                    : "text-white/60"
+                    ? "current"
+                    : ""
                 }"
               >
 
-                ${escapeHtml(
-                  episode.title
-                )}
+                <span
+                  class="text-pink-400 font-bold text-sm min-w-[56px]"
+                >
 
-              </span>
+                  Ep ${episode.episode}
+
+                </span>
 
 
-              ${
-                current
+                <span
+                  class="text-sm flex-1 ${
+                    current
+                      ? "text-white font-semibold"
+                      : "text-white/60"
+                  }"
+                >
 
-                  ? `
+                  ${escapeHtml(
+                    episode.title
+                  )}
 
-                    <span
-                      class="text-xs bg-pink-500/30 text-pink-300 px-2 py-0.5 rounded-full ml-auto"
-                    >
+                </span>
 
-                      ▶ Playing
 
-                    </span>
+                ${
+                  current
+                    ? `
+                      <span
+                        class="text-xs bg-pink-500/30 text-pink-300 px-2 py-0.5 rounded-full ml-auto"
+                      >
+                        ▶ Playing
+                      </span>
+                    `
+                    : ""
+                }
 
-                  `
+              </a>
 
-                  : ""
+            `;
 
-              }
+          }
+        )
+        .join("");
 
-            </a>
+  }
 
-          `;
 
-        }
+  /* =========================================================
+     PREVIOUS EPISODE
+  ========================================================= */
+
+  prevBtn.onclick =
+    () => {
+
+      if (ep <= 1) {
+
+        return;
+
+      }
+
+
+      goToEpisode(
+        ep - 1
+      );
+
+    };
+
+
+  /* =========================================================
+     NEXT EPISODE
+  ========================================================= */
+
+  nextBtn.onclick =
+    () => {
+
+      goToEpisode(
+        ep + 1
+      );
+
+    };
+
+
+  /* =========================================================
+     GO TO EPISODE
+  ========================================================= */
+
+  function goToEpisode(
+    episode
+  ) {
+
+    const newParams =
+      new URLSearchParams();
+
+
+    if (anilistId) {
+
+      newParams.set(
+        "anilistId",
+        anilistId
+      );
+
+    }
+
+
+    if (animeParam) {
+
+      newParams.set(
+        "anime",
+        animeParam
+      );
+
+    }
+
+
+    if (malId) {
+
+      newParams.set(
+        "malId",
+        malId
+      );
+
+    }
+
+
+    newParams.set(
+      "ep",
+      episode
+    );
+
+
+    window.location.href =
+      `watch.html?${newParams.toString()}`;
+
+  }
+
+
+  /* =========================================================
+     FORMAT STATUS
+  ========================================================= */
+
+  function formatStatus(
+    status
+  ) {
+
+    if (!status) {
+
+      return "Unknown";
+
+    }
+
+
+    return status
+      .replace(
+        /_/g,
+        " "
       )
-      .join("");
+      .replace(
+        /\b\w/g,
+        char =>
+          char.toUpperCase()
+      );
 
-}
+  }
 
 
+  /* =========================================================
+     FORMAT SOURCE
+  ========================================================= */
 
-/* =========================================================
-   PREVIOUS EPISODE
-========================================================= */
+  function formatSource(
+    source
+  ) {
 
-prevBtn.onclick =
-  () => {
+    if (!source) {
 
-    if (
-      ep <= 1
-    ) {
+      return "Unknown";
+
+    }
+
+
+    return source
+      .replace(
+        /_/g,
+        " "
+      )
+      .replace(
+        /\b\w/g,
+        char =>
+          char.toUpperCase()
+      );
+
+  }
+
+
+  /* =========================================================
+     CLEAN DESCRIPTION
+  ========================================================= */
+
+  function cleanDescription(
+    description
+  ) {
+
+    return String(description)
+      .replace(
+        /<br\s*\/?>/gi,
+        "\n"
+      )
+      .replace(
+        /<[^>]*>/g,
+        ""
+      );
+
+  }
+
+
+  /* =========================================================
+     ESCAPE HTML
+  ========================================================= */
+
+  function escapeHtml(
+    value
+  ) {
+
+    return String(value)
+
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+
+      .replace(
+        /</g,
+        "&lt;"
+      )
+
+      .replace(
+        />/g,
+        "&gt;"
+      )
+
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
+  }
+
+
+  /* =========================================================
+     ESCAPE ATTRIBUTE
+  ========================================================= */
+
+  function escapeAttribute(
+    value
+  ) {
+
+    return String(value)
+
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+
+      .replace(
+        /</g,
+        "&lt;"
+      )
+
+      .replace(
+        />/g,
+        "&gt;"
+      );
+
+  }
+
+
+  /* =========================================================
+     INITIALIZE PAGE
+  ========================================================= */
+
+  async function initializePage() {
+
+    console.log(
+      "🔥 Loading Danimeverse watch page..."
+    );
+
+
+    /*
+      Load AniList anime info first.
+    */
+
+    const anime =
+      await loadAniListAnime();
+
+
+    /*
+      Stop if AniList failed.
+    */
+
+    if (!anime) {
+
+      console.error(
+        "❌ Could not load anime information."
+      );
 
       return;
 
     }
 
 
-    goToEpisode(
-      ep - 1
+    /*
+      Load Firestore episode.
+    */
+
+    await loadEpisode(
+      anime
     );
 
-  };
 
-
-
-/* =========================================================
-   NEXT EPISODE
-========================================================= */
-
-nextBtn.onclick =
-  () => {
-
-    goToEpisode(
-      ep + 1
-    );
-
-  };
-
-
-
-/* =========================================================
-   GO TO EPISODE
-========================================================= */
-
-function goToEpisode(
-  episode
-) {
-
-  const newParams =
-    new URLSearchParams();
-
-
-  if (
-    anilistId
-  ) {
-
-    newParams.set(
-      "anilistId",
-      anilistId
+    console.log(
+      "🎉 Watch page loaded"
     );
 
   }
 
 
-  if (
-    animeParam
-  ) {
+  initializePage();
 
-    newParams.set(
-      "anime",
-      animeParam
-    );
-
-  }
-
-
-  if (
-    malId
-  ) {
-
-    newParams.set(
-      "malId",
-      malId
-    );
-
-  }
-
-
-  newParams.set(
-    "ep",
-    episode
-  );
-
-
-  window.location.href =
-    `watch.html?${newParams.toString()}`;
-
-}
-
-
-
-/* =========================================================
-   FORMAT STATUS
-========================================================= */
-
-function formatStatus(
-  status
-) {
-
-  if (
-    !status
-  ) {
-
-    return "Unknown";
-
-  }
-
-
-  return status
-    .replace(
-      /_/g,
-      " "
-    )
-    .replace(
-      /\b\w/g,
-      char =>
-        char.toUpperCase()
-    );
-
-}
-
-
-
-/* =========================================================
-   FORMAT SOURCE
-========================================================= */
-
-function formatSource(
-  source
-) {
-
-  if (
-    !source
-  ) {
-
-    return "Unknown";
-
-  }
-
-
-  return source
-    .replace(
-      /_/g,
-      " "
-    )
-    .replace(
-      /\b\w/g,
-      char =>
-        char.toUpperCase()
-    );
-
-}
-
-
-
-/* =========================================================
-   CLEAN DESCRIPTION
-========================================================= */
-
-function cleanDescription(
-  description
-) {
-
-  return String(
-    description
-  )
-    .replace(
-      /<br\s*\/?>/gi,
-      "\n"
-    )
-    .replace(
-      /<[^>]*>/g,
-      ""
-    );
-
-}
-
-
-
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-function escapeHtml(
-  value
-) {
-
-  return String(
-    value
-  )
-
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-
-    .replace(
-      /</g,
-      "&lt;"
-    )
-
-    .replace(
-      />/g,
-      "&gt;"
-    )
-
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
-}
-
-
-
-/* =========================================================
-   ESCAPE ATTRIBUTE
-========================================================= */
-
-function escapeAttribute(
-  value
-) {
-
-  return String(
-    value
-  )
-
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-
-    .replace(
-      /</g,
-      "&lt;"
-    )
-
-    .replace(
-      />/g,
-      "&gt;"
-    );
-
-}
-
-
-
-/* =========================================================
-   INITIALIZE PAGE
-========================================================= */
-
-async function initializePage() {
-
-  console.log(
-    "🔥 Loading Danimeverse watch page..."
-  );
-
-
-  /*
-    First load full anime information
-    from AniList.
-  */
-
-  const anime =
-    await loadAniListAnime();
-
-
-  /*
-    Then load uploaded episodes
-    from Firebase.
-  */
-
-  await loadEpisode(
-    anime
-  );
-
-
-  console.log(
-    "🎉 Watch page loaded"
-  );
-
-}
-
-
-initializePage();
-
-
-</script>
+  </script>
 
 </body>
 
