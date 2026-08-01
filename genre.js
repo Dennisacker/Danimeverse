@@ -1,15 +1,18 @@
+console.log("🔥 NEW GENRE.JS IS RUNNING");
 document.addEventListener("DOMContentLoaded", () => {
 
   const params = new URLSearchParams(window.location.search);
 
   const genre = params.get("genre");
-  const genreId = params.get("id");
 
   const genreTitle = document.getElementById("genreTitle");
   const animeContainer = document.getElementById("genreAnimeContainer");
 
-  // Check if genre exists
-  if (!genre || !genreId) {
+  // =========================
+  // CHECK GENRE
+  // =========================
+
+  if (!genre) {
 
     genreTitle.textContent = "Genre Not Found";
 
@@ -22,15 +25,61 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Format genre name
-  const formattedGenre =
-    genre.charAt(0).toUpperCase() + genre.slice(1).replace("-", " ");
 
-  // Update page title
-  genreTitle.textContent = `${formattedGenre} Anime`;
+  
+  // =========================
+  // ANILIST GENRE MAPPING
+  // =========================
+
+  const genreMap = {
+    action: "Action",
+    adventure: "Adventure",
+    fantasy: "Fantasy",
+    "sci-fi": "Sci-Fi",
+    supernatural: "Supernatural",
+    thriller: "Thriller"
+  };
+
 
   // =========================
-  // PAGINATION SETTINGS
+  // SPECIAL GENRE / TAG MAPPING
+  // =========================
+
+  const tagMap = {
+    isekai: "Isekai",
+    superhero: "Super Power"
+  };
+
+
+  // =========================
+  // FORMAT DISPLAY NAME
+  // =========================
+
+  const formattedGenre =
+    genre === "sci-fi"
+      ? "Sci-Fi"
+      : genre
+          .split("-")
+          .map(word =>
+            word.charAt(0).toUpperCase() + word.slice(1)
+          )
+          .join(" ");
+
+
+  genreTitle.textContent = `${formattedGenre} Anime`;
+
+
+  // =========================
+  // GET GENRE OR TAG
+  // =========================
+
+  const anilistGenre = genreMap[genre];
+  const anilistTag = tagMap[genre];
+  
+
+
+  // =========================
+  // PAGINATION
   // =========================
 
   let currentPage = 1;
@@ -43,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // =========================
-  // CREATE LOAD MORE BUTTON
+  // LOAD MORE BUTTON
   // =========================
 
   const loadMoreButton = document.createElement("button");
@@ -64,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     hover:scale-105
   `;
 
-  // Put button below the anime grid
+
   const buttonWrapper = document.createElement("div");
 
   buttonWrapper.className =
@@ -73,6 +122,71 @@ document.addEventListener("DOMContentLoaded", () => {
   buttonWrapper.appendChild(loadMoreButton);
 
   animeContainer.parentNode.appendChild(buttonWrapper);
+
+
+  // =========================
+  // ANILIST GRAPHQL QUERY
+  // =========================
+
+  const query = `
+    query (
+      $genre: String,
+      $tag: String,
+      $page: Int,
+      $perPage: Int
+    ) {
+
+      Page(
+        page: $page
+        perPage: $perPage
+      ) {
+
+        pageInfo {
+          hasNextPage
+        }
+
+        media(
+          type: ANIME
+          genre: $genre
+          tag: $tag
+          sort: SCORE_DESC
+        ) {
+
+          id
+
+          idMal
+
+          title {
+            romaji
+            english
+            native
+          }
+
+          coverImage {
+            large
+            extraLarge
+          }
+
+          bannerImage
+
+          description
+
+          type
+
+          averageScore
+
+          episodes
+
+          status
+
+          genres
+
+        }
+
+      }
+
+    }
+  `;
 
 
   // =========================
@@ -86,10 +200,14 @@ document.addEventListener("DOMContentLoaded", () => {
     isLoading = true;
 
     loadMoreButton.textContent = "Loading...";
+
     loadMoreButton.disabled = true;
 
 
-    // Show loading message only on first load
+    // =========================
+    // FIRST PAGE LOADING
+    // =========================
+
     if (page === 1) {
 
       animeContainer.innerHTML = `
@@ -103,25 +221,97 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
 
-      const apiUrl =
-        `https://api.jikan.moe/v4/anime?genres=${genreId}&order_by=score&sort=desc&page=${page}&limit=${limit}`;
+      console.log(
+        `🔥 Loading ${formattedGenre} anime from AniList...`
+      );
 
-      const response = await fetch(apiUrl);
+
+      // =========================
+      // SEND GRAPHQL REQUEST
+      // =========================
+
+      const response = await fetch(
+        "https://graphql.anilist.co",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+
+          body: JSON.stringify({
+
+            query: query,
+
+             
+            variables: {
+
+              genre: anilistGenre || null,
+
+              tag: anilistTag || null,
+
+              page: page,
+
+              perPage: limit
+
+            }
+            
+
+
+          })
+
+        }
+      );
+
+
+      // =========================
+      // CHECK RESPONSE
+      // =========================
 
       if (!response.ok) {
-        throw new Error("Failed to fetch anime");
+
+        throw new Error(
+          `AniList API Error: ${response.status} ${response.statusText}`
+        );
+
       }
+
 
       const result = await response.json();
 
-      const animeList = result.data || [];
+
+      // =========================
+      // CHECK GRAPHQL ERRORS
+      // =========================
+
+      if (result.errors) {
+
+        console.error(
+          "AniList GraphQL Error:",
+          result.errors
+        );
+
+        throw new Error(
+          "AniList returned an error"
+        );
+
+      }
+
+
+      const pageData = result.data.Page;
+
+      const animeList = pageData.media || [];
 
 
       // =========================
-      // CHECK IF RESULTS EXIST
+      // NO RESULTS
       // =========================
 
-      if (page === 1 && animeList.length === 0) {
+      if (
+        page === 1 &&
+        animeList.length === 0
+      ) {
 
         animeContainer.innerHTML = `
           <p class="text-slate-400 col-span-full text-center">
@@ -134,17 +324,31 @@ document.addEventListener("DOMContentLoaded", () => {
         buttonWrapper.remove();
 
         return;
+
       }
 
 
       // =========================
-      // ADD ANIME CARDS
+      // REMOVE LOADING MESSAGE
+      // =========================
+
+      if (page === 1) {
+
+        animeContainer.innerHTML = "";
+
+      }
+
+
+      // =========================
+      // CREATE ANIME CARDS
       // =========================
 
       animeList.forEach(anime => {
 
         const card = document.createElement("div");
 
+
+        // SAME CARD STYLE
         card.className = `
           glass-card
           rounded-2xl
@@ -157,15 +361,36 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
 
 
+        // =========================
+        // ANIME TITLE
+        // =========================
+
+        const animeTitle =
+          anime.title.english ||
+          anime.title.romaji ||
+          anime.title.native ||
+          "Unknown Anime";
+
+
+        // =========================
+        // ANIME IMAGE
+        // =========================
+
+        const animeImage =
+          anime.coverImage?.extraLarge ||
+          anime.coverImage?.large ||
+          "";
+
+
+        // =========================
+        // CREATE CARD
+        // =========================
+
         card.innerHTML = `
 
           <img
-            src="${
-              anime.images?.jpg?.large_image_url ||
-              anime.images?.jpg?.image_url ||
-              ""
-            }"
-            alt="${anime.title}"
+            src="${animeImage}"
+            alt="${animeTitle}"
             class="w-full h-64 object-cover"
             loading="lazy"
           >
@@ -173,12 +398,19 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="p-4">
 
             <h3 class="text-white font-semibold text-base line-clamp-2">
-              ${anime.title}
+              ${animeTitle}
             </h3>
 
             <p class="text-sm text-slate-400 mt-2">
+
               ${anime.type || "Anime"}
-              ${anime.score ? ` • ⭐ ${anime.score}` : ""}
+
+              ${
+                anime.averageScore
+                  ? ` • ⭐ ${(anime.averageScore / 10).toFixed(1)}`
+                  : ""
+              }
+
             </p>
 
           </div>
@@ -190,13 +422,37 @@ document.addEventListener("DOMContentLoaded", () => {
         // CLICK ANIME
         // =========================
 
-        card.addEventListener("click", () => {
+       
+        card.addEventListener(
+          "click",
+          () => {
 
-          window.location.href =
-            `watch.html?id=${anime.mal_id}`;
+            const animeTitle =
+              anime.title.english ||
+              anime.title.romaji ||
+              anime.title.native ||
+              "Unknown Anime";
 
-        });
+            const params = new URLSearchParams({
+              anilistId: anime.id,
+              anime: animeTitle,
+              ep: 1
+            });
 
+            if (anime.idMal) {
+              params.set("malId", anime.idMal);
+            }
+
+            window.location.href =
+              `watch.html?${params.toString()}`;
+
+          }
+        );
+       
+
+        // =========================
+        // ADD CARD
+        // =========================
 
         animeContainer.appendChild(card);
 
@@ -204,13 +460,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
       // =========================
-      // CHECK FOR MORE RESULTS
+      // CHECK MORE RESULTS
       // =========================
 
       if (
-        !result.pagination ||
-        !result.pagination.has_next_page ||
-        animeList.length < limit
+        !pageData.pageInfo ||
+        !pageData.pageInfo.hasNextPage
       ) {
 
         hasMore = false;
@@ -221,33 +476,72 @@ document.addEventListener("DOMContentLoaded", () => {
 
         currentPage++;
 
-        loadMoreButton.textContent = "Load More";
+        loadMoreButton.textContent =
+          "Load More";
 
-        loadMoreButton.disabled = false;
+        loadMoreButton.disabled =
+          false;
 
       }
 
 
     } catch (error) {
 
-      console.error("Genre API Error:", error);
+      console.error(
+        "AniList API Error:",
+        error
+      );
 
 
       if (page === 1) {
 
         animeContainer.innerHTML = `
-          <p class="text-red-400 col-span-full text-center">
-            Failed to load anime.
-            Please refresh the page and try again.
-          </p>
+
+          <div class="col-span-full text-center">
+
+            <p class="text-red-400">
+              Failed to load anime.
+            </p>
+
+            <button
+              id="retryGenre"
+              class="mt-4 px-5 py-2 rounded-full bg-pink-500 hover:bg-pink-600 text-white transition"
+            >
+              Try Again
+            </button>
+
+          </div>
+
         `;
+
+
+        const retryButton =
+          document.getElementById("retryGenre");
+
+
+        if (retryButton) {
+
+          retryButton.addEventListener(
+            "click",
+            () => {
+
+              hasMore = true;
+
+              loadAnime(1);
+
+            }
+          );
+
+        }
 
       }
 
 
-      loadMoreButton.textContent = "Load More";
+      loadMoreButton.textContent =
+        "Load More";
 
-      loadMoreButton.disabled = false;
+      loadMoreButton.disabled =
+        false;
 
     }
 
@@ -261,11 +555,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // LOAD MORE CLICK
   // =========================
 
-  loadMoreButton.addEventListener("click", () => {
+  loadMoreButton.addEventListener(
+    "click",
+    () => {
 
-    loadAnime(currentPage);
+      loadAnime(currentPage);
 
-  });
+    }
+  );
 
 
   // =========================

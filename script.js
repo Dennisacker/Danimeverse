@@ -1,4 +1,4 @@
-```js
+
 console.log("🔥 Danimeverse JS loaded");
 
 /* =========================
@@ -194,4 +194,3 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
-```

@@ -387,7 +387,7 @@ body::before {
 
     <!-- ACTION -->
 
-  <a href="genre.html?genre=action"
+    <a href="genre.html?genre=action&id=1"
     class="genre-card group relative overflow-hidden rounded-[1.5rem] p-3 md:p-4 shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-glow"
     data-genre="action">
 
@@ -696,30 +696,10 @@ body::before {
     <script>
       console.log("🔥 Danimeverse JS loaded");
 
-      /*
-      =====================================================
-      HOMEPAGE GENRE CARDS
-      =====================================================
-
-      Genre cards now link directly to genre.html.
-
-      Example:
-      Action → genre.html?genre=action&id=1
-
-      We DO NOT use the old filter system anymore.
-      We DO NOT save a selected genre in localStorage.
-      We DO NOT automatically click any genre on page load.
-
-      This prevents the homepage from redirecting to Action.
-      */
-
-      document.addEventListener("DOMContentLoaded", () => {
-
       document.addEventListener("DOMContentLoaded", () => {
 
         const genreCards = document.querySelectorAll(".genre-card");
 
-        // Jikan API genre IDs
         const genreIds = {
           action: 1,
           adventure: 2,
@@ -737,7 +717,6 @@ body::before {
 
           if (!genre) return;
 
-          // Make the card clickable
           card.style.cursor = "pointer";
 
           card.addEventListener("click", () => {
@@ -749,7 +728,6 @@ body::before {
               return;
             }
 
-            // Go to the genre page
             window.location.href =
               `genre.html?genre=${encodeURIComponent(genre)}&id=${genreId}`;
 
