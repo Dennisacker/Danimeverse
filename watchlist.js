@@ -49,145 +49,73 @@ const db = getFirestore(app);
 ========================================================= */
 
 function slugify(title) {
-
   return title
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
-
 }
 
 
-/* =========================================================
-   TOAST
-========================================================= */
+function showToast(message, success = true) {
 
-function showToast(
-  message,
-  success = true
-) {
-
-  let toast =
-    document.getElementById(
-      "wl-toast"
-    );
-
+  let toast = document.getElementById("wl-toast");
 
   if (!toast) {
 
-    toast =
-      document.createElement(
-        "div"
-      );
+    toast = document.createElement("div");
 
+    toast.id = "wl-toast";
 
-    toast.id =
-      "wl-toast";
+    toast.style.position = "fixed";
+    toast.style.bottom = "30px";
+    toast.style.right = "30px";
+    toast.style.zIndex = "9999";
+    toast.style.padding = "14px 20px";
+    toast.style.borderRadius = "10px";
+    toast.style.color = "white";
+    toast.style.fontWeight = "600";
+    toast.style.fontSize = "14px";
+    toast.style.boxShadow = "0 10px 30px rgba(0,0,0,.4)";
+    toast.style.transition = "opacity .3s ease";
 
-
-    toast.style.position =
-      "fixed";
-
-    toast.style.bottom =
-      "30px";
-
-    toast.style.right =
-      "30px";
-
-    toast.style.zIndex =
-      "9999";
-
-    toast.style.padding =
-      "14px 20px";
-
-    toast.style.borderRadius =
-      "10px";
-
-    toast.style.color =
-      "white";
-
-    toast.style.fontWeight =
-      "600";
-
-    toast.style.fontSize =
-      "14px";
-
-    toast.style.boxShadow =
-      "0 10px 30px rgba(0,0,0,.4)";
-
-    toast.style.transition =
-      "opacity .3s ease";
-
-
-    document.body.appendChild(
-      toast
-    );
-
+    document.body.appendChild(toast);
   }
 
+  toast.textContent = message;
 
-  toast.textContent =
-    message;
+  toast.style.background = success
+    ? "#ec4899"
+    : "#dc2626";
 
+  toast.style.opacity = "1";
 
-  toast.style.background =
-    success
-      ? "#ec4899"
-      : "#dc2626";
+  clearTimeout(toast._timer);
 
-
-  toast.style.opacity =
-    "1";
-
-
-  clearTimeout(
-    toast._timer
-  );
-
-
-  toast._timer =
-    setTimeout(
-      () => {
-
-        toast.style.opacity =
-          "0";
-
-      },
-      2500
-    );
+  toast._timer = setTimeout(() => {
+    toast.style.opacity = "0";
+  }, 2500);
 
 }
 
 
 /* =========================================================
-   GET SAVED WATCHLIST SLUGS
+   GET WATCHLIST SLUGS
 ========================================================= */
 
-async function getWatchlistSlugs(
-  uid
-) {
+async function getWatchlistSlugs(uid) {
 
-  const snapshot =
-    await getDocs(
-
-      collection(
-        db,
-        "watchlists",
-        uid,
-        "items"
-      )
-
-    );
-
+  const snapshot = await getDocs(
+    collection(
+      db,
+      "watchlists",
+      uid,
+      "items"
+    )
+  );
 
   return new Set(
-
-    snapshot.docs.map(
-      document =>
-        document.id
-    )
-
+    snapshot.docs.map(doc => doc.id)
   );
 
 }
@@ -197,19 +125,11 @@ async function getWatchlistSlugs(
    ADD ANIME
 ========================================================= */
 
-async function addItem(
-  uid,
-  anime
-) {
+async function addItem(uid, anime) {
 
-  const slug =
-    slugify(
-      anime.title
-    );
-
+  const slug = slugify(anime.title);
 
   await setDoc(
-
     doc(
       db,
       "watchlists",
@@ -217,33 +137,15 @@ async function addItem(
       "items",
       slug
     ),
-
     {
-
-      title:
-        anime.title || "",
-
-      img:
-        anime.img || "",
-
-      desc:
-        anime.desc || "",
-
-      genres:
-        anime.genres || "",
-
-      malId:
-        anime.malId
-          ? Number(anime.malId)
-          : null,
-
-      addedAt:
-        Date.now()
-
+      title: anime.title || "",
+      img: anime.img || "",
+      desc: anime.desc || "",
+      href: anime.href || "",
+      genres: anime.genres || "",
+      addedAt: Date.now()
     }
-
   );
-
 
   return slug;
 
@@ -254,13 +156,9 @@ async function addItem(
    REMOVE ANIME
 ========================================================= */
 
-async function removeItem(
-  uid,
-  slug
-) {
+async function removeItem(uid, slug) {
 
   await deleteDoc(
-
     doc(
       db,
       "watchlists",
@@ -268,611 +166,257 @@ async function removeItem(
       "items",
       slug
     )
-
   );
 
 }
 
 
 /* =========================================================
-   OPEN ANIME FROM MY LIST
-   Uses the same AniList system as api.js
+   INJECT WATCHLIST BUTTONS
 ========================================================= */
 
-async function openSavedAnime(
-  anime
-) {
-
-  if (
-    !anime.malId
-  ) {
-
-    showToast(
-      "This anime is missing its MAL ID.",
-      false
-    );
-
-    return;
-
-  }
-
-
-  const malId =
-    Number(
-      anime.malId
-    );
-
-
-  const fallbackTitle =
-    anime.title ||
-    "Unknown Anime";
-
-
-  try {
-
-    console.log(
-      "🎬 Opening saved anime:",
-      fallbackTitle,
-      "MAL ID:",
-      malId
-    );
-
-
-    const query = `
-
-      query ($malId: Int) {
-
-        Media(
-          idMal: $malId,
-          type: ANIME
-        ) {
-
-          id
-
-          idMal
-
-          title {
-
-            romaji
-
-            english
-
-            native
-
-          }
-
-        }
-
-      }
-
-    `;
-
-
-    const response =
-      await fetch(
-        "https://graphql.anilist.co",
-        {
-
-          method:
-            "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json",
-
-            "Accept":
-              "application/json"
-
-          },
-
-          body:
-            JSON.stringify({
-
-              query,
-
-              variables: {
-
-                malId
-
-              }
-
-            })
-
-        }
-      );
-
-
-    if (
-      !response.ok
-    ) {
-
-      throw new Error(
-        `AniList API Error: ${response.status}`
-      );
-
-    }
-
-
-    const result =
-      await response.json();
-
-
-    if (
-      result.errors
-    ) {
-
-      throw new Error(
-        "AniList returned an error"
-      );
-
-    }
-
-
-    const anilistAnime =
-      result.data?.Media;
-
-
-    if (
-      !anilistAnime
-    ) {
-
-      throw new Error(
-        "Anime not found on AniList"
-      );
-
-    }
-
-
-    const anilistId =
-      anilistAnime.id;
-
-
-    const animeTitle =
-
-      anilistAnime.title?.english ||
-
-      anilistAnime.title?.romaji ||
-
-      anilistAnime.title?.native ||
-
-      fallbackTitle;
-
-
-    const params =
-      new URLSearchParams({
-
-        anilistId:
-          String(
-            anilistId
-          ),
-
-        anime:
-          animeTitle,
-
-        ep:
-          "1",
-
-        malId:
-          String(
-            malId
-          )
-
-      });
-
-
-    window.location.href =
-      `watch.html?${params.toString()}`;
-
-
-  } catch (error) {
-
-    console.error(
-      "❌ Failed to open saved anime:",
-      error
-    );
-
-
-    showToast(
-      `Could not open ${fallbackTitle}. Please try again.`,
-      false
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   INJECT WATCHLIST BUTTONS INTO HOMEPAGE CARDS
-========================================================= */
-
-function injectButtons(
-  uid,
-  slugs
-) {
+function injectButtons(uid, slugs) {
 
   document
-    .querySelectorAll(
-      "article.glass-card"
-    )
-    .forEach(
-      card => {
+    .querySelectorAll("article.glass-card")
+    .forEach(card => {
 
-        if (
-          card.querySelector(
-            ".wl-btn"
-          )
-        ) {
+      if (card.querySelector(".wl-btn")) {
+        return;
+      }
 
-          return;
+      const imgEl = card.querySelector("img");
+      const h3 = card.querySelector("h3");
+      const pEl = card.querySelector("p");
+      const genreEl = card.querySelector("[data-genres]");
+      const parentA = card.closest("a");
 
-        }
+      if (!h3) {
+        return;
+      }
 
+      const anime = {
 
-        const imgEl =
-          card.querySelector(
-            "img"
-          );
+        title:
+          h3.textContent.trim(),
 
+        img:
+          imgEl?.src || "",
 
-        const h3 =
-          card.querySelector(
-            "h3"
-          );
+        desc:
+          pEl?.textContent.trim() || "",
 
+        href:
+          parentA?.getAttribute("href") || "",
 
-        const pEl =
-          card.querySelector(
-            "p"
-          );
+        genres:
+          genreEl?.dataset.genres || ""
 
+      };
 
-        const genreEl =
-          card.querySelector(
-            "[data-genres]"
-          );
+      const slug = slugify(anime.title);
 
+      const inList = slugs.has(slug);
 
-        if (
-          !h3
-        ) {
+      const btn = document.createElement("button");
 
-          return;
+      btn.className =
+        "wl-btn" +
+        (inList ? " in-list" : "");
 
-        }
+      btn.dataset.slug = slug;
 
+      btn.title =
+        inList
+          ? "Remove from My List"
+          : "Add to My List";
 
-        /* -------------------------------------------------
-           GET JIKAN MAL ID
-           api.js must expose the anime object
-        ------------------------------------------------- */
+      btn.innerHTML = inList
+        ? `
+          <svg viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3">
 
-        const title =
-          h3.textContent.trim();
+            <polyline
+              points="20 6 9 17 4 12">
+            </polyline>
 
+          </svg>
+        `
+        : `
+          <svg viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3">
 
-        const anime =
-          window.danimeverseAnimeData?.find(
-            item => {
+            <line
+              x1="12"
+              y1="5"
+              x2="12"
+              y2="19">
+            </line>
 
-              const itemTitle =
-                item.title_english ||
-                item.title ||
-                "";
+            <line
+              x1="5"
+              y1="12"
+              x2="19"
+              y2="12">
+            </line>
 
-              return (
-                itemTitle.trim() ===
-                title
+          </svg>
+        `;
+
+      btn.addEventListener(
+        "click",
+        async e => {
+
+          e.preventDefault();
+          e.stopPropagation();
+
+          if (btn.disabled) {
+            return;
+          }
+
+          btn.disabled = true;
+
+          try {
+
+            if (btn.classList.contains("in-list")) {
+
+              await removeItem(
+                uid,
+                btn.dataset.slug
               );
 
-            }
-          );
+              btn.classList.remove("in-list");
 
+              btn.title = "Add to My List";
 
-        if (
-          !anime
-        ) {
-
-          console.warn(
-            "Could not find Jikan data for:",
-            title
-          );
-
-          return;
-
-        }
-
-
-        const animeData = {
-
-          title,
-
-          img:
-            imgEl?.src ||
-            "",
-
-          desc:
-            pEl?.textContent.trim() ||
-            "",
-
-          genres:
-            genreEl?.textContent.trim() ||
-            "",
-
-          malId:
-            anime.mal_id
-
-        };
-
-
-        const slug =
-          slugify(
-            animeData.title
-          );
-
-
-        const inList =
-          slugs.has(
-            slug
-          );
-
-
-        const btn =
-          document.createElement(
-            "button"
-          );
-
-
-        btn.className =
-          "wl-btn" +
-          (
-            inList
-              ? " in-list"
-              : ""
-          );
-
-
-        btn.dataset.slug =
-          slug;
-
-
-        btn.title =
-          inList
-            ? "Remove from My List"
-            : "Add to My List";
-
-
-        function setButtonIcon(
-          saved
-        ) {
-
-          btn.innerHTML =
-
-            saved
-
-              ? `
-
-                <svg
-                  viewBox="0 0 24 24"
+              btn.innerHTML = `
+                <svg viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="3"
-                >
-
-                  <polyline
-                    points="20 6 9 17 4 12"
-                  ></polyline>
-
-                </svg>
-
-              `
-
-              : `
-
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="3"
-                >
+                  stroke-width="3">
 
                   <line
                     x1="12"
                     y1="5"
                     x2="12"
-                    y2="19"
-                  ></line>
+                    y2="19">
+                  </line>
 
                   <line
                     x1="5"
                     y1="12"
                     x2="19"
-                    y2="12"
-                  ></line>
+                    y2="12">
+                  </line>
 
                 </svg>
-
               `;
 
-        }
-
-
-        setButtonIcon(
-          inList
-        );
-
-
-        btn.addEventListener(
-          "click",
-          async e => {
-
-            e.preventDefault();
-
-            e.stopPropagation();
-
-
-            if (
-              btn.disabled
-            ) {
-
-              return;
-
-            }
-
-
-            btn.disabled =
-              true;
-
-
-            try {
-
-              if (
-                btn.classList.contains(
-                  "in-list"
-                )
-              ) {
-
-                await removeItem(
-                  uid,
-                  btn.dataset.slug
-                );
-
-
-                btn.classList.remove(
-                  "in-list"
-                );
-
-
-                btn.title =
-                  "Add to My List";
-
-
-                setButtonIcon(
-                  false
-                );
-
-
-                showToast(
-                  "Removed from My List",
-                  false
-                );
-
-
-              } else {
-
-                const newSlug =
-                  await addItem(
-                    uid,
-                    animeData
-                  );
-
-
-                btn.dataset.slug =
-                  newSlug;
-
-
-                btn.classList.add(
-                  "in-list"
-                );
-
-
-                btn.title =
-                  "Remove from My List";
-
-
-                setButtonIcon(
-                  true
-                );
-
-
-                showToast(
-                  "Added to My List ✓"
-                );
-
-              }
-
-
-            } catch (
-              error
-            ) {
-
-              console.error(
-                "Watchlist button error:",
-                error
-              );
-
-
               showToast(
-                "Something went wrong. Please try again.",
+                "Removed from My List",
                 false
               );
 
-            } finally {
+            } else {
 
-              btn.disabled =
-                false;
+              const newSlug =
+                await addItem(
+                  uid,
+                  anime
+                );
+
+              btn.dataset.slug = newSlug;
+
+              btn.classList.add("in-list");
+
+              btn.title = "Remove from My List";
+
+              btn.innerHTML = `
+                <svg viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3">
+
+                  <polyline
+                    points="20 6 9 17 4 12">
+                  </polyline>
+
+                </svg>
+              `;
+
+              showToast(
+                "Added to My List ✓"
+              );
 
             }
 
+          } catch (error) {
+
+            console.error(
+              "Watchlist button error:",
+              error
+            );
+
+            showToast(
+              "Something went wrong. Please try again.",
+              false
+            );
+
+          } finally {
+
+            btn.disabled = false;
+
           }
-        );
 
+        }
+      );
 
-        card.appendChild(
-          btn
-        );
+      card.appendChild(btn);
 
-      }
-    );
+    });
 
 }
 
 
 /* =========================================================
-   RENDER MY LIST PAGE
+   RENDER WATCHLIST PAGE
 ========================================================= */
 
-async function renderWatchlistPage(
-  uid
-) {
+async function renderWatchlistPage(uid) {
 
   const grid =
-    document.getElementById(
-      "watchlist-grid"
-    );
-
+    document.getElementById("watchlist-grid");
 
   const emptyState =
-    document.getElementById(
-      "watchlist-empty"
-    );
-
+    document.getElementById("watchlist-empty");
 
   const loading =
-    document.getElementById(
-      "watchlist-loading"
-    );
-
+    document.getElementById("watchlist-loading");
 
   const notSignedIn =
-    document.getElementById(
-      "watchlist-not-signed-in"
-    );
-
+    document.getElementById("watchlist-not-signed-in");
 
   const countEl =
-    document.getElementById(
-      "watchlist-count"
-    );
+    document.getElementById("watchlist-count");
 
 
-  if (
-    !grid
-  ) {
-
+  if (!grid) {
     return;
+  }
 
+
+  /* =====================================================
+     IMPORTANT:
+     REMOVE THE LOADING/SKELETON AREA IMMEDIATELY
+     SO IT CAN NEVER LEAVE A TRANSPARENT GAP
+  ===================================================== */
+
+  if (loading) {
+    loading.remove();
   }
 
 
@@ -886,66 +430,53 @@ async function renderWatchlistPage(
 
     const snapshot =
       await getDocs(
-
         collection(
           db,
           "watchlists",
           uid,
           "items"
         )
-
       );
 
 
-    loading?.classList.add(
-      "hidden"
+    console.log(
+      "📋 Watchlist documents:",
+      snapshot.size
     );
 
 
-    notSignedIn?.classList.add(
-      "hidden"
-    );
+    notSignedIn?.classList.add("hidden");
 
 
-    if (
-      snapshot.empty
-    ) {
+    /* =====================================================
+       EMPTY LIST
+    ===================================================== */
 
-      grid.innerHTML =
-        "";
+    if (snapshot.empty) {
 
+      grid.innerHTML = "";
 
-      emptyState?.classList.remove(
-        "hidden"
-      );
+      emptyState?.classList.remove("hidden");
 
-
-      if (
-        countEl
-      ) {
-
-        countEl.textContent =
-          "0 titles";
-
+      if (countEl) {
+        countEl.textContent = "0 titles";
       }
-
 
       return;
 
     }
 
 
-    emptyState?.classList.add(
-      "hidden"
-    );
+    /* =====================================================
+       HIDE EMPTY STATE
+    ===================================================== */
+
+    emptyState?.classList.add("hidden");
 
 
-    if (
-      countEl
-    ) {
+    if (countEl) {
 
       countEl.textContent =
-
         `${snapshot.size} title${
           snapshot.size !== 1
             ? "s"
@@ -969,39 +500,22 @@ async function renderWatchlistPage(
 
 
     items.sort(
-      (
-        a,
-        b
-      ) =>
-
-        (
-          b.addedAt ||
-          0
-        ) -
-
-        (
-          a.addedAt ||
-          0
-        )
-
+      (a, b) =>
+        (b.addedAt || 0) -
+        (a.addedAt || 0)
     );
 
 
-    grid.innerHTML =
-      "";
+    grid.innerHTML = "";
 
 
     items.forEach(
       anime => {
 
         const card =
-          document.createElement(
-            "div"
-          );
+          document.createElement("div");
 
-
-        card.className =
-          "wl-card";
+        card.className = "wl-card";
 
 
         card.innerHTML = `
@@ -1027,9 +541,9 @@ async function renderWatchlistPage(
 
             <div class="wl-card-actions">
 
-              <button
+              <a
+                href="${anime.href || "#"}"
                 class="wl-watch-btn"
-                type="button"
               >
 
                 <svg
@@ -1047,12 +561,12 @@ async function renderWatchlistPage(
 
                 Watch
 
-              </button>
+              </a>
 
 
               <button
                 class="wl-remove-btn"
-                type="button"
+                data-slug="${anime.slug}"
               >
 
                 Remove
@@ -1066,7 +580,7 @@ async function renderWatchlistPage(
 
           <button
             class="wl-remove-icon"
-            type="button"
+            data-slug="${anime.slug}"
             title="Remove"
           >
 
@@ -1078,79 +592,25 @@ async function renderWatchlistPage(
 
 
         /* =====================================================
-           WATCH BUTTON
-        ===================================================== */
-
-        const watchButton =
-          card.querySelector(
-            ".wl-watch-btn"
-          );
-
-
-        watchButton?.addEventListener(
-          "click",
-          async e => {
-
-            e.preventDefault();
-
-            e.stopPropagation();
-
-
-            watchButton.disabled =
-              true;
-
-
-            try {
-
-              await openSavedAnime(
-                anime
-              );
-
-            } finally {
-
-              watchButton.disabled =
-                false;
-
-            }
-
-          }
-        );
-
-
-        /* =====================================================
            REMOVE BUTTONS
         ===================================================== */
 
-        const removeButtons =
-          card.querySelectorAll(
-            ".wl-remove-btn, .wl-remove-icon"
-          );
-
-
-        removeButtons.forEach(
-          btn => {
+        card
+          .querySelectorAll("[data-slug]")
+          .forEach(btn => {
 
             btn.addEventListener(
               "click",
               async e => {
 
                 e.preventDefault();
-
                 e.stopPropagation();
 
-
-                if (
-                  btn.disabled
-                ) {
-
+                if (btn.disabled) {
                   return;
-
                 }
 
-
-                btn.disabled =
-                  true;
-
+                btn.disabled = true;
 
                 try {
 
@@ -1177,12 +637,9 @@ async function renderWatchlistPage(
                         ).length;
 
 
-                      if (
-                        countEl
-                      ) {
+                      if (countEl) {
 
                         countEl.textContent =
-
                           `${remaining} title${
                             remaining !== 1
                               ? "s"
@@ -1192,9 +649,7 @@ async function renderWatchlistPage(
                       }
 
 
-                      if (
-                        !remaining
-                      ) {
+                      if (!remaining) {
 
                         emptyState?.classList.remove(
                           "hidden"
@@ -1213,9 +668,7 @@ async function renderWatchlistPage(
                   );
 
 
-                } catch (
-                  error
-                ) {
+                } catch (error) {
 
                   console.error(
                     "Remove error:",
@@ -1229,29 +682,23 @@ async function renderWatchlistPage(
                   );
 
 
-                  btn.disabled =
-                    false;
+                  btn.disabled = false;
 
                 }
 
               }
             );
 
-          }
-        );
+          });
 
 
-        grid.appendChild(
-          card
-        );
+        grid.appendChild(card);
 
       }
     );
 
 
-  } catch (
-    error
-  ) {
+  } catch (error) {
 
     console.error(
       "❌ WATCHLIST LOAD ERROR:",
@@ -1259,181 +706,85 @@ async function renderWatchlistPage(
     );
 
 
-    loading?.classList.add(
-      "hidden"
-    );
+    /* =====================================================
+       MAKE SURE LOADING AREA IS GONE ON ERROR TOO
+    ===================================================== */
 
-
-    grid.innerHTML = `
-
-      <div style="
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 80px 20px;
-      ">
-
-        <h2 style="
-          font-size: 24px;
-          font-weight: 800;
-          margin-bottom: 10px;
-        ">
-
-          Unable to load My List
-
-        </h2>
-
-
-        <p style="
-          color: #888;
-          margin-bottom: 20px;
-        ">
-
-          ${
-            error.code === "permission-denied"
-
-              ? "Your Firebase Firestore rules are blocking access to your watchlist."
-
-              : "Please refresh the page and try again."
-
-          }
-
-        </p>
-
-      </div>
-
-    `;
-
-  }
-
-}
-
-
-/* =========================================================
-   HOMEPAGE WATCHLIST SETUP
-========================================================= */
-
-async function setupHomepageWatchlist(
-  user
-) {
-
-  try {
-
-    console.log(
-      "❤️ Setting up homepage watchlist..."
-    );
-
-
-    const slugs =
-      await getWatchlistSlugs(
-        user.uid
-      );
-
-
-    function injectWhenReady() {
-
-      const cards =
-        document.querySelectorAll(
-          "article.glass-card"
-        );
-
-
-      if (
-        !cards.length
-      ) {
-
-        return false;
-
-      }
-
-
-      injectButtons(
-        user.uid,
-        slugs
-      );
-
-
-      return true;
-
+    if (loading) {
+      loading.remove();
     }
 
 
     if (
-      injectWhenReady()
+      error.code === "permission-denied"
     ) {
 
-      return;
+      grid.innerHTML = `
+
+        <div style="
+          grid-column: 1 / -1;
+          text-align: center;
+          padding: 80px 20px;
+        ">
+
+          <h2 style="
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 10px;
+          ">
+
+            Watchlist Access Denied
+
+          </h2>
+
+
+          <p style="
+            color: #888;
+            margin-bottom: 20px;
+          ">
+
+            Your Firebase Firestore rules are blocking access to your watchlist.
+
+          </p>
+
+        </div>
+
+      `;
+
+    } else {
+
+      grid.innerHTML = `
+
+        <div style="
+          grid-column: 1 / -1;
+          text-align: center;
+          padding: 80px 20px;
+        ">
+
+          <h2 style="
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 10px;
+          ">
+
+            Unable to load My List
+
+          </h2>
+
+
+          <p style="
+            color: #888;
+          ">
+
+            Please refresh the page and try again.
+
+          </p>
+
+        </div>
+
+      `;
 
     }
-
-
-    const observer =
-      new MutationObserver(
-        () => {
-
-          injectWhenReady();
-
-        }
-      );
-
-
-    const containers = [
-
-      document.getElementById(
-        "popularAnimeContainer"
-      ),
-
-      document.getElementById(
-        "trendingAnimeContainer"
-      ),
-
-      document.getElementById(
-        "latestAnimeContainer"
-      )
-
-    ].filter(
-      Boolean
-    );
-
-
-    containers.forEach(
-      container => {
-
-        observer.observe(
-          container,
-          {
-
-            childList:
-              true,
-
-            subtree:
-              true
-
-          }
-
-        );
-
-      }
-    );
-
-
-    setTimeout(
-      () => {
-
-        observer.disconnect();
-
-      },
-      30000
-    );
-
-
-  } catch (
-    error
-  ) {
-
-    console.error(
-      "❌ Could not setup homepage watchlist:",
-      error
-    );
 
   }
 
@@ -1456,19 +807,11 @@ onAuthStateChanged(
     );
 
 
-    /* =====================================================
-       DESKTOP MY LIST LINK
-    ===================================================== */
-
     const myListLink =
-      document.getElementById(
-        "myListLink"
-      );
+      document.getElementById("myListLink");
 
 
-    if (
-      myListLink
-    ) {
+    if (myListLink) {
 
       myListLink.style.display =
         user
@@ -1477,32 +820,6 @@ onAuthStateChanged(
 
     }
 
-
-    /* =====================================================
-       MOBILE MY LIST LINK
-    ===================================================== */
-
-    const mobileMyListLink =
-      document.getElementById(
-        "mobileMyListLink"
-      );
-
-
-    if (
-      mobileMyListLink
-    ) {
-
-      mobileMyListLink.classList.toggle(
-        "hidden",
-        !user
-      );
-
-    }
-
-
-    /* =====================================================
-       MY LIST PAGE ELEMENTS
-    ===================================================== */
 
     const notSignedIn =
       document.getElementById(
@@ -1520,18 +837,18 @@ onAuthStateChanged(
        USER NOT SIGNED IN
     ===================================================== */
 
-    if (
-      !user
-    ) {
+    if (!user) {
 
       console.log(
         "👤 User is not signed in."
       );
 
 
-      loading?.classList.add(
-        "hidden"
-      );
+      /* Remove skeleton immediately */
+
+      if (loading) {
+        loading.remove();
+      }
 
 
       notSignedIn?.classList.remove(
@@ -1544,10 +861,6 @@ onAuthStateChanged(
     }
 
 
-    /* =====================================================
-       USER SIGNED IN
-    ===================================================== */
-
     console.log(
       "👤 User signed in:",
       user.uid
@@ -1555,18 +868,135 @@ onAuthStateChanged(
 
 
     /* =====================================================
-       HOMEPAGE
+       HOMEPAGE WATCHLIST BUTTONS
     ===================================================== */
 
-    if (
-      document.querySelector(
-        "#popularAnimeContainer, #trendingAnimeContainer, #latestAnimeContainer"
-      )
-    ) {
+    async function setupHomepageWatchlist(user) {
 
-      setupHomepageWatchlist(
-        user
-      );
+      try {
+
+        console.log(
+          "❤️ Setting up homepage watchlist..."
+        );
+
+
+        const slugs =
+          await getWatchlistSlugs(
+            user.uid
+          );
+
+
+        function injectWhenReady() {
+
+          const cards =
+            document.querySelectorAll(
+              "article.glass-card"
+            );
+
+
+          if (!cards.length) {
+
+            console.log(
+              "⏳ Anime cards not ready yet..."
+            );
+
+            return false;
+
+          }
+
+
+          console.log(
+            "✅ Anime cards found:",
+            cards.length
+          );
+
+
+          injectButtons(
+            user.uid,
+            slugs
+          );
+
+
+          return true;
+
+        }
+
+
+        if (
+          injectWhenReady()
+        ) {
+
+          return;
+
+        }
+
+
+        const observer =
+          new MutationObserver(
+            () => {
+
+              if (
+                injectWhenReady()
+              ) {
+
+                observer.disconnect();
+
+              }
+
+            }
+          );
+
+
+        const containers = [
+
+          document.getElementById(
+            "popularAnimeContainer"
+          ),
+
+          document.getElementById(
+            "trendingAnimeContainer"
+          ),
+
+          document.getElementById(
+            "latestAnimeContainer"
+          )
+
+        ].filter(Boolean);
+
+
+        containers.forEach(
+          container => {
+
+            observer.observe(
+              container,
+              {
+                childList: true,
+                subtree: true
+              }
+            );
+
+          }
+        );
+
+
+        setTimeout(
+          () => {
+
+            observer.disconnect();
+
+          },
+          30000
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "❌ Could not load watchlist buttons:",
+          error
+        );
+
+      }
 
     }
 
@@ -1587,5 +1017,19 @@ onAuthStateChanged(
 
     }
 
+
+    /* =====================================================
+       HOMEPAGE
+    ===================================================== */
+
+    else {
+
+      await setupHomepageWatchlist(
+        user
+      );
+
+    }
+
   }
+
 );
