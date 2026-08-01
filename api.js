@@ -582,7 +582,17 @@
           document.createElement(
             "article"
           );
+        if (!window.danimeverseAnimeData) {
+          window.danimeverseAnimeData = [];
+        }
 
+        if (
+          !window.danimeverseAnimeData.some(
+            item => item.mal_id === anime.mal_id
+          )
+        ) {
+          window.danimeverseAnimeData.push(anime);
+        }
 
         card.className =
           "glass-card group overflow-hidden rounded-[2rem] border border-white/10 p-4 shadow-soft transition duration-500 hover:-translate-y-2 hover:shadow-glow";

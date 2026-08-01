@@ -360,3 +360,78 @@ body::before {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+/* =====================================================
+   WATCHLIST ADD BUTTON
+===================================================== */
+
+.wl-btn {
+  position: absolute;
+  top: 12px;
+  right: 52px;
+
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+
+  border: 2px solid rgba(255, 255, 255, 0.5);
+
+  color: white;
+
+  cursor: pointer;
+
+  z-index: 30;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.wl-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.wl-btn:hover {
+  transform: scale(1.12);
+  background: #ec4899;
+  border-color: #ec4899;
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.6);
+}
+
+.wl-btn.in-list {
+  background: #ec4899;
+  border-color: #ec4899;
+}
+
+.wl-btn.in-list:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+
+  .wl-btn {
+    width: 38px;
+    height: 38px;
+
+    top: 10px;
+    right: 48px;
+  }
+
+  .wl-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+}
