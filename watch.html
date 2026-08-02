@@ -1656,239 +1656,317 @@
                 !nextEpisodeSnap.exists();
 
 
-              /* =====================================================
-                 LOAD EPISODE LIST
-              ===================================================== */
+    ```js
+      /* =========================================================
+         LOAD EPISODE LIST
+      ========================================================= */
 
-              await loadEpisodeList(
-                firestoreAnimeId,
-                anime
-              );
+      async function loadEpisodeList(
+        firestoreAnimeId,
+        anime
+      ) {
+
+        try {
+
+          console.log(
+            "🔥 Loading episode list for:",
+            `animes/${firestoreAnimeId}/episodes`
+          );
 
 
-            } catch (error) {
+          const episodesRef =
+            collection(
+              db,
+              "animes",
+              firestoreAnimeId,
+              "episodes"
+            );
 
-              console.error(
-                "❌ Firestore episode error:",
-                error
-              );
 
-
-              showEpisodeError(
-                "Error Loading Episode",
-                error.message ||
-                "Could not load episode data."
-              );
-
-            }
-
-          }
-          /* =================================================
-             SUPPORT BOTH:
-
-             episode: 1
-
-             AND
-
-             episodeNumber: 1
-          ================================================= */
-
-          const episodeNumber =
-            Number(
-              data.episode ||
-              data.episodeNumber
+          const snapshot =
+            await getDocs(
+              episodesRef
             );
 
 
           if (
-            !episodeNumber ||
-            episodeNumber < 1
+            snapshot.empty
           ) {
+
+            console.log(
+              "ℹ️ No episodes found."
+            );
+
+            epListWrap.style.display =
+              "none";
 
             return;
 
           }
 
 
-          allEpisodes.push({
+          const allEpisodes = [];
 
-            episode:
-              episodeNumber,
 
-            title:
-              data.title ||
-              `Episode ${episodeNumber}`,
+          snapshot.forEach(
+            episodeDoc => {
 
-            video:
-              data.playerUrl ||
-              data.video ||
-              data.febboxUrl ||
-              ""
+              const data =
+                episodeDoc.data();
 
-          });
+
+              /* =================================================
+                 SUPPORT BOTH:
+
+                 episode: 1
+
+                 AND
+
+                 episodeNumber: 1
+
+                 ALSO FALL BACK TO:
+
+                 ep_1
+                 ep_2
+                 ep_3
+              ================================================= */
+
+              let episodeNumber =
+                Number(
+                  data.episode ||
+                  data.episodeNumber
+                );
+
+
+              if (
+                !episodeNumber ||
+                episodeNumber < 1
+              ) {
+
+                const match =
+                  episodeDoc.id.match(
+                    /^ep_(\d+)$/
+                  );
+
+
+                if (
+                  match
+                ) {
+
+                  episodeNumber =
+                    Number(
+                      match[1]
+                    );
+
+                }
+
+              }
+
+
+              if (
+                !episodeNumber ||
+                episodeNumber < 1
+              ) {
+
+                return;
+
+              }
+
+
+              allEpisodes.push({
+
+                episode:
+                  episodeNumber,
+
+                title:
+                  data.title ||
+                  `Episode ${episodeNumber}`,
+
+                video:
+                  data.playerUrl ||
+                  data.video ||
+                  data.febboxUrl ||
+                  ""
+
+              });
+
+            }
+          );
+
+
+          /* =====================================================
+             SORT EPISODES
+          ===================================================== */
+
+          allEpisodes.sort(
+            (
+              a,
+              b
+            ) =>
+              a.episode -
+              b.episode
+          );
+
+
+          /* =====================================================
+             ONLY SHOW LIST IF THERE IS MORE THAN ONE EPISODE
+          ===================================================== */
+
+          if (
+            allEpisodes.length <= 1
+          ) {
+
+            epListWrap.style.display =
+              "none";
+
+            return;
+
+          }
+
+
+          /* =====================================================
+             RENDER EPISODE LIST
+          ===================================================== */
+
+          renderEpisodeList(
+            allEpisodes
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "❌ Episode list error:",
+            error
+          );
 
         }
-      );
-
-
-      allEpisodes.sort(
-        (
-          a,
-          b
-        ) =>
-          a.episode -
-          b.episode
-      );
-
-
-      if (
-        allEpisodes.length <= 1
-      ) {
-
-        return;
 
       }
 
 
-      renderEpisodeList(
-        allEpisodes
-      );
+      /* =========================================================
+         RENDER EPISODE LIST
+      ========================================================= */
+
+      function renderEpisodeList(
+        episodes
+      ) {
+
+        epListWrap.style.display =
+          "block";
 
 
-    } catch (error) {
+        epList.innerHTML =
+          episodes
+            .map(
+              episode => {
 
-      console.error(
-        "❌ Episode list error:",
-        error
-      );
-
-    }
-
-  }
+                const current =
+                  episode.episode === ep;
 
 
-  /* =========================================================
-     RENDER EPISODE LIST
-  ========================================================= */
-
-  function renderEpisodeList(
-    episodes
-  ) {
-
-    epListWrap.style.display =
-      "block";
+                const episodeParams =
+                  new URLSearchParams();
 
 
-    epList.innerHTML =
-      episodes
-        .map(
-          episode => {
+                if (
+                  anilistId
+                ) {
 
-            const current =
-              episode.episode === ep;
+                  episodeParams.set(
+                    "anilistId",
+                    anilistId
+                  );
 
-
-            const episodeParams =
-              new URLSearchParams();
-
-
-            if (
-              anilistId
-            ) {
-
-              episodeParams.set(
-                "anilistId",
-                anilistId
-              );
-
-            }
-
-
-            if (
-              animeParam
-            ) {
-
-              episodeParams.set(
-                "anime",
-                animeParam
-              );
-
-            }
-
-
-            if (
-              malId
-            ) {
-
-              episodeParams.set(
-                "malId",
-                malId
-              );
-
-            }
-
-
-            episodeParams.set(
-              "ep",
-              episode.episode
-            );
-
-
-            return `
-
-              <a
-                href="watch.html?${episodeParams.toString()}"
-                class="ep-row ${
-                  current
-                    ? "current"
-                    : ""
-                }"
-              >
-
-                <span
-                  class="text-pink-400 font-bold text-sm min-w-[56px]"
-                >
-                  Ep ${episode.episode}
-                </span>
-
-
-                <span
-                  class="text-sm flex-1 ${
-                    current
-                      ? "text-white font-semibold"
-                      : "text-white/60"
-                  }"
-                >
-
-                  ${escapeHtml(
-                    episode.title
-                  )}
-
-                </span>
-
-
-                ${
-                  current
-                    ? `
-                      <span
-                        class="text-xs bg-pink-500/30 text-pink-300 px-2 py-0.5 rounded-full ml-auto"
-                      >
-                        ▶ Playing
-                      </span>
-                    `
-                    : ""
                 }
 
-              </a>
 
-            `;
+                if (
+                  animeParam
+                ) {
 
-          }
-        )
-        .join("");
+                  episodeParams.set(
+                    "anime",
+                    animeParam
+                  );
 
-  }
+                }
 
+
+                if (
+                  malId
+                ) {
+
+                  episodeParams.set(
+                    "malId",
+                    malId
+                  );
+
+                }
+
+
+                episodeParams.set(
+                  "ep",
+                  episode.episode
+                );
+
+
+                return `
+
+                  <a
+                    href="watch.html?${episodeParams.toString()}"
+                    class="ep-row ${
+                      current
+                        ? "current"
+                        : ""
+                    }"
+                  >
+
+                    <span
+                      class="text-pink-400 font-bold text-sm min-w-[56px]"
+                    >
+                      Ep ${episode.episode}
+                    </span>
+
+
+                    <span
+                      class="text-sm flex-1 ${
+                        current
+                          ? "text-white font-semibold"
+                          : "text-white/60"
+                      }"
+                    >
+
+                      ${escapeHtml(
+                        episode.title
+                      )}
+
+                    </span>
+
+
+                    ${
+                      current
+                        ? `
+                          <span
+                            class="text-xs bg-pink-500/30 text-pink-300 px-2 py-0.5 rounded-full ml-auto"
+                          >
+                            ▶ Playing
+                          </span>
+                        `
+                        : ""
+                    }
+
+                  </a>
+
+                `;
+
+              }
+            )
+            .join("");
+
+      }
+    ```
 
   /* =========================================================
      PREVIOUS EPISODE
