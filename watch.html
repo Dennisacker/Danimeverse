@@ -1362,23 +1362,20 @@
 
             try {
 
-              /* =====================================================
-                 DETERMINE FIRESTORE ANIME ID
+              /* =========================================================
+                 FIRESTORE ANIME ID
 
-                 Your Firestore structure uses MAL IDs:
+                 Example Firestore structure:
 
                  animes
-                   └── 20
+                   └── 16498
                         └── episodes
                              ├── ep_1
                              ├── ep_2
                              └── ep_3
 
-                 Naruto MAL ID = 20
-
-                 We therefore prioritize MAL ID first.
-              ===================================================== */
-
+                 The MAL ID is used as the Firestore document ID.
+              ========================================================= */
               const firestoreAnimeId =
                 anime?.malId
                   ? String(anime.malId)
