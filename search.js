@@ -1,4 +1,4 @@
-```javascript
+
 console.log("SEARCH.JS LOADED");
 
 
@@ -481,4 +481,4 @@ document.addEventListener(
 
   }
 );
-```
+
