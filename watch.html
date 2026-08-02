@@ -1394,15 +1394,23 @@
 
 
       const firestoreAnimeId =
-        anime?.anilistId
+      anime?.malId
+        ? String(
+            anime.malId
+          )
+        : malId
           ? String(
-              anime.anilistId
+              malId
             )
-          : anilistId
+          : anime?.anilistId
             ? String(
-                anilistId
+                anime.anilistId
               )
-            : null;
+            : anilistId
+              ? String(
+                  anilistId
+                )
+              : null;
 
 
       if (!firestoreAnimeId) {
