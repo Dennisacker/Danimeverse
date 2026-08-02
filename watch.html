@@ -52,6 +52,82 @@
         height: 215px;
       }
     }
+    /* =========================================================
+       ANIME INFO RESPONSIVE LAYOUT
+    ========================================================= */
+
+    .anime-info-layout {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 24px;
+      width: 100%;
+    }
+
+    .anime-poster-wrapper {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .anime-details {
+      flex: 1;
+      min-width: 0;
+      width: 100%;
+    }
+
+
+    /* =========================================================
+       MOBILE
+    ========================================================= */
+
+    @media (max-width: 767px) {
+
+      .anime-info-layout {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+        width: 100%;
+      }
+
+      .anime-poster-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .anime-poster {
+        width: 150px;
+        height: 215px;
+        object-fit: cover;
+        border-radius: 12px;
+      }
+
+      .anime-details {
+        width: 100%;
+        min-width: 0;
+        text-align: left;
+      }
+
+      #animeTitle {
+        text-align: center;
+        font-size: 2rem;
+        line-height: 1.15;
+        word-break: normal;
+        overflow-wrap: anywhere;
+      }
+
+      #animeNativeTitle {
+        text-align: center;
+      }
+
+      #animeDescription {
+        text-align: left;
+      }
+
+    }
     .watch-btn {
       display: flex;
       align-items: center;
@@ -243,22 +319,22 @@
       style="display:none"
     >
 
-            <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+              <div class="anime-info-layout">
 
-          <!-- POSTER -->
+              <!-- POSTER -->
 
-            <div class="flex-shrink-0 flex justify-center w-full md:w-auto">
-            <img
-              id="animePoster"
-              src=""
-              alt="Anime Poster"
-              class="anime-poster shadow-lg"
-            >
-          </div>
+              <div class="anime-poster-wrapper">
+                <img
+                  id="animePoster"
+                  src=""
+                  alt="Anime Poster"
+                  class="anime-poster shadow-lg"
+                >
+              </div>
 
-          <!-- DETAILS -->
+              <!-- DETAILS -->
 
-            <div class="flex-1 min-w-0 w-full">
+              <div class="anime-details">
 
           <!-- TITLE -->
 
