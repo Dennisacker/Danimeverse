@@ -45,6 +45,13 @@
       border-radius: 12px;
       display: block;
     }
+
+    @media (max-width: 767px) {
+      .anime-poster {
+        width: 150px;
+        height: 215px;
+      }
+    }
     .watch-btn {
       display: flex;
       align-items: center;
@@ -236,11 +243,11 @@
       style="display:none"
     >
 
-          <div class="flex items-start gap-5">
+            <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
 
           <!-- POSTER -->
 
-          <div class="flex-shrink-0">
+            <div class="flex-shrink-0 flex justify-center w-full md:w-auto">
             <img
               id="animePoster"
               src=""
@@ -251,7 +258,7 @@
 
           <!-- DETAILS -->
 
-          <div class="flex-1 min-w-0">
+            <div class="flex-1 min-w-0 w-full">
 
           <!-- TITLE -->
 
