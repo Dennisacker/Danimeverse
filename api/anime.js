@@ -1,4 +1,4 @@
-```js
+```javascript
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
@@ -28,84 +28,48 @@ export default async function handler(req, res) {
   =========================================================
   SEARCH MODE
 
-  Search is handled separately because a search should
-  return MULTIPLE anime results.
+  Search must return MULTIPLE results.
 
-  Example:
+  We use AniList first because it supports
+  multiple search results properly.
 
-  /api/anime?search=Attack%20on%20Titan
-
-  Returns:
-
-  data: [
-    anime 1,
-    anime 2,
-    anime 3,
-    ...
-  ]
+  /api/anime?search=naruto
   =========================================================
   */
 
   if (search) {
-    try {
-      const results =
-        await searchAnimeAcrossProviders(search);
-
-      if (results.length > 0) {
-        return res.status(200).json({
-          success: true,
-          provider: "multi",
-          data: results
-        });
-      }
-
-      return res.status(404).json({
-        success: false,
-        error: "Anime not found",
-        message: "No anime search results were found."
-      });
-
-    } catch (error) {
-      console.error(
-        "❌ Search error:",
-        error.message
-      );
-
-      return res.status(500).json({
-        success: false,
-        error: "Anime search failed",
-        message: error.message
-      });
-    }
+    return handleSearch(req, res, search);
   }
-
 
   /*
   =========================================================
   SINGLE ANIME MODE
 
-  This keeps your existing system:
+  Used by:
 
-  id
-    ↓
-  Kitsu → AniList → Jikan
+  /api/anime?id=ANILIST_ID
 
-  idMal
-    ↓
-  Kitsu → AniList → Jikan
+  or
 
-  This is used by watch.html and anime.html.
+  /api/anime?idMal=MAL_ID
+
+  This keeps your existing watch system working.
   =========================================================
   */
 
   const errors = [];
 
+  /*
+  =========================================================
+  KITSU
+  =========================================================
+  */
+
   try {
-    const kitsu =
-      await fetchFromKitsu({
-        id,
-        idMal
-      });
+    const kitsu = await fetchFromKitsu({
+      id,
+      idMal
+    });
 
     if (kitsu) {
       return res.status(200).json({
@@ -114,7 +78,6 @@ export default async function handler(req, res) {
         data: kitsu
       });
     }
-
   } catch (error) {
     console.error(
       "Kitsu error:",
@@ -122,18 +85,21 @@ export default async function handler(req, res) {
     );
 
     errors.push(
-      "Kitsu: " +
-      error.message
+      "Kitsu: " + error.message
     );
   }
 
+  /*
+  =========================================================
+  ANILIST
+  =========================================================
+  */
 
   try {
-    const anilist =
-      await fetchFromAniList({
-        id,
-        idMal
-      });
+    const anilist = await fetchFromAniList({
+      id,
+      idMal
+    });
 
     if (anilist) {
       return res.status(200).json({
@@ -142,7 +108,6 @@ export default async function handler(req, res) {
         data: anilist
       });
     }
-
   } catch (error) {
     console.error(
       "AniList error:",
@@ -150,18 +115,20 @@ export default async function handler(req, res) {
     );
 
     errors.push(
-      "AniList: " +
-      error.message
+      "AniList: " + error.message
     );
   }
 
+  /*
+  =========================================================
+  JIKAN FALLBACK
+  =========================================================
+  */
 
   try {
-    const jikan =
-      await fetchFromJikan({
-        id,
-        idMal
-      });
+    const jikan = await fetchFromJikan({
+      idMal
+    });
 
     if (jikan) {
       return res.status(200).json({
@@ -170,7 +137,6 @@ export default async function handler(req, res) {
         data: jikan
       });
     }
-
   } catch (error) {
     console.error(
       "Jikan error:",
@@ -178,11 +144,15 @@ export default async function handler(req, res) {
     );
 
     errors.push(
-      "Jikan: " +
-      error.message
+      "Jikan: " + error.message
     );
   }
 
+  /*
+  =========================================================
+  NOTHING FOUND
+  =========================================================
+  */
 
   return res.status(404).json({
     success: false,
@@ -196,72 +166,49 @@ export default async function handler(req, res) {
 
 /*
 =========================================================
-MULTI-PROVIDER SEARCH
-=========================================================
+SEARCH HANDLER
 
-Priority:
+Returns multiple anime results.
 
-1. Kitsu
-2. AniList
-3. Jikan
+Example:
 
-The first provider that returns usable results is used.
+/api/anime?search=naruto
 
-This prevents duplicate results from all three APIs.
+Response:
+
+{
+  success: true,
+  provider: "anilist",
+  data: [...]
+}
 =========================================================
 */
 
-async function searchAnimeAcrossProviders(
-  search
-) {
+async function handleSearch(req, res, search) {
+
+  const errors = [];
 
   /*
-  =========================================================
-  TRY KITSU
-  =========================================================
+  =======================================================
+  ANILIST SEARCH
+  =======================================================
   */
 
   try {
 
-    const kitsuResults =
-      await searchKitsu(search);
-
-    if (
-      kitsuResults &&
-      kitsuResults.length > 0
-    ) {
-
-      return kitsuResults;
-
-    }
-
-  } catch (error) {
-
-    console.error(
-      "Kitsu search error:",
-      error.message
-    );
-
-  }
-
-
-  /*
-  =========================================================
-  TRY ANILIST
-  =========================================================
-  */
-
-  try {
-
-    const anilistResults =
+    const results =
       await searchAniList(search);
 
     if (
-      anilistResults &&
-      anilistResults.length > 0
+      results &&
+      results.length > 0
     ) {
 
-      return anilistResults;
+      return res.status(200).json({
+        success: true,
+        provider: "anilist",
+        data: results
+      });
 
     }
 
@@ -272,26 +219,72 @@ async function searchAnimeAcrossProviders(
       error.message
     );
 
+    errors.push(
+      "AniList: " + error.message
+    );
+
   }
 
 
   /*
-  =========================================================
-  TRY JIKAN
-  =========================================================
+  =======================================================
+  KITSU SEARCH FALLBACK
+  =======================================================
   */
 
   try {
 
-    const jikanResults =
+    const results =
+      await searchKitsu(search);
+
+    if (
+      results &&
+      results.length > 0
+    ) {
+
+      return res.status(200).json({
+        success: true,
+        provider: "kitsu",
+        data: results
+      });
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Kitsu search error:",
+      error.message
+    );
+
+    errors.push(
+      "Kitsu: " + error.message
+    );
+
+  }
+
+
+  /*
+  =======================================================
+  JIKAN SEARCH FALLBACK
+  =======================================================
+  */
+
+  try {
+
+    const results =
       await searchJikan(search);
 
     if (
-      jikanResults &&
-      jikanResults.length > 0
+      results &&
+      results.length > 0
     ) {
 
-      return jikanResults;
+      return res.status(200).json({
+        success: true,
+        provider: "jikan",
+        data: results
+      });
 
     }
 
@@ -302,237 +295,30 @@ async function searchAnimeAcrossProviders(
       error.message
     );
 
-  }
-
-
-  return [];
-}
-
-
-/*
-=========================================================
-KITSU SEARCH
-
-IMPORTANT:
-
-Old:
-
-page[limit]=1
-
-New:
-
-page[limit]=10
-
-This allows multiple search suggestions.
-=========================================================
-*/
-
-async function searchKitsu(
-  search
-) {
-
-  const url =
-    "https://kitsu.io/api/edge/anime" +
-    "?filter[text]=" +
-    encodeURIComponent(search) +
-    "&page[limit]=10";
-
-  const response =
-    await fetch(
-      url,
-      {
-        headers: {
-          Accept:
-            "application/vnd.api+json"
-        }
-      }
-    );
-
-  if (!response.ok) {
-
-    throw new Error(
-      "Kitsu HTTP " +
-      response.status
+    errors.push(
+      "Jikan: " + error.message
     );
 
   }
 
-  const json =
-    await response.json();
 
-  const animeList =
-    json.data || [];
-
-  const results = [];
-
-  for (
-    const anime of animeList
-  ) {
-
-    if (!anime) {
-      continue;
-    }
-
-    const attributes =
-      anime.attributes || {};
-
-    const titles =
-      attributes.titles || {};
-
-    const poster =
-      attributes.posterImage || {};
-
-    const startDate =
-      attributes.startDate || "";
-
-    /*
-    Kitsu may not always provide MAL ID.
-
-    Try to find it from AniList if necessary.
-    */
-
-    let malId =
-      attributes.malId ||
-      null;
-
-    if (
-      !malId
-    ) {
-
-      try {
-
-        malId =
-          await findMalIdFromAniList(
-            titles.en ||
-            titles.en_jp ||
-            titles.en_us ||
-            attributes.canonicalTitle ||
-            search
-          );
-
-      } catch (error) {
-
-        console.warn(
-          "Could not find MAL ID:",
-          error.message
-        );
-
-      }
-
-    }
-
-
-    /*
-    Skip results without MAL IDs.
-
-    Your current search.js requires idMal.
-    */
-
-    if (
-      !malId
-    ) {
-
-      continue;
-
-    }
-
-
-    results.push({
-
-      id:
-        anime.id ||
-        null,
-
-      anilistId:
-        null,
-
-      malId:
-        malId,
-
-      title:
-        titles.en ||
-        titles.en_jp ||
-        titles.en_us ||
-        attributes.canonicalTitle ||
-        "Unknown Anime",
-
-      nativeTitle:
-        titles.ja_jp ||
-        attributes.canonicalTitle ||
-        "",
-
-      poster:
-        poster.large ||
-        poster.medium ||
-        poster.small ||
-        "",
-
-      banner:
-        "",
-
-      description:
-        attributes.synopsis ||
-        attributes.description ||
-        "",
-
-      rating:
-        attributes.averageRating
-          ? Number(
-              attributes.averageRating
-            ) / 10
-          : null,
-
-      status:
-        attributes.status ||
-        "",
-
-      year:
-        startDate
-          ? Number(
-              startDate.substring(
-                0,
-                4
-              )
-            )
-          : null,
-
-      episodes:
-        attributes.episodeCount ||
-        null,
-
-      type:
-        attributes.subtype ||
-        "ANIME",
-
-      format:
-        attributes.subtype ||
-        "TV",
-
-      source:
-        "",
-
-      genres:
-        []
-
-    });
-
-  }
-
-
-  return results;
+  return res.status(404).json({
+    success: false,
+    error: "Anime not found",
+    data: [],
+    details: errors
+  });
 
 }
 
 
 /*
 =========================================================
-ANILIST SEARCH
+ANILIST MULTI SEARCH
 =========================================================
 */
 
-async function searchAniList(
-  search
-) {
+async function searchAniList(search) {
 
   const query = `
     query ($search: String) {
@@ -549,7 +335,6 @@ async function searchAniList(
         ) {
 
           id
-
           idMal
 
           title {
@@ -559,20 +344,24 @@ async function searchAniList(
           }
 
           coverImage {
-            medium
+            extraLarge
             large
+            medium
           }
 
+          bannerImage
+
+          description(asHtml: false)
+
+          type
           format
-
-          episodes
-
-          seasonYear
-
           status
-
           averageScore
+          episodes
+          seasonYear
+          source
 
+          genres
         }
 
       }
@@ -597,16 +386,12 @@ async function searchAniList(
 
         body:
           JSON.stringify({
-
             query,
 
             variables: {
               search
             }
-
           })
-
-        }
       }
     );
 
@@ -625,60 +410,90 @@ async function searchAniList(
     await response.json();
 
 
-  const animeList =
-    json.data?.Page?.media ||
-    [];
+  if (
+    json.errors &&
+    json.errors.length
+  ) {
+
+    throw new Error(
+      json.errors[0].message ||
+      "AniList GraphQL error"
+    );
+
+  }
 
 
-  return animeList
+  const media =
+    json.data &&
+    json.data.Page &&
+    json.data.Page.media;
 
-    .filter(
-      anime =>
-        anime.idMal
-    )
 
-    .map(
-      anime => ({
+  if (
+    !media ||
+    !media.length
+  ) {
+
+    return [];
+
+  }
+
+
+  return media.map(
+    anime => {
+
+      return {
 
         id:
-          anime.id,
+          anime.id ||
+          null,
 
         anilistId:
-          anime.id,
+          anime.id ||
+          null,
 
         malId:
-          anime.idMal,
+          anime.idMal ||
+          null,
 
         title:
-          anime.title?.english ||
-          anime.title?.romaji ||
-          anime.title?.native ||
+          anime.title &&
+          (
+            anime.title.english ||
+            anime.title.romaji ||
+            anime.title.native
+          ) ||
           "Unknown Anime",
 
         nativeTitle:
-          anime.title?.native ||
+          anime.title &&
+          anime.title.native ||
           "",
 
         poster:
-          anime.coverImage?.large ||
-          anime.coverImage?.medium ||
+          anime.coverImage &&
+          (
+            anime.coverImage.extraLarge ||
+            anime.coverImage.large ||
+            anime.coverImage.medium
+          ) ||
           "",
 
         banner:
+          anime.bannerImage ||
           "",
 
         description:
+          anime.description ||
           "",
 
         rating:
-          anime.averageScore
-            ? anime.averageScore /
-              10
-            : null,
+          anime.averageScore ||
+          null,
 
         status:
           anime.status ||
-          "",
+          null,
 
         year:
           anime.seasonYear ||
@@ -689,152 +504,32 @@ async function searchAniList(
           null,
 
         type:
-          anime.format ||
-          "ANIME",
+          anime.type ||
+          null,
 
         format:
           anime.format ||
-          "TV",
-
-        source:
-          "",
-
-        genres:
-          []
-
-      })
-
-    );
-
-}
-
-
-/*
-=========================================================
-JIKAN SEARCH
-=========================================================
-*/
-
-async function searchJikan(
-  search
-) {
-
-  const url =
-    "https://api.jikan.moe/v4/anime" +
-    "?q=" +
-    encodeURIComponent(search) +
-    "&limit=10";
-
-  const response =
-    await fetch(
-      url
-    );
-
-  if (!response.ok) {
-
-    throw new Error(
-      "Jikan HTTP " +
-      response.status
-    );
-
-  }
-
-  const json =
-    await response.json();
-
-
-  const animeList =
-    json.data ||
-    [];
-
-
-  return animeList
-
-    .filter(
-      anime =>
-        anime.mal_id
-    )
-
-    .map(
-      anime => ({
-
-        id:
-          anime.mal_id,
-
-        anilistId:
           null,
-
-        malId:
-          anime.mal_id,
-
-        title:
-          anime.title_english ||
-          anime.title ||
-          "Unknown Anime",
-
-        nativeTitle:
-          anime.title_japanese ||
-          "",
-
-        poster:
-          anime.images?.jpg?.large_image_url ||
-          anime.images?.jpg?.image_url ||
-          "",
-
-        banner:
-          anime.images?.jpg?.large_image_url ||
-          "",
-
-        description:
-          anime.synopsis ||
-          "",
-
-        rating:
-          anime.score ||
-          null,
-
-        status:
-          anime.status ||
-          "",
-
-        year:
-          anime.year ||
-          null,
-
-        episodes:
-          anime.episodes ||
-          null,
-
-        type:
-          anime.type ||
-          "ANIME",
-
-        format:
-          anime.type ||
-          "TV",
 
         source:
           anime.source ||
-          "",
+          null,
 
         genres:
-          anime.genres
-            ? anime.genres.map(
-                genre =>
-                  genre.name
-              )
-            : []
+          anime.genres ||
+          []
 
-      })
+      };
 
-    );
+    }
+  );
 
 }
 
 
 /*
 =========================================================
-SINGLE KITSU LOOKUP
+KITSU SINGLE ANIME
 =========================================================
 */
 
@@ -864,8 +559,7 @@ async function fetchFromKitsu({
 
   }
 
-
-  if (!url) {
+  else {
 
     return null;
 
@@ -912,6 +606,87 @@ async function fetchFromKitsu({
   }
 
 
+  return normalizeKitsu(
+    anime,
+    idMal
+  );
+
+}
+
+
+/*
+=========================================================
+KITSU MULTI SEARCH
+=========================================================
+*/
+
+async function searchKitsu(search) {
+
+  const url =
+    "https://kitsu.io/api/edge/anime" +
+    "?filter[text]=" +
+    encodeURIComponent(search) +
+    "&page[limit]=10";
+
+
+  const response =
+    await fetch(
+      url,
+      {
+        headers: {
+          Accept:
+            "application/vnd.api+json"
+        }
+      }
+    );
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      "Kitsu HTTP " +
+      response.status
+    );
+
+  }
+
+
+  const json =
+    await response.json();
+
+
+  if (
+    !json.data ||
+    !json.data.length
+  ) {
+
+    return [];
+
+  }
+
+
+  return json.data.map(
+    anime =>
+      normalizeKitsu(
+        anime,
+        null
+      )
+  );
+
+}
+
+
+/*
+=========================================================
+NORMALIZE KITSU
+=========================================================
+*/
+
+function normalizeKitsu(
+  anime,
+  fallbackMalId
+) {
+
   const attributes =
     anime.attributes ||
     {};
@@ -929,28 +704,6 @@ async function fetchFromKitsu({
     {};
 
 
-  let malIdValue =
-    attributes.malId ||
-    idMal ||
-    null;
-
-
-  if (
-    !malIdValue
-  ) {
-
-    malIdValue =
-      await findMalIdFromAniList(
-        titles.en ||
-        titles.en_jp ||
-        titles.en_us ||
-        attributes.canonicalTitle ||
-        ""
-      );
-
-  }
-
-
   return {
 
     id:
@@ -961,7 +714,9 @@ async function fetchFromKitsu({
       null,
 
     malId:
-      malIdValue,
+      attributes.malId ||
+      fallbackMalId ||
+      null,
 
     title:
       titles.en ||
@@ -972,22 +727,21 @@ async function fetchFromKitsu({
 
     nativeTitle:
       titles.ja_jp ||
-      attributes.canonicalTitle ||
       "",
 
     poster:
+      poster.original ||
       poster.large ||
       poster.medium ||
-      poster.small ||
       "",
 
     banner:
+      cover.original ||
       cover.large ||
       cover.medium ||
       "",
 
     description:
-      attributes.synopsis ||
       attributes.description ||
       "",
 
@@ -995,12 +749,12 @@ async function fetchFromKitsu({
       attributes.averageRating
         ? Number(
             attributes.averageRating
-          ) / 10
+          )
         : null,
 
     status:
       attributes.status ||
-      "",
+      null,
 
     year:
       attributes.startDate
@@ -1018,14 +772,14 @@ async function fetchFromKitsu({
 
     type:
       attributes.subtype ||
-      "ANIME",
+      null,
 
     format:
       attributes.subtype ||
-      "TV",
+      null,
 
     source:
-      "",
+      null,
 
     genres:
       []
@@ -1037,7 +791,223 @@ async function fetchFromKitsu({
 
 /*
 =========================================================
-SINGLE ANILIST LOOKUP
+JIKAN SINGLE ANIME
+=========================================================
+*/
+
+async function fetchFromJikan({
+  idMal
+}) {
+
+  if (!idMal) {
+
+    return null;
+
+  }
+
+
+  const url =
+    "https://api.jikan.moe/v4/anime/" +
+    encodeURIComponent(idMal);
+
+
+  const response =
+    await fetch(
+      url,
+      {
+        headers: {
+          Accept:
+            "application/json"
+        }
+      }
+    );
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      "Jikan HTTP " +
+      response.status
+    );
+
+  }
+
+
+  const json =
+    await response.json();
+
+
+  if (!json.data) {
+
+    return null;
+
+  }
+
+
+  return normalizeJikan(
+    json.data
+  );
+
+}
+
+
+/*
+=========================================================
+JIKAN MULTI SEARCH
+=========================================================
+*/
+
+async function searchJikan(search) {
+
+  const url =
+    "https://api.jikan.moe/v4/anime" +
+    "?q=" +
+    encodeURIComponent(search) +
+    "&limit=10";
+
+
+  const response =
+    await fetch(
+      url,
+      {
+        headers: {
+          Accept:
+            "application/json"
+        }
+      }
+    );
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      "Jikan HTTP " +
+      response.status
+    );
+
+  }
+
+
+  const json =
+    await response.json();
+
+
+  if (
+    !json.data ||
+    !json.data.length
+  ) {
+
+    return [];
+
+  }
+
+
+  return json.data.map(
+    anime =>
+      normalizeJikan(
+        anime
+      )
+  );
+
+}
+
+
+/*
+=========================================================
+NORMALIZE JIKAN
+=========================================================
+*/
+
+function normalizeJikan(anime) {
+
+  return {
+
+    id:
+      anime.mal_id ||
+      null,
+
+    anilistId:
+      null,
+
+    malId:
+      anime.mal_id ||
+      null,
+
+    title:
+      anime.title_english ||
+      anime.title ||
+      "Unknown Anime",
+
+    nativeTitle:
+      anime.title_japanese ||
+      "",
+
+    poster:
+      anime.images &&
+      anime.images.jpg &&
+      (
+        anime.images.jpg.large_image_url ||
+        anime.images.jpg.image_url
+      ) ||
+      "",
+
+    banner:
+      anime.images &&
+      anime.images.jpg &&
+      (
+        anime.images.jpg.large_image_url ||
+        anime.images.jpg.image_url
+      ) ||
+      "",
+
+    description:
+      anime.synopsis ||
+      "",
+
+    rating:
+      anime.score ||
+      null,
+
+    status:
+      anime.status ||
+      null,
+
+    year:
+      anime.year ||
+      null,
+
+    episodes:
+      anime.episodes ||
+      null,
+
+    type:
+      anime.type ||
+      null,
+
+    format:
+      anime.type ||
+      null,
+
+    source:
+      anime.source ||
+      null,
+
+    genres:
+      anime.genres
+        ? anime.genres.map(
+            genre =>
+              genre.name
+          )
+        : []
+
+  };
+
+}
+
+
+/*
+=========================================================
+ANILIST SINGLE ANIME
 =========================================================
 */
 
@@ -1046,72 +1016,115 @@ async function fetchFromAniList({
   idMal
 }) {
 
-  const query = `
-    query (
-      $id: Int,
-      $idMal: Int
-    ) {
-
-      Media(
-        id: $id
-        idMal: $idMal
-        type: ANIME
-      ) {
-
-        id
-
-        idMal
-
-        title {
-          romaji
-          english
-          native
-        }
-
-        description
-
-        coverImage {
-          medium
-          large
-        }
-
-        bannerImage
-
-        format
-
-        status
-
-        averageScore
-
-        episodes
-
-        seasonYear
-
-        source
-
-        genres
-
-      }
-
-    }
-  `;
-
-
-  const variables = {};
+  let query;
+  let variables;
 
 
   if (id) {
 
-    variables.id =
-      Number(id);
+    query = `
+      query ($id: Int) {
+
+        Media(
+          id: $id
+          type: ANIME
+        ) {
+
+          id
+          idMal
+
+          title {
+            romaji
+            english
+            native
+          }
+
+          coverImage {
+            extraLarge
+            large
+          }
+
+          bannerImage
+
+          description(asHtml: false)
+
+          type
+          format
+          status
+          averageScore
+          episodes
+          seasonYear
+          source
+
+          genres
+
+        }
+
+      }
+    `;
+
+
+    variables = {
+      id:
+        Number(id)
+    };
 
   }
 
+  else if (idMal) {
 
-  if (idMal) {
+    query = `
+      query ($idMal: Int) {
 
-    variables.idMal =
-      Number(idMal);
+        Media(
+          idMal: $idMal
+          type: ANIME
+        ) {
+
+          id
+          idMal
+
+          title {
+            romaji
+            english
+            native
+          }
+
+          coverImage {
+            extraLarge
+            large
+          }
+
+          bannerImage
+
+          description(asHtml: false)
+
+          type
+          format
+          status
+          averageScore
+          episodes
+          seasonYear
+          source
+
+          genres
+
+        }
+
+      }
+    `;
+
+
+    variables = {
+      idMal:
+        Number(idMal)
+    };
+
+  }
+
+  else {
+
+    return null;
 
   }
 
@@ -1135,7 +1148,6 @@ async function fetchFromAniList({
             query,
             variables
           })
-
       }
     );
 
@@ -1154,8 +1166,22 @@ async function fetchFromAniList({
     await response.json();
 
 
+  if (
+    json.errors &&
+    json.errors.length
+  ) {
+
+    throw new Error(
+      json.errors[0].message ||
+      "AniList GraphQL error"
+    );
+
+  }
+
+
   const anime =
-    json.data?.Media;
+    json.data &&
+    json.data.Media;
 
 
   if (!anime) {
@@ -1168,10 +1194,12 @@ async function fetchFromAniList({
   return {
 
     id:
-      anime.id,
+      anime.id ||
+      null,
 
     anilistId:
-      anime.id,
+      anime.id ||
+      null,
 
     malId:
       anime.idMal ||
@@ -1179,18 +1207,25 @@ async function fetchFromAniList({
       null,
 
     title:
-      anime.title?.english ||
-      anime.title?.romaji ||
-      anime.title?.native ||
+      anime.title &&
+      (
+        anime.title.english ||
+        anime.title.romaji ||
+        anime.title.native
+      ) ||
       "Unknown Anime",
 
     nativeTitle:
-      anime.title?.native ||
+      anime.title &&
+      anime.title.native ||
       "",
 
     poster:
-      anime.coverImage?.large ||
-      anime.coverImage?.medium ||
+      anime.coverImage &&
+      (
+        anime.coverImage.extraLarge ||
+        anime.coverImage.large
+      ) ||
       "",
 
     banner:
@@ -1202,14 +1237,12 @@ async function fetchFromAniList({
       "",
 
     rating:
-      anime.averageScore
-        ? anime.averageScore /
-          10
-        : null,
+      anime.averageScore ||
+      null,
 
     status:
       anime.status ||
-      "",
+      null,
 
     year:
       anime.seasonYear ||
@@ -1220,234 +1253,22 @@ async function fetchFromAniList({
       null,
 
     type:
-      anime.format ||
-      "ANIME",
+      anime.type ||
+      null,
 
     format:
       anime.format ||
-      "TV",
+      null,
 
     source:
       anime.source ||
-      "",
+      null,
 
     genres:
       anime.genres ||
       []
 
   };
-
-}
-
-
-/*
-=========================================================
-SINGLE JIKAN LOOKUP
-=========================================================
-*/
-
-async function fetchFromJikan({
-  idMal
-}) {
-
-  if (!idMal) {
-
-    return null;
-
-  }
-
-
-  const response =
-    await fetch(
-      "https://api.jikan.moe/v4/anime/" +
-      encodeURIComponent(idMal) +
-      "/full"
-    );
-
-
-  if (!response.ok) {
-
-    throw new Error(
-      "Jikan HTTP " +
-      response.status
-    );
-
-  }
-
-
-  const json =
-    await response.json();
-
-
-  const anime =
-    json.data;
-
-
-  if (!anime) {
-
-    return null;
-
-  }
-
-
-  return {
-
-    id:
-      anime.mal_id,
-
-    anilistId:
-      null,
-
-    malId:
-      anime.mal_id,
-
-    title:
-      anime.title_english ||
-      anime.title ||
-      "Unknown Anime",
-
-    nativeTitle:
-      anime.title_japanese ||
-      "",
-
-    poster:
-      anime.images?.jpg?.large_image_url ||
-      anime.images?.jpg?.image_url ||
-      "",
-
-    banner:
-      anime.images?.jpg?.large_image_url ||
-      "",
-
-    description:
-      anime.synopsis ||
-      "",
-
-    rating:
-      anime.score ||
-      null,
-
-    status:
-      anime.status ||
-      "",
-
-    year:
-      anime.year ||
-      null,
-
-    episodes:
-      anime.episodes ||
-      null,
-
-    type:
-      anime.type ||
-      "ANIME",
-
-    format:
-      anime.type ||
-      "TV",
-
-    source:
-      anime.source ||
-      "",
-
-    genres:
-      anime.genres
-        ? anime.genres.map(
-            genre =>
-              genre.name
-          )
-        : []
-
-  };
-
-}
-
-
-/*
-=========================================================
-FIND MAL ID FROM ANILIST
-=========================================================
-*/
-
-async function findMalIdFromAniList(
-  search
-) {
-
-  if (
-    !search
-  ) {
-
-    return null;
-
-  }
-
-
-  const query = `
-    query (
-      $search: String
-    ) {
-
-      Media(
-        search: $search
-        type: ANIME
-      ) {
-
-        id
-
-        idMal
-
-      }
-
-    }
-  `;
-
-
-  const response =
-    await fetch(
-      "https://graphql.anilist.co",
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type":
-            "application/json",
-
-          Accept:
-            "application/json"
-        },
-
-        body:
-          JSON.stringify({
-
-            query,
-
-            variables: {
-              search
-            }
-
-          })
-
-        }
-      }
-    );
-
-
-  if (!response.ok) {
-
-    return null;
-
-  }
-
-
-  const json =
-    await response.json();
-
-
-  return (
-    json.data?.Media?.idMal ||
-    null
-  );
 
 }
 ```
