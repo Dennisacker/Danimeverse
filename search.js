@@ -1,9 +1,17 @@
-```js
-console.log("🔥 SEARCH.JS LOADED");
+```javascript
+console.log("🔎 DANIMEVERSE SEARCH.JS LOADED");
 
 
 /* =========================================================
    DANIMEVERSE SEARCH SYSTEM
+
+   Uses:
+   /api/anime?search=QUERY
+
+   API Gateway:
+   Kitsu → AniList → Jikan
+
+   Returns multiple AniList search results.
 ========================================================= */
 
 
@@ -43,49 +51,36 @@ const SITE_CATALOG_TITLES = new Set([
 
 
 /* =========================================================
-   CHECK IF ANIME IS AVAILABLE ON DANIMEVERSE
+   CHECK IF ANIME IS ON DANIMEVERSE
 ========================================================= */
 
 function isOnSite(title) {
 
-  const normalizedTitle =
+  const t =
     String(title || "")
       .toLowerCase()
       .trim();
 
-  if (!normalizedTitle) {
+  if (!t) {
     return false;
   }
 
-  if (
-    SITE_CATALOG_TITLES.has(
-      normalizedTitle
-    )
-  ) {
+  if (SITE_CATALOG_TITLES.has(t)) {
     return true;
   }
 
-  for (
-    const catalogTitle of SITE_CATALOG_TITLES
-  ) {
+  for (const item of SITE_CATALOG_TITLES) {
 
     if (
-      normalizedTitle.includes(
-        catalogTitle
-      ) ||
-      catalogTitle.includes(
-        normalizedTitle
-      )
+      t.includes(item) ||
+      item.includes(t)
     ) {
-
       return true;
-
     }
 
   }
 
   return false;
-
 }
 
 
@@ -169,86 +164,304 @@ async function searchAnime(query) {
   }
 
 
-  const anime =
-    result.data;
+  return result.data;
+
+}
+
+
+/* =========================================================
+   GET SEARCH RESULTS
+
+   Your current API returns ONE anime result.
+   This function converts it into an array.
+
+   If your API gateway is later changed to return
+   multiple results, it will also support that.
+========================================================= */
+
+async function getSearchResults(query) {
+
+  const data =
+    await searchAnime(query);
 
 
   /* =======================================================
-     NORMALIZE API RESPONSE
+     IF API RETURNS AN ARRAY
   ======================================================= */
 
-  const normalizedAnime = {
+  if (Array.isArray(data)) {
 
-    id:
-      anime.anilistId ||
-      anime.id ||
-      null,
+    return data;
 
-    idMal:
-      anime.malId ||
-      null,
-
-    title: {
-
-      english:
-        anime.title ||
-        "",
-
-      romaji:
-        anime.title ||
-        "",
-
-      native:
-        anime.nativeTitle ||
-        ""
-
-    },
-
-    type:
-      anime.type ||
-      "ANIME",
-
-    format:
-      anime.format ||
-      anime.type ||
-      "TV",
-
-    startDate: {
-
-      year:
-        anime.year ||
-        null
-
-    },
-
-    episodes:
-      anime.episodes ||
-      null,
-
-    coverImage: {
-
-      medium:
-        anime.poster ||
-        "",
-
-      large:
-        anime.poster ||
-        ""
-
-    }
-
-  };
+  }
 
 
-  console.log(
-    "✅ Normalized search result:",
-    normalizedAnime
-  );
+  /* =======================================================
+     IF API RETURNS A SINGLE ANIME
+  ======================================================= */
+
+  if (data) {
+
+    return [data];
+
+  }
 
 
-  return [
-    normalizedAnime
-  ];
+  return [];
+
+}
+
+
+/* =========================================================
+   CREATE SEARCH RESULT HTML
+========================================================= */
+
+function createSearchResult(anime) {
+
+  const title =
+    anime.title ||
+    anime.title_english ||
+    anime.title_romaji ||
+    "Unknown Anime";
+
+
+  const nativeTitle =
+    anime.nativeTitle ||
+    "";
+
+
+  const image =
+    anime.poster ||
+    anime.coverImage ||
+    anime.image ||
+    "";
+
+
+  const year =
+    anime.year ||
+    "";
+
+
+  const type =
+    anime.format ||
+    anime.type ||
+    "Anime";
+
+
+  const malId =
+    anime.malId ||
+    anime.idMal ||
+    "";
+
+
+  const anilistId =
+    anime.anilistId ||
+    anime.id ||
+    "";
+
+
+  const onSite =
+    isOnSite(title) ||
+    isOnSite(nativeTitle);
+
+
+  /* =======================================================
+     ANIME PAGE URL
+
+     Your existing anime.html uses MAL ID.
+  ======================================================= */
+
+  let href = "#";
+
+
+  if (malId) {
+
+    href =
+      `anime.html?malId=${encodeURIComponent(malId)}`;
+
+  }
+
+
+  /* =======================================================
+     RESULT HTML
+  ======================================================= */
+
+  return `
+
+    <a
+      href="${escapeAttribute(href)}"
+      class="
+        search-anime-result
+        flex
+        items-center
+        gap-3
+        p-3
+        rounded-xl
+        hover:bg-white/10
+        transition
+        cursor-pointer
+      "
+      data-mal-id="${escapeAttribute(malId)}"
+      data-anilist-id="${escapeAttribute(anilistId)}"
+    >
+
+      ${
+        image
+
+          ? `
+
+            <img
+              src="${escapeAttribute(image)}"
+              alt="${escapeAttribute(title)}"
+              class="
+                w-12
+                h-16
+                object-cover
+                rounded-lg
+                flex-shrink-0
+                bg-white/5
+              "
+              loading="lazy"
+              onerror="this.style.display='none'"
+            >
+
+          `
+
+          : `
+
+            <div
+              class="
+                w-12
+                h-16
+                rounded-lg
+                flex-shrink-0
+                bg-white/5
+                flex
+                items-center
+                justify-center
+                text-xs
+                text-slate-500
+              "
+            >
+              N/A
+            </div>
+
+          `
+      }
+
+
+      <div
+        class="
+          min-w-0
+          flex-1
+        "
+      >
+
+        <h4
+          class="
+            text-sm
+            font-semibold
+            text-white
+            truncate
+          "
+        >
+          ${escapeHtml(title)}
+        </h4>
+
+
+        ${
+          nativeTitle
+
+            ? `
+
+              <p
+                class="
+                  text-[11px]
+                  text-slate-500
+                  truncate
+                  mt-0.5
+                "
+              >
+                ${escapeHtml(nativeTitle)}
+              </p>
+
+            `
+
+            : ""
+        }
+
+
+        <p
+          class="
+            text-xs
+            text-slate-400
+            mt-1
+          "
+        >
+          ${escapeHtml(type)}
+
+          ${
+            year
+              ? ` · ${escapeHtml(year)}`
+              : ""
+          }
+
+        </p>
+
+
+        <div
+          class="
+            mt-1
+          "
+        >
+
+          ${
+            onSite
+
+              ? `
+
+                <span
+                  class="
+                    inline-block
+                    text-[10px]
+                    bg-pink-600
+                    text-white
+                    px-2
+                    py-0.5
+                    rounded-full
+                  "
+                >
+                  ▶ On Site
+                </span>
+
+              `
+
+              : `
+
+                <span
+                  class="
+                    inline-block
+                    text-[10px]
+                    bg-white/10
+                    text-slate-400
+                    px-2
+                    py-0.5
+                    rounded-full
+                  "
+                >
+                  ▶ View
+                </span>
+
+              `
+          }
+
+        </div>
+
+      </div>
+
+    </a>
+
+  `;
 
 }
 
@@ -266,10 +479,6 @@ document.addEventListener(
     );
 
 
-    /* =====================================================
-       GET SEARCH ELEMENTS
-    ===================================================== */
-
     const searchInput =
       document.getElementById(
         "searchInput"
@@ -281,10 +490,6 @@ document.addEventListener(
         "searchResults"
       );
 
-
-    /* =====================================================
-       CHECK ELEMENTS
-    ===================================================== */
 
     if (
       !searchInput ||
@@ -327,7 +532,8 @@ document.addEventListener(
 
 
         const query =
-          searchInput.value.trim();
+          searchInput.value
+            .trim();
 
 
         /* =================================================
@@ -349,21 +555,55 @@ document.addEventListener(
 
 
         /* =================================================
+           MINIMUM SEARCH LENGTH
+        ================================================= */
+
+        if (query.length < 2) {
+
+          searchResults.innerHTML = `
+
+            <p
+              class="
+                text-xs
+                text-slate-400
+                text-center
+                p-4
+              "
+            >
+              Type at least 2 characters...
+            </p>
+
+          `;
+
+          searchResults.classList.remove(
+            "hidden"
+          );
+
+          return;
+
+        }
+
+
+        /* =================================================
            SHOW LOADING
         ================================================= */
 
         searchResults.innerHTML = `
 
-          <div
-            style="
-              padding:14px;
-              text-align:center;
-              color:#94a3b8;
-              font-size:13px;
+          <p
+            class="
+              text-xs
+              text-slate-400
+              text-center
+              p-4
             "
           >
-            Searching...
-          </div>
+            🔎 Searching for
+            <span class="text-pink-400">
+              ${escapeHtml(query)}
+            </span>
+            ...
+          </p>
 
         `;
 
@@ -374,7 +614,7 @@ document.addEventListener(
 
 
         /* =================================================
-           DEBOUNCE SEARCH
+           DEBOUNCE
         ================================================= */
 
         debounceTimer =
@@ -388,13 +628,13 @@ document.addEventListener(
               try {
 
                 console.log(
-                  "🔎 Searching through API Gateway:",
+                  "🔎 Running search:",
                   query
                 );
 
 
                 const items =
-                  await searchAnime(
+                  await getSearchResults(
                     query
                   );
 
@@ -413,15 +653,34 @@ document.addEventListener(
                 }
 
 
+                console.log(
+                  "✅ Search results:",
+                  items
+                );
+
+
                 /* =========================================
-                   VALID RESULTS
+                   FILTER RESULTS
+
+                   Keep results with either MAL ID
+                   or AniList ID.
                 ========================================= */
 
                 const validItems =
                   items.filter(
-                    anime =>
-                      anime &&
-                      anime.idMal
+                    anime => {
+
+                      return (
+                        anime &&
+                        (
+                          anime.malId ||
+                          anime.idMal ||
+                          anime.anilistId ||
+                          anime.id
+                        )
+                      );
+
+                    }
                   );
 
 
@@ -435,16 +694,19 @@ document.addEventListener(
 
                   searchResults.innerHTML = `
 
-                    <div
-                      style="
-                        padding:14px;
-                        text-align:center;
-                        color:#94a3b8;
-                        font-size:13px;
+                    <p
+                      class="
+                        text-sm
+                        text-slate-400
+                        text-center
+                        p-5
                       "
                     >
-                      No results found.
-                    </div>
+                      No anime found for
+                      "<span class="text-white">
+                        ${escapeHtml(query)}
+                      </span>"
+                    </p>
 
                   `;
 
@@ -454,224 +716,50 @@ document.addEventListener(
 
 
                 /* =========================================
-                   SEARCH RESULTS HEADER
+                   BUILD RESULTS
                 ========================================= */
 
                 let html = `
 
                   <div
-                    style="
-                      padding:8px 12px 4px;
-                      font-size:10px;
-                      font-weight:700;
-                      letter-spacing:.08em;
-                      text-transform:uppercase;
-                      color:#ec4899;
+                    class="
+                      px-3
+                      pt-3
+                      pb-1
                     "
                   >
-                    Search Results
+
+                    <p
+                      class="
+                        text-[10px]
+                        font-bold
+                        uppercase
+                        tracking-widest
+                        text-pink-500
+                      "
+                    >
+                      Search Results
+                    </p>
+
                   </div>
 
                 `;
 
 
-                /* =========================================
-                   BUILD RESULTS
-                ========================================= */
-
                 validItems.forEach(
                   anime => {
 
-                    const title =
-                      anime.title?.english ||
-                      anime.title?.romaji ||
-                      anime.title?.native ||
-                      "Unknown Anime";
-
-
-                    const romajiTitle =
-                      anime.title?.romaji ||
-                      "";
-
-
-                    const nativeTitle =
-                      anime.title?.native ||
-                      "";
-
-
-                    const year =
-                      anime.startDate?.year ||
-                      "";
-
-
-                    const type =
-                      anime.format ||
-                      anime.type ||
-                      "Anime";
-
-
-                    const image =
-                      anime.coverImage?.medium ||
-                      anime.coverImage?.large ||
-                      "";
-
-
-                    const malId =
-                      anime.idMal;
-
-
-                    const onSite =
-                      isOnSite(title) ||
-                      isOnSite(romajiTitle) ||
-                      isOnSite(nativeTitle);
-
-
-                    /* =====================================
-                       ANIME PAGE LINK
-                    ===================================== */
-
-                    const href =
-                      `anime.html?malId=${encodeURIComponent(
-                        malId
-                      )}`;
-
-
-                    html += `
-
-                      <a
-                        href="${escapeAttribute(href)}"
-                        class="
-                          flex
-                          items-center
-                          gap-3
-                          p-3
-                          rounded-xl
-                          hover:bg-white/10
-                          transition
-                          no-underline
-                        "
-                      >
-
-                        ${
-                          image
-                            ? `
-
-                              <img
-                                src="${escapeAttribute(image)}"
-                                alt="${escapeHtml(title)}"
-                                class="
-                                  w-12
-                                  h-16
-                                  object-cover
-                                  rounded-lg
-                                  flex-shrink-0
-                                "
-                                loading="lazy"
-                                onerror="
-                                  this.style.display='none'
-                                "
-                              >
-
-                            `
-                            : `
-
-                              <div
-                                class="
-                                  w-12
-                                  h-16
-                                  rounded-lg
-                                  flex-shrink-0
-                                  bg-white/5
-                                  flex
-                                  items-center
-                                  justify-center
-                                  text-xs
-                                  text-slate-500
-                                "
-                              >
-                                N/A
-                              </div>
-
-                            `
-                        }
-
-
-                        <div
-                          class="min-w-0 flex-1"
-                        >
-
-                          <h4
-                            class="
-                              text-sm
-                              font-semibold
-                              text-white
-                              truncate
-                            "
-                          >
-                            ${escapeHtml(title)}
-                          </h4>
-
-
-                          <p
-                            class="
-                              text-xs
-                              text-slate-400
-                              mt-1
-                            "
-                          >
-
-                            ${escapeHtml(type)}
-
-                            ${
-                              year
-                                ? ` · ${escapeHtml(year)}`
-                                : ""
-                            }
-
-                          </p>
-
-
-                          <span
-                            style="
-                              display:inline-block;
-                              margin-top:4px;
-                              font-size:10px;
-                              padding:2px 7px;
-                              border-radius:999px;
-                              ${
-                                onSite
-                                  ? `
-                                    background:#ec4899;
-                                    color:white;
-                                  `
-                                  : `
-                                    background:rgba(255,255,255,.1);
-                                    color:#94a3b8;
-                                  `
-                              }
-                            "
-                          >
-
-                            ${
-                              onSite
-                                ? "▶ On Site"
-                                : "▶ View"
-                            }
-
-                          </span>
-
-                        </div>
-
-                      </a>
-
-                    `;
+                    html +=
+                      createSearchResult(
+                        anime
+                      );
 
                   }
                 );
 
 
                 /* =========================================
-                   DISPLAY RESULTS
+                   SHOW RESULTS
                 ========================================= */
 
                 searchResults.innerHTML =
@@ -684,9 +772,9 @@ document.addEventListener(
 
 
                 console.log(
-                  "✅ Search results displayed"
+                  "✅ Search results displayed:",
+                  validItems.length
                 );
-
 
               } catch (error) {
 
@@ -708,16 +796,16 @@ document.addEventListener(
 
                 searchResults.innerHTML = `
 
-                  <div
-                    style="
-                      padding:14px;
-                      text-align:center;
-                      color:#f87171;
-                      font-size:13px;
+                  <p
+                    class="
+                      text-xs
+                      text-red-400
+                      text-center
+                      p-4
                     "
                   >
                     Search is temporarily unavailable.
-                  </div>
+                  </p>
 
                 `;
 
@@ -737,7 +825,7 @@ document.addEventListener(
 
     document.addEventListener(
       "click",
-      (event) => {
+      event => {
 
         if (
           !searchResults.contains(
@@ -755,6 +843,29 @@ document.addEventListener(
 
       }
     );
+
+
+    /* =====================================================
+       KEEP SEARCH OPEN WHEN CLICKING INPUT
+    ===================================================== */
+
+    searchInput.addEventListener(
+      "focus",
+      () => {
+
+        if (
+          searchInput.value.trim()
+        ) {
+
+          searchResults.classList.remove(
+            "hidden"
+          );
+
+        }
+
+      }
+    );
+
 
   }
 );
