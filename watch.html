@@ -1652,6 +1652,21 @@
               nextBtn.disabled =
                 !nextEpisodeSnap.exists();
 
+              } catch (error) {
+
+                console.error(
+                  "❌ Failed to load episode:",
+                  error
+                );
+
+                showEpisodeError(
+                  "Episode Error",
+                  "Something went wrong while loading this episode."
+                );
+
+              }
+
+              } // ✅ CLOSES loadEpisode()
 
    
       /* =========================================================
