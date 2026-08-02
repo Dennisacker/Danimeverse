@@ -1,8 +1,14 @@
+```js
 console.log("🔥 SEARCH.JS LOADED");
 
 
 /* =========================================================
-   DANIMEVERSE SITE CATALOG
+   DANIMEVERSE SEARCH SYSTEM
+========================================================= */
+
+
+/* =========================================================
+   SITE CATALOG
 ========================================================= */
 
 const SITE_CATALOG_TITLES = new Set([
@@ -37,38 +43,39 @@ const SITE_CATALOG_TITLES = new Set([
 
 
 /* =========================================================
-   CHECK IF ANIME IS ON DANIMEVERSE
+   CHECK IF ANIME IS AVAILABLE ON DANIMEVERSE
 ========================================================= */
 
 function isOnSite(title) {
 
-  const t =
-    String(
-      title || ""
-    )
+  const normalizedTitle =
+    String(title || "")
       .toLowerCase()
       .trim();
 
-
-  if (!t) {
+  if (!normalizedTitle) {
     return false;
   }
 
-
   if (
-    SITE_CATALOG_TITLES.has(t)
+    SITE_CATALOG_TITLES.has(
+      normalizedTitle
+    )
   ) {
     return true;
   }
 
-
   for (
-    const k of SITE_CATALOG_TITLES
+    const catalogTitle of SITE_CATALOG_TITLES
   ) {
 
     if (
-      t.includes(k) ||
-      k.includes(t)
+      normalizedTitle.includes(
+        catalogTitle
+      ) ||
+      catalogTitle.includes(
+        normalizedTitle
+      )
     ) {
 
       return true;
@@ -76,7 +83,6 @@ function isOnSite(title) {
     }
 
   }
-
 
   return false;
 
@@ -89,34 +95,12 @@ function isOnSite(title) {
 
 function escapeHtml(value) {
 
-  return String(
-    value || ""
-  )
-
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-
-    .replace(
-      /</g,
-      "&lt;"
-    )
-
-    .replace(
-      />/g,
-      "&gt;"
-    )
-
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-
-    .replace(
-      /'/g,
-      "&#039;"
-    );
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 
 }
 
@@ -127,29 +111,11 @@ function escapeHtml(value) {
 
 function escapeAttribute(value) {
 
-  return String(
-    value || ""
-  )
-
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-
-    .replace(
-      /</g,
-      "&lt;"
-    )
-
-    .replace(
-      />/g,
-      "&gt;"
-    );
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 
 }
 
@@ -166,12 +132,9 @@ async function searchAnime(query) {
   );
 
 
-  const response =
-    await fetch(
-      `/api/anime?search=${encodeURIComponent(
-        query
-      )}`
-    );
+  const response = await fetch(
+    `/api/anime?search=${encodeURIComponent(query)}`
+  );
 
 
   if (!response.ok) {
@@ -210,9 +173,9 @@ async function searchAnime(query) {
     result.data;
 
 
-  /* =====================================================
+  /* =======================================================
      NORMALIZE API RESPONSE
-  ===================================================== */
+  ======================================================= */
 
   const normalizedAnime = {
 
@@ -221,12 +184,9 @@ async function searchAnime(query) {
       anime.id ||
       null,
 
-
     idMal:
       anime.malId ||
-      anime.idMal ||
       null,
-
 
     title: {
 
@@ -244,17 +204,14 @@ async function searchAnime(query) {
 
     },
 
-
     type:
       anime.type ||
       "ANIME",
-
 
     format:
       anime.format ||
       anime.type ||
       "TV",
-
 
     startDate: {
 
@@ -264,11 +221,9 @@ async function searchAnime(query) {
 
     },
 
-
     episodes:
       anime.episodes ||
       null,
-
 
     coverImage: {
 
@@ -311,6 +266,10 @@ document.addEventListener(
     );
 
 
+    /* =====================================================
+       GET SEARCH ELEMENTS
+    ===================================================== */
+
     const searchInput =
       document.getElementById(
         "searchInput"
@@ -324,7 +283,7 @@ document.addEventListener(
 
 
     /* =====================================================
-       CHECK SEARCH ELEMENTS
+       CHECK ELEMENTS
     ===================================================== */
 
     if (
@@ -377,14 +336,12 @@ document.addEventListener(
 
         if (!query) {
 
-          searchResults.classList.add(
-            "hidden"
-          );
-
-
           searchResults.innerHTML =
             "";
 
+          searchResults.classList.add(
+            "hidden"
+          );
 
           return;
 
@@ -392,21 +349,21 @@ document.addEventListener(
 
 
         /* =================================================
-           SHOW SEARCHING
+           SHOW LOADING
         ================================================= */
 
         searchResults.innerHTML = `
 
-          <p
+          <div
             style="
-              font-size:12px;
-              color:#94a3b8;
-              padding:12px 14px;
+              padding:14px;
               text-align:center;
+              color:#94a3b8;
+              font-size:13px;
             "
           >
             Searching...
-          </p>
+          </div>
 
         `;
 
@@ -417,7 +374,7 @@ document.addEventListener(
 
 
         /* =================================================
-           DEBOUNCE
+           DEBOUNCE SEARCH
         ================================================= */
 
         debounceTimer =
@@ -478,16 +435,16 @@ document.addEventListener(
 
                   searchResults.innerHTML = `
 
-                    <p
+                    <div
                       style="
-                        font-size:13px;
-                        color:#94a3b8;
-                        padding:12px 14px;
+                        padding:14px;
                         text-align:center;
+                        color:#94a3b8;
+                        font-size:13px;
                       "
                     >
                       No results found.
-                    </p>
+                    </div>
 
                   `;
 
@@ -497,29 +454,29 @@ document.addEventListener(
 
 
                 /* =========================================
-                   SEARCH RESULT HEADER
+                   SEARCH RESULTS HEADER
                 ========================================= */
 
                 let html = `
 
-                  <p
+                  <div
                     style="
+                      padding:8px 12px 4px;
                       font-size:10px;
                       font-weight:700;
                       letter-spacing:.08em;
-                      color:#ec4899;
-                      padding:8px 12px 2px;
                       text-transform:uppercase;
+                      color:#ec4899;
                     "
                   >
                     Search Results
-                  </p>
+                  </div>
 
                 `;
 
 
                 /* =========================================
-                   RENDER RESULTS
+                   BUILD RESULTS
                 ========================================= */
 
                 validItems.forEach(
@@ -569,6 +526,10 @@ document.addEventListener(
                       isOnSite(nativeTitle);
 
 
+                    /* =====================================
+                       ANIME PAGE LINK
+                    ===================================== */
+
                     const href =
                       `anime.html?malId=${encodeURIComponent(
                         malId
@@ -578,9 +539,7 @@ document.addEventListener(
                     html += `
 
                       <a
-                        href="${escapeAttribute(
-                          href
-                        )}"
+                        href="${escapeAttribute(href)}"
                         class="
                           flex
                           items-center
@@ -589,6 +548,7 @@ document.addEventListener(
                           rounded-xl
                           hover:bg-white/10
                           transition
+                          no-underline
                         "
                       >
 
@@ -597,12 +557,8 @@ document.addEventListener(
                             ? `
 
                               <img
-                                src="${escapeAttribute(
-                                  image
-                                )}"
-                                alt="${escapeHtml(
-                                  title
-                                )}"
+                                src="${escapeAttribute(image)}"
+                                alt="${escapeHtml(title)}"
                                 class="
                                   w-12
                                   h-16
@@ -641,7 +597,7 @@ document.addEventListener(
 
 
                         <div
-                          class="min-w-0"
+                          class="min-w-0 flex-1"
                         >
 
                           <h4
@@ -652,9 +608,7 @@ document.addEventListener(
                               truncate
                             "
                           >
-                            ${escapeHtml(
-                              title
-                            )}
+                            ${escapeHtml(title)}
                           </h4>
 
 
@@ -662,57 +616,49 @@ document.addEventListener(
                             class="
                               text-xs
                               text-slate-400
+                              mt-1
                             "
                           >
 
-                            ${escapeHtml(
-                              type
-                            )}
+                            ${escapeHtml(type)}
 
                             ${
                               year
-                                ? ` · ${escapeHtml(
-                                    year
-                                  )}`
+                                ? ` · ${escapeHtml(year)}`
                                 : ""
                             }
 
                           </p>
 
 
-                          ${
-                            onSite
-                              ? `
-
-                                <span
-                                  style="
-                                    font-size:10px;
+                          <span
+                            style="
+                              display:inline-block;
+                              margin-top:4px;
+                              font-size:10px;
+                              padding:2px 7px;
+                              border-radius:999px;
+                              ${
+                                onSite
+                                  ? `
                                     background:#ec4899;
                                     color:white;
-                                    padding:1px 7px;
-                                    border-radius:999px;
-                                  "
-                                >
-                                  ▶ On Site
-                                </span>
-
-                              `
-                              : `
-
-                                <span
-                                  style="
-                                    font-size:10px;
+                                  `
+                                  : `
                                     background:rgba(255,255,255,.1);
                                     color:#94a3b8;
-                                    padding:1px 7px;
-                                    border-radius:999px;
-                                  "
-                                >
-                                  ▶ View
-                                </span>
+                                  `
+                              }
+                            "
+                          >
 
-                              `
-                          }
+                            ${
+                              onSite
+                                ? "▶ On Site"
+                                : "▶ View"
+                            }
+
+                          </span>
 
                         </div>
 
@@ -742,9 +688,7 @@ document.addEventListener(
                 );
 
 
-              } catch (
-                error
-              ) {
+              } catch (error) {
 
                 console.error(
                   "❌ Search error:",
@@ -764,16 +708,16 @@ document.addEventListener(
 
                 searchResults.innerHTML = `
 
-                  <p
+                  <div
                     style="
-                      font-size:12px;
-                      color:#f87171;
-                      padding:12px 14px;
+                      padding:14px;
                       text-align:center;
+                      color:#f87171;
+                      font-size:13px;
                     "
                   >
                     Search is temporarily unavailable.
-                  </p>
+                  </div>
 
                 `;
 
@@ -788,18 +732,19 @@ document.addEventListener(
 
 
     /* =====================================================
-       CLOSE SEARCH RESULTS WHEN CLICKING OUTSIDE
+       CLOSE SEARCH WHEN CLICKING OUTSIDE
     ===================================================== */
 
     document.addEventListener(
       "click",
-      event => {
+      (event) => {
 
         if (
           !searchResults.contains(
             event.target
           ) &&
-          event.target !== searchInput
+          event.target !==
+            searchInput
         ) {
 
           searchResults.classList.add(
@@ -813,3 +758,4 @@ document.addEventListener(
 
   }
 );
+```
