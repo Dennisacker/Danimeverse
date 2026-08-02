@@ -37,9 +37,9 @@ export default async function handler(req, res) {
       variables = {
         id: Number(id)
       };
-    }
 
-    else if (idMal) {
+    } else if (idMal) {
+
       query = `
         query ($idMal: Int) {
           Media(idMal: $idMal, type: ANIME) {
@@ -71,9 +71,9 @@ export default async function handler(req, res) {
       variables = {
         idMal: Number(idMal)
       };
-    }
 
-    else if (search) {
+    } else if (search) {
+
       query = `
         query ($search: String) {
           Media(
@@ -107,45 +107,59 @@ export default async function handler(req, res) {
       `;
 
       variables = {
-        search
+        search: search
       };
-    }
 
-    else {
+    } else {
+
       return res.status(400).json({
         error: "Missing id, idMal, or search parameter"
       });
+
     }
 
-    const response = await fetch("https://graphql.anilist.co", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({
-        query,
-        variables
-      })
-    });
+    const response = await fetch(
+      "https://graphql.anilist.co",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+
+        body: JSON.stringify({
+          query: query,
+          variables: variables
+        })
+      }
+    );
 
     const data = await response.json();
 
-    if (!response.ok) {
-      return res.status(response.status).json({
-        error: "AniList API request failed",
-        details: data
-      });
-    }
+    console.log(
+      "AniList response status:",
+      response.status
+    );
 
-    return res.status(200).json(data);
+    console.log(
+      "AniList response:",
+      data
+    );
+
+    return res.status(response.status).json(data);
 
   } catch (error) {
-    console.error("AniList API error:", error);
+
+    console.error(
+      "AniList server error:",
+      error
+    );
 
     return res.status(500).json({
-      error: "Failed to fetch AniList data",
+      error: "Server error",
       message: error.message
     });
+
   }
 }
