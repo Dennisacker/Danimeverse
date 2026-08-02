@@ -1036,5 +1036,3 @@ document.addEventListener(
   }
 );
 
-
-
