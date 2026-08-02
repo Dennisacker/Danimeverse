@@ -22,216 +22,316 @@
          Open watch.html
       ========================================================= */
 
-      async function openAnime(anime) {
-
-        if (!anime) {
-          console.error("❌ No anime data provided.");
-          return;
-        }
-
-        const malId = anime.mal_id;
+/* =========================================================
+   UNIVERSAL ANIME OPEN FUNCTION
 
-        if (!malId) {
-          console.error("❌ Anime has no MAL ID:", anime);
-          alert("This anime could not be opened.");
-          return;
-        }
+   Jikan MAL ID
+        ↓
+   /api/anime Gateway
+        ↓
+   Kitsu → AniList → Jikan
+        ↓
+   Open watch.html
 
-        const title =
-          anime.title_english ||
-          anime.title ||
-          "Unknown Anime";
+   The frontend NEVER calls AniList directly.
+========================================================= */
 
-        console.log(
-          "🎬 Finding AniList ID for:",
-          title,
-          "MAL ID:",
-          malId
-        );
+async function openAnime(anime) {
 
-        try {
+  if (!anime) {
 
-          /* =======================================================
-             FIND SAME ANIME ON ANILIST USING MAL ID
-          ======================================================= */
+    console.error(
+      "❌ No anime data provided."
+    );
 
-          const query = `
-            query ($malId: Int) {
-              Media(
-                idMal: $malId,
-                type: ANIME
-              ) {
-                id
-                idMal
-                title {
-                  romaji
-                  english
-                  native
-                }
-              }
-            }
-          `;
+    return;
 
+  }
 
-          /* =======================================================
-             SEND REQUEST TO ANILIST
-          ======================================================= */
 
-          const response = await fetch(
-            "https://graphql.anilist.co",
-            {
-              method: "POST",
+  const malId =
+    anime.mal_id;
 
-              headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-              },
 
-              body: JSON.stringify({
-                query: query,
+  if (!malId) {
 
-                variables: {
-                  malId: Number(malId)
-                }
-              })
-            }
-          );
+    console.error(
+      "❌ Anime has no MAL ID:",
+      anime
+    );
 
+    alert(
+      "This anime could not be opened."
+    );
 
-          /* =======================================================
-             CHECK HTTP RESPONSE
-          ======================================================= */
+    return;
 
-          if (!response.ok) {
+  }
 
-            throw new Error(
-              `AniList API Error: ${response.status}`
-            );
 
-          }
+  const title =
+    anime.title_english ||
+    anime.title ||
+    "Unknown Anime";
 
 
-          /* =======================================================
-             GET RESPONSE
-          ======================================================= */
+  console.log(
+    "🎬 Opening anime:",
+    title,
+    "MAL ID:",
+    malId
+  );
 
-          const result =
-            await response.json();
 
+  try {
 
-          /* =======================================================
-             CHECK GRAPHQL ERRORS
-          ======================================================= */
+    /* =======================================================
+       CALL OUR UNIVERSAL API GATEWAY
 
-          if (result.errors) {
+       /api/anime.js handles:
 
-            console.error(
-              "❌ AniList GraphQL Error:",
-              result.errors
-            );
+       1. Kitsu
+       2. AniList
+       3. Jikan
+    ======================================================= */
 
-            throw new Error(
-              "AniList returned an error"
-            );
+    const response =
+      await fetch(
+        `/api/anime?idMal=${encodeURIComponent(malId)}`
+      );
 
-          }
 
+    if (!response.ok) {
 
-          /* =======================================================
-             GET ANILIST ANIME
-          ======================================================= */
+      throw new Error(
+        `API Gateway HTTP ${response.status}`
+      );
 
-          const anilistAnime =
-            result.data?.Media;
+    }
 
 
-          if (!anilistAnime) {
+    const result =
+      await response.json();
 
-            throw new Error(
-              "Anime not found on AniList"
-            );
 
-          }
+    console.log(
+      "📡 Universal API response:",
+      result
+    );
 
 
-          /* =======================================================
-             GET ANILIST ID
-          ======================================================= */
+    /* =======================================================
+       CHECK API RESULT
+    ======================================================= */
 
-          const anilistId =
-            anilistAnime.id;
+    if (
+      !result.success ||
+      !result.data
+    ) {
 
+      throw new Error(
+        result.error ||
+        "Could not find anime information."
+      );
 
-          /* =======================================================
-             GET BEST ANIME TITLE
-          ======================================================= */
+    }
 
-          const animeTitle =
-            anilistAnime.title?.english ||
-            anilistAnime.title?.romaji ||
-            anilistAnime.title?.native ||
-            title;
 
+    /* =======================================================
+       NORMALIZED ANIME DATA
 
-          console.log(
-            "✅ AniList anime found:",
-            animeTitle
-          );
+       This data comes from whichever provider
+       successfully responded.
 
-          console.log(
-            "🆔 AniList ID:",
-            anilistId
-          );
+       Kitsu:
+       {
+         id,
+         anilistId,
+         malId,
+         title,
+         ...
+       }
 
-          console.log(
-            "🆔 MAL ID:",
-            malId
-          );
+       AniList:
+       {
+         id,
+         anilistId,
+         malId,
+         title,
+         ...
+       }
 
+       Jikan:
+       {
+         id,
+         anilistId,
+         malId,
+         title,
+         ...
+       }
+    ======================================================= */
 
-          /* =======================================================
-             OPEN UNIVERSAL WATCH PAGE
-          ======================================================= */
+    const animeData =
+      result.data;
 
-          const params =
-            new URLSearchParams({
 
-              anilistId:
-                String(anilistId),
+    console.log(
+      "✅ Anime found using provider:",
+      result.provider
+    );
 
-              anime:
-                animeTitle,
 
-              ep:
-                "1",
+    console.log(
+      "🎬 Anime data:",
+      animeData
+    );
 
-              malId:
-                String(malId)
 
-            });
+    /* =======================================================
+       GET ANILIST ID
 
+       If Kitsu found the anime, it may not have an AniList ID.
 
-          window.location.href =
-            `watch.html?${params.toString()}`;
+       That's okay.
 
+       watch.html can still use:
 
-        } catch (error) {
+       anilistId
+       OR
+       malId
+       OR
+       anime title
 
-          console.error(
-            "❌ Failed to find anime on AniList:",
-            error
-          );
+       So we use whichever IDs are available.
+    ======================================================= */
 
+    const anilistId =
+      animeData.anilistId ||
+      "";
 
-          alert(
-            `Could not open ${title}. Please try again.`
-          );
 
-        }
+    const returnedMalId =
+      animeData.malId ||
+      malId ||
+      "";
 
-      }
 
+    const animeTitle =
+      animeData.title ||
+      title;
 
+
+    console.log(
+      "🆔 AniList ID:",
+      anilistId || "Not available"
+    );
+
+
+    console.log(
+      "🆔 MAL ID:",
+      returnedMalId || "Not available"
+    );
+
+
+    console.log(
+      "🎬 Title:",
+      animeTitle
+    );
+
+
+    /* =======================================================
+       BUILD WATCH PAGE URL
+    ======================================================= */
+
+    const params =
+      new URLSearchParams();
+
+
+    /*
+      Only add AniList ID if available.
+    */
+
+    if (anilistId) {
+
+      params.set(
+        "anilistId",
+        String(anilistId)
+      );
+
+    }
+
+
+    /*
+      Always add anime title.
+    */
+
+    if (animeTitle) {
+
+      params.set(
+        "anime",
+        animeTitle
+      );
+
+    }
+
+
+    /*
+      Add MAL ID if available.
+    */
+
+    if (returnedMalId) {
+
+      params.set(
+        "malId",
+        String(returnedMalId)
+      );
+
+    }
+
+
+    /*
+      Start from episode 1.
+    */
+
+    params.set(
+      "ep",
+      "1"
+    );
+
+
+    /* =======================================================
+       OPEN UNIVERSAL WATCH PAGE
+    ======================================================= */
+
+    const watchUrl =
+      `watch.html?${params.toString()}`;
+
+
+    console.log(
+      "🚀 Opening watch page:",
+      watchUrl
+    );
+
+
+    window.location.href =
+      watchUrl;
+
+
+  } catch (error) {
+
+    console.error(
+      "❌ Failed to open anime:",
+      error
+    );
+
+
+    alert(
+      `Could not open ${title}. Please try again.`
+    );
+
+  }
+
+}
       /* =========================================================
          GET HOMEPAGE CONTAINERS
       ========================================================= */

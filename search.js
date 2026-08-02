@@ -148,57 +148,118 @@ const ANILIST_SEARCH_QUERY = `
 
 async function searchAnime(query) {
 
-  const response = await fetch(
-    ANILIST_API,
-    {
-      method: "POST",
+console.log(
+"🔎 Searching Danimeverse API Gateway:",
+query
+);
 
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
+const response = await fetch(
+`/api/anime?search=${encodeURIComponent(query)}`
+);
 
-      body: JSON.stringify({
-        query: ANILIST_SEARCH_QUERY,
+if (!response.ok) {
 
-        variables: {
-          search: query
-        }
-      })
-    }
-  );
+```
+throw new Error(
+  `API Gateway HTTP ${response.status}`
+);
+```
 
+}
 
-  if (!response.ok) {
+const result =
+await response.json();
 
-    throw new Error(
-      `AniList HTTP ${response.status}`
-    );
+console.log(
+"📡 Search API response:",
+result
+);
 
+if (
+!result.success ||
+!result.data
+) {
+
+```
+throw new Error(
+  result.error ||
+  "Anime search failed"
+);
+```
+
+}
+
+/*
+Your API gateway returns ONE anime result
+from the first provider that works.
+
+```
+For now, return it as an array
+so the rest of your existing search
+rendering code does not need to change.
+```
+
+*/
+
+return [
+{
+id:
+result.data.anilistId ||
+result.data.id ||
+null,
+
+```
+  idMal:
+    result.data.malId ||
+    null,
+
+  title: {
+    english:
+      result.data.title ||
+      "",
+
+    romaji:
+      result.data.title ||
+      "",
+
+    native:
+      result.data.nativeTitle ||
+      ""
+  },
+
+  type:
+    result.data.type ||
+    "ANIME",
+
+  format:
+    result.data.format ||
+    result.data.type ||
+    "TV",
+
+  startDate: {
+    year:
+      result.data.year ||
+      null
+  },
+
+  episodes:
+    result.data.episodes ||
+    null,
+
+  coverImage: {
+    medium:
+      result.data.poster ||
+      "",
+
+    large:
+      result.data.poster ||
+      ""
   }
 
+}
+```
 
-  const result =
-    await response.json();
-
-
-  if (
-    result.errors &&
-    result.errors.length
-  ) {
-
-    throw new Error(
-      result.errors[0].message ||
-      "AniList search failed"
-    );
-
-  }
-
-
-  return (
-    result.data?.Page?.media ||
-    []
-  );
+];
 
 }
 
