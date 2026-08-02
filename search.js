@@ -1,79 +1,56 @@
 ```javascript
-console.log("🔎 DANIMEVERSE SEARCH.JS LOADED");
+console.log("SEARCH.JS LOADED");
 
 
-/* =========================================================
-   DANIMEVERSE SEARCH SYSTEM
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
-   Uses:
-   /api/anime?search=QUERY
-
-   API Gateway:
-   Kitsu → AniList → Jikan
-
-   Returns multiple AniList search results.
-========================================================= */
-
-
-/* =========================================================
-   SITE CATALOG
-========================================================= */
-
-const SITE_CATALOG_TITLES = new Set([
-  "naruto",
-  "attack on titan",
-  "shingeki no kyojin",
-  "demon slayer",
-  "kimetsu no yaiba",
-  "jujutsu kaisen",
-  "chainsaw man",
-  "fire force",
-  "enen no shouboutai",
-  "dr. stone",
-  "re:zero",
-  "mushoku tensei",
-  "my hero academia",
-  "boku no hero academia",
-  "assassination classroom",
-  "ansatsu kyoushitsu",
-  "fate/strange fake",
-  "frieren",
-  "sousou no frieren",
-  "hell's paradise",
-  "jigokuraku",
-  "oshi no ko",
-  "solo leveling",
-  "ore dake level up na ken",
-  "tokyo revengers",
-  "witch hat atelier",
-  "tongari booshi no atelier"
-]);
-
-
-/* =========================================================
-   CHECK IF ANIME IS ON DANIMEVERSE
-========================================================= */
 
 function isOnSite(title) {
 
-  const t =
-    String(title || "")
-      .toLowerCase()
-      .trim();
+  var siteTitles = [
+    "naruto",
+    "attack on titan",
+    "shingeki no kyojin",
+    "demon slayer",
+    "kimetsu no yaiba",
+    "jujutsu kaisen",
+    "chainsaw man",
+    "fire force",
+    "dr. stone",
+    "re:zero",
+    "mushoku tensei",
+    "my hero academia",
+    "assassination classroom",
+    "fate/strange fake",
+    "frieren",
+    "hell's paradise",
+    "oshi no ko",
+    "solo leveling",
+    "tokyo revengers",
+    "witch hat atelier"
+  ];
 
-  if (!t) {
+  var text = String(title || "")
+    .toLowerCase()
+    .trim();
+
+  if (!text) {
     return false;
   }
 
-  if (SITE_CATALOG_TITLES.has(t)) {
-    return true;
-  }
-
-  for (const item of SITE_CATALOG_TITLES) {
+  for (var i = 0; i < siteTitles.length; i++) {
 
     if (
-      t.includes(item) ||
-      item.includes(t)
+      text === siteTitles[i] ||
+      text.indexOf(siteTitles[i]) !== -1 ||
+      siteTitles[i].indexOf(text) !== -1
     ) {
       return true;
     }
@@ -84,72 +61,41 @@ function isOnSite(title) {
 }
 
 
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-function escapeHtml(value) {
-
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
-}
-
-
-/* =========================================================
-   ESCAPE ATTRIBUTE
-========================================================= */
-
-function escapeAttribute(value) {
-
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-
-}
-
-
-/* =========================================================
-   SEARCH ANIME THROUGH API GATEWAY
-========================================================= */
-
 async function searchAnime(query) {
 
   console.log(
-    "🔎 Searching Danimeverse API Gateway:",
+    "SEARCHING:",
     query
   );
 
+  var url =
+    "/api/anime?search=" +
+    encodeURIComponent(query);
 
-  const response = await fetch(
-    `/api/anime?search=${encodeURIComponent(query)}`
+  var response =
+    await fetch(url);
+
+  console.log(
+    "API STATUS:",
+    response.status
   );
-
 
   if (!response.ok) {
 
     throw new Error(
-      `API Gateway HTTP ${response.status}`
+      "API HTTP " +
+      response.status
     );
 
   }
 
-
-  const result =
+  var result =
     await response.json();
 
-
   console.log(
-    "📡 Search API response:",
+    "API RESULT:",
     result
   );
-
 
   if (
     !result.success ||
@@ -158,334 +104,157 @@ async function searchAnime(query) {
 
     throw new Error(
       result.error ||
-      "Anime search failed"
+      "Search failed"
     );
 
   }
-
 
   return result.data;
 
 }
 
 
-/* =========================================================
-   GET SEARCH RESULTS
-
-   Your current API returns ONE anime result.
-   This function converts it into an array.
-
-   If your API gateway is later changed to return
-   multiple results, it will also support that.
-========================================================= */
-
-async function getSearchResults(query) {
-
-  const data =
-    await searchAnime(query);
-
-
-  /* =======================================================
-     IF API RETURNS AN ARRAY
-  ======================================================= */
+function normalizeResults(data) {
 
   if (Array.isArray(data)) {
-
     return data;
-
   }
-
-
-  /* =======================================================
-     IF API RETURNS A SINGLE ANIME
-  ======================================================= */
 
   if (data) {
-
     return [data];
-
   }
-
 
   return [];
 
 }
 
 
-/* =========================================================
-   CREATE SEARCH RESULT HTML
-========================================================= */
+function createResult(anime) {
 
-function createSearchResult(anime) {
-
-  const title =
+  var title =
     anime.title ||
-    anime.title_english ||
-    anime.title_romaji ||
     "Unknown Anime";
 
-
-  const nativeTitle =
+  var nativeTitle =
     anime.nativeTitle ||
     "";
 
-
-  const image =
+  var poster =
     anime.poster ||
-    anime.coverImage ||
-    anime.image ||
     "";
 
-
-  const year =
+  var year =
     anime.year ||
     "";
 
-
-  const type =
+  var type =
     anime.format ||
     anime.type ||
     "Anime";
 
-
-  const malId =
+  var malId =
     anime.malId ||
     anime.idMal ||
     "";
 
+  var href =
+    "anime.html?malId=" +
+    encodeURIComponent(malId);
 
-  const anilistId =
-    anime.anilistId ||
-    anime.id ||
-    "";
-
-
-  const onSite =
-    isOnSite(title) ||
-    isOnSite(nativeTitle);
+  var badge =
+    isOnSite(title)
+      ? "ON SITE"
+      : "VIEW";
 
 
-  /* =======================================================
-     ANIME PAGE URL
+  return (
 
-     Your existing anime.html uses MAL ID.
-  ======================================================= */
+    '<a href="' +
+    href +
+    '" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition">' +
 
-  let href = "#";
+      (
+        poster
 
+        ?
 
-  if (malId) {
+        '<img src="' +
+        escapeHtml(poster) +
+        '" alt="' +
+        escapeHtml(title) +
+        '" class="w-12 h-16 object-cover rounded-lg flex-shrink-0" loading="lazy">'
 
-    href =
-      `anime.html?malId=${encodeURIComponent(malId)}`;
+        :
 
-  }
+        '<div class="w-12 h-16 rounded-lg bg-white/5 flex items-center justify-center text-xs text-slate-500 flex-shrink-0">N/A</div>'
+      )
 
+      +
 
-  /* =======================================================
-     RESULT HTML
-  ======================================================= */
+      '<div class="min-w-0 flex-1">' +
 
-  return `
+        '<h4 class="text-sm font-semibold text-white truncate">' +
+        escapeHtml(title) +
+        '</h4>' +
 
-    <a
-      href="${escapeAttribute(href)}"
-      class="
-        search-anime-result
-        flex
-        items-center
-        gap-3
-        p-3
-        rounded-xl
-        hover:bg-white/10
-        transition
-        cursor-pointer
-      "
-      data-mal-id="${escapeAttribute(malId)}"
-      data-anilist-id="${escapeAttribute(anilistId)}"
-    >
-
-      ${
-        image
-
-          ? `
-
-            <img
-              src="${escapeAttribute(image)}"
-              alt="${escapeAttribute(title)}"
-              class="
-                w-12
-                h-16
-                object-cover
-                rounded-lg
-                flex-shrink-0
-                bg-white/5
-              "
-              loading="lazy"
-              onerror="this.style.display='none'"
-            >
-
-          `
-
-          : `
-
-            <div
-              class="
-                w-12
-                h-16
-                rounded-lg
-                flex-shrink-0
-                bg-white/5
-                flex
-                items-center
-                justify-center
-                text-xs
-                text-slate-500
-              "
-            >
-              N/A
-            </div>
-
-          `
-      }
-
-
-      <div
-        class="
-          min-w-0
-          flex-1
-        "
-      >
-
-        <h4
-          class="
-            text-sm
-            font-semibold
-            text-white
-            truncate
-          "
-        >
-          ${escapeHtml(title)}
-        </h4>
-
-
-        ${
+        (
           nativeTitle
 
-            ? `
+          ?
 
-              <p
-                class="
-                  text-[11px]
-                  text-slate-500
-                  truncate
-                  mt-0.5
-                "
-              >
-                ${escapeHtml(nativeTitle)}
-              </p>
+          '<p class="text-[11px] text-slate-500 truncate">' +
+          escapeHtml(nativeTitle) +
+          '</p>'
 
-            `
+          :
 
+          ''
+        )
+
+        +
+
+        '<p class="text-xs text-slate-400 mt-1">' +
+        escapeHtml(type) +
+
+        (
+          year
+            ? " · " + escapeHtml(year)
             : ""
-        }
+        )
 
+        +
 
-        <p
-          class="
-            text-xs
-            text-slate-400
-            mt-1
-          "
-        >
-          ${escapeHtml(type)}
+        '</p>' +
 
-          ${
-            year
-              ? ` · ${escapeHtml(year)}`
-              : ""
-          }
+        '<span class="inline-block mt-1 text-[10px] bg-pink-600 text-white px-2 py-0.5 rounded-full">' +
+        badge +
+        '</span>' +
 
-        </p>
+      '</div>' +
 
+    '</a>'
 
-        <div
-          class="
-            mt-1
-          "
-        >
-
-          ${
-            onSite
-
-              ? `
-
-                <span
-                  class="
-                    inline-block
-                    text-[10px]
-                    bg-pink-600
-                    text-white
-                    px-2
-                    py-0.5
-                    rounded-full
-                  "
-                >
-                  ▶ On Site
-                </span>
-
-              `
-
-              : `
-
-                <span
-                  class="
-                    inline-block
-                    text-[10px]
-                    bg-white/10
-                    text-slate-400
-                    px-2
-                    py-0.5
-                    rounded-full
-                  "
-                >
-                  ▶ View
-                </span>
-
-              `
-          }
-
-        </div>
-
-      </div>
-
-    </a>
-
-  `;
+  );
 
 }
 
 
-/* =========================================================
-   INITIALIZE SEARCH
-========================================================= */
-
 document.addEventListener(
   "DOMContentLoaded",
-  () => {
+  function() {
 
     console.log(
-      "🔎 Initializing Danimeverse search..."
+      "INITIALIZING SEARCH"
     );
 
 
-    const searchInput =
+    var searchInput =
       document.getElementById(
         "searchInput"
       );
 
 
-    const searchResults =
+    var searchResults =
       document.getElementById(
         "searchResults"
       );
@@ -496,8 +265,8 @@ document.addEventListener(
       !searchResults
     ) {
 
-      console.warn(
-        "⚠️ Search elements not found."
+      console.error(
+        "SEARCH ELEMENTS NOT FOUND"
       );
 
       return;
@@ -506,39 +275,25 @@ document.addEventListener(
 
 
     console.log(
-      "✅ Search elements found."
+      "SEARCH ELEMENTS FOUND"
     );
 
 
-    let debounceTimer =
-      null;
+    var timer = null;
 
+    var requestNumber = 0;
 
-    let searchRequestId =
-      0;
-
-
-    /* =====================================================
-       SEARCH INPUT
-    ===================================================== */
 
     searchInput.addEventListener(
       "input",
-      () => {
+      function() {
 
-        clearTimeout(
-          debounceTimer
-        );
+        clearTimeout(timer);
 
 
-        const query =
-          searchInput.value
-            .trim();
+        var query =
+          searchInput.value.trim();
 
-
-        /* =================================================
-           EMPTY SEARCH
-        ================================================= */
 
         if (!query) {
 
@@ -554,26 +309,10 @@ document.addEventListener(
         }
 
 
-        /* =================================================
-           MINIMUM SEARCH LENGTH
-        ================================================= */
-
         if (query.length < 2) {
 
-          searchResults.innerHTML = `
-
-            <p
-              class="
-                text-xs
-                text-slate-400
-                text-center
-                p-4
-              "
-            >
-              Type at least 2 characters...
-            </p>
-
-          `;
+          searchResults.innerHTML =
+            '<p class="text-xs text-slate-400 text-center p-4">Type at least 2 characters...</p>';
 
           searchResults.classList.remove(
             "hidden"
@@ -584,28 +323,8 @@ document.addEventListener(
         }
 
 
-        /* =================================================
-           SHOW LOADING
-        ================================================= */
-
-        searchResults.innerHTML = `
-
-          <p
-            class="
-              text-xs
-              text-slate-400
-              text-center
-              p-4
-            "
-          >
-            🔎 Searching for
-            <span class="text-pink-400">
-              ${escapeHtml(query)}
-            </span>
-            ...
-          </p>
-
-        `;
+        searchResults.innerHTML =
+          '<p class="text-xs text-slate-400 text-center p-4">Searching...</p>';
 
 
         searchResults.classList.remove(
@@ -613,39 +332,25 @@ document.addEventListener(
         );
 
 
-        /* =================================================
-           DEBOUNCE
-        ================================================= */
-
-        debounceTimer =
+        timer =
           setTimeout(
-            async () => {
+            async function() {
 
-              const requestId =
-                ++searchRequestId;
+              var currentRequest =
+                ++requestNumber;
 
 
               try {
 
-                console.log(
-                  "🔎 Running search:",
-                  query
-                );
-
-
-                const items =
-                  await getSearchResults(
+                var data =
+                  await searchAnime(
                     query
                   );
 
 
-                /* =========================================
-                   IGNORE OLD REQUEST
-                ========================================= */
-
                 if (
-                  requestId !==
-                  searchRequestId
+                  currentRequest !==
+                  requestNumber
                 ) {
 
                   return;
@@ -653,114 +358,51 @@ document.addEventListener(
                 }
 
 
-                console.log(
-                  "✅ Search results:",
-                  items
-                );
-
-
-                /* =========================================
-                   FILTER RESULTS
-
-                   Keep results with either MAL ID
-                   or AniList ID.
-                ========================================= */
-
-                const validItems =
-                  items.filter(
-                    anime => {
-
-                      return (
-                        anime &&
-                        (
-                          anime.malId ||
-                          anime.idMal ||
-                          anime.anilistId ||
-                          anime.id
-                        )
-                      );
-
-                    }
+                var results =
+                  normalizeResults(
+                    data
                   );
 
 
-                /* =========================================
-                   NO RESULTS
-                ========================================= */
+                console.log(
+                  "NORMALIZED RESULTS:",
+                  results
+                );
+
 
                 if (
-                  !validItems.length
+                  results.length === 0
                 ) {
 
-                  searchResults.innerHTML = `
-
-                    <p
-                      class="
-                        text-sm
-                        text-slate-400
-                        text-center
-                        p-5
-                      "
-                    >
-                      No anime found for
-                      "<span class="text-white">
-                        ${escapeHtml(query)}
-                      </span>"
-                    </p>
-
-                  `;
+                  searchResults.innerHTML =
+                    '<p class="text-sm text-slate-400 text-center p-5">No anime found.</p>';
 
                   return;
 
                 }
 
 
-                /* =========================================
-                   BUILD RESULTS
-                ========================================= */
-
-                let html = `
-
-                  <div
-                    class="
-                      px-3
-                      pt-3
-                      pb-1
-                    "
-                  >
-
-                    <p
-                      class="
-                        text-[10px]
-                        font-bold
-                        uppercase
-                        tracking-widest
-                        text-pink-500
-                      "
-                    >
-                      Search Results
-                    </p>
-
-                  </div>
-
-                `;
+                var html =
+                  '<div class="px-3 pt-3 pb-1">' +
+                  '<p class="text-[10px] font-bold uppercase tracking-widest text-pink-500">' +
+                  "SEARCH RESULTS" +
+                  "</p>" +
+                  "</div>";
 
 
-                validItems.forEach(
-                  anime => {
+                for (
+                  var i = 0;
+                  i < results.length;
+                  i++
+                ) {
 
-                    html +=
-                      createSearchResult(
-                        anime
-                      );
+                  html +=
+                    createResult(
+                      results[i]
+                    );
 
-                  }
-                );
+                }
 
-
-                /* =========================================
-                   SHOW RESULTS
-                ========================================= */
 
                 searchResults.innerHTML =
                   html;
@@ -772,42 +414,21 @@ document.addEventListener(
 
 
                 console.log(
-                  "✅ Search results displayed:",
-                  validItems.length
+                  "SEARCH DISPLAYED:",
+                  results.length
                 );
+
 
               } catch (error) {
 
                 console.error(
-                  "❌ Search error:",
+                  "SEARCH ERROR:",
                   error
                 );
 
 
-                if (
-                  requestId !==
-                  searchRequestId
-                ) {
-
-                  return;
-
-                }
-
-
-                searchResults.innerHTML = `
-
-                  <p
-                    class="
-                      text-xs
-                      text-red-400
-                      text-center
-                      p-4
-                    "
-                  >
-                    Search is temporarily unavailable.
-                  </p>
-
-                `;
+                searchResults.innerHTML =
+                  '<p class="text-xs text-red-400 text-center p-4">Search is temporarily unavailable.</p>';
 
               }
 
@@ -819,13 +440,9 @@ document.addEventListener(
     );
 
 
-    /* =====================================================
-       CLOSE SEARCH WHEN CLICKING OUTSIDE
-    ===================================================== */
-
     document.addEventListener(
       "click",
-      event => {
+      function(event) {
 
         if (
           !searchResults.contains(
@@ -845,13 +462,9 @@ document.addEventListener(
     );
 
 
-    /* =====================================================
-       KEEP SEARCH OPEN WHEN CLICKING INPUT
-    ===================================================== */
-
     searchInput.addEventListener(
       "focus",
-      () => {
+      function() {
 
         if (
           searchInput.value.trim()
@@ -865,7 +478,6 @@ document.addEventListener(
 
       }
     );
-
 
   }
 );
