@@ -2,64 +2,25 @@
 console.log("SEARCH.JS LOADED");
 
 
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
 function escapeHtml(value) {
+
   return String(value || "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+
 }
 
 
-function isOnSite(title) {
-
-  var siteTitles = [
-    "naruto",
-    "attack on titan",
-    "shingeki no kyojin",
-    "demon slayer",
-    "kimetsu no yaiba",
-    "jujutsu kaisen",
-    "chainsaw man",
-    "fire force",
-    "dr. stone",
-    "re:zero",
-    "mushoku tensei",
-    "my hero academia",
-    "assassination classroom",
-    "fate/strange fake",
-    "frieren",
-    "hell's paradise",
-    "oshi no ko",
-    "solo leveling",
-    "tokyo revengers",
-    "witch hat atelier"
-  ];
-
-  var text = String(title || "")
-    .toLowerCase()
-    .trim();
-
-  if (!text) {
-    return false;
-  }
-
-  for (var i = 0; i < siteTitles.length; i++) {
-
-    if (
-      text === siteTitles[i] ||
-      text.indexOf(siteTitles[i]) !== -1 ||
-      siteTitles[i].indexOf(text) !== -1
-    ) {
-      return true;
-    }
-
-  }
-
-  return false;
-}
-
+/* =========================================================
+   SEARCH ANIME
+========================================================= */
 
 async function searchAnime(query) {
 
@@ -68,17 +29,21 @@ async function searchAnime(query) {
     query
   );
 
-  var url =
+
+  const url =
     "/api/anime?search=" +
     encodeURIComponent(query);
 
-  var response =
+
+  const response =
     await fetch(url);
+
 
   console.log(
     "API STATUS:",
     response.status
   );
+
 
   if (!response.ok) {
 
@@ -89,13 +54,16 @@ async function searchAnime(query) {
 
   }
 
-  var result =
+
+  const result =
     await response.json();
+
 
   console.log(
     "API RESULT:",
     result
   );
+
 
   if (
     !result.success ||
@@ -109,155 +77,297 @@ async function searchAnime(query) {
 
   }
 
+
   return result.data;
 
 }
 
 
+/* =========================================================
+   NORMALIZE RESULTS
+========================================================= */
+
 function normalizeResults(data) {
 
   if (Array.isArray(data)) {
+
     return data;
+
   }
 
+
   if (data) {
+
     return [data];
+
   }
+
 
   return [];
 
 }
 
 
+/* =========================================================
+   CREATE SEARCH RESULT
+========================================================= */
+
 function createResult(anime) {
 
-  var title =
+  const title =
     anime.title ||
     "Unknown Anime";
 
-  var nativeTitle =
+
+  const nativeTitle =
     anime.nativeTitle ||
     "";
 
-  var poster =
+
+  const poster =
     anime.poster ||
     "";
 
-  var year =
+
+  const year =
     anime.year ||
     "";
 
-  var type =
+
+  const type =
     anime.format ||
     anime.type ||
     "Anime";
 
-  var malId =
+
+  /*
+    IMPORTANT:
+
+    We keep BOTH IDs.
+
+    The search result itself does NOT directly
+    open anime.html anymore.
+
+    Instead, we store the anime information
+    inside the result element.
+
+    When clicked, we use the SAME openAnime()
+    function used by the homepage WATCH button.
+  */
+
+  const malId =
     anime.malId ||
     anime.idMal ||
     "";
 
-  var anilistId =
+
+  const anilistId =
     anime.anilistId ||
+    anime.id ||
     "";
 
 
-  /*
-  =========================================================
-  IMPORTANT
-
-  ALWAYS OPEN THE SAME ANIME PAGE AS HOMEPAGE SEARCH/CARDS
-
-  We use AniList ID as the primary identifier.
-  MAL ID is also included for Firebase episode matching.
-  =========================================================
-  */
-
-  var href =
-    "watch.html?anilistId=" +
-    encodeURIComponent(anilistId) +
-    "&malId=" +
-    encodeURIComponent(malId) +
-    "&anime=" +
-    encodeURIComponent(title);
+  const resultElement =
+    document.createElement("button");
 
 
-  var badge =
-    isOnSite(title)
-      ? "ON SITE"
-      : "VIEW";
+  resultElement.type =
+    "button";
 
 
-  return (
+  resultElement.className =
+    "w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition text-left";
 
-    '<a href="' +
-    href +
-    '" class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition">' +
 
-      (
-        poster
+  resultElement.innerHTML =
+
+    (
+      poster
+
+      ?
+
+      `
+      <img
+        src="${escapeHtml(poster)}"
+        alt="${escapeHtml(title)}"
+        class="w-12 h-16 object-cover rounded-lg flex-shrink-0"
+        loading="lazy"
+      >
+      `
+
+      :
+
+      `
+      <div
+        class="w-12 h-16 rounded-lg bg-white/5 flex items-center justify-center text-xs text-slate-500 flex-shrink-0"
+      >
+        N/A
+      </div>
+      `
+
+    )
+
+    +
+
+    `
+
+    <div class="min-w-0 flex-1">
+
+      <h4
+        class="text-sm font-semibold text-white truncate"
+      >
+        ${escapeHtml(title)}
+      </h4>
+
+
+      ${
+        nativeTitle
 
         ?
 
-        '<img src="' +
-        escapeHtml(poster) +
-        '" alt="' +
-        escapeHtml(title) +
-        '" class="w-12 h-16 object-cover rounded-lg flex-shrink-0" loading="lazy">'
+        `
+        <p
+          class="text-[11px] text-slate-500 truncate"
+        >
+          ${escapeHtml(nativeTitle)}
+        </p>
+        `
 
         :
 
-        '<div class="w-12 h-16 rounded-lg bg-white/5 flex items-center justify-center text-xs text-slate-500 flex-shrink-0">N/A</div>'
-      )
+        ""
+      }
 
-      +
 
-      '<div class="min-w-0 flex-1">' +
+      <p
+        class="text-xs text-slate-400 mt-1"
+      >
 
-        '<h4 class="text-sm font-semibold text-white truncate">' +
-        escapeHtml(title) +
-        '</h4>' +
+        ${escapeHtml(type)}
 
-        (
-          nativeTitle
-
-          ?
-
-          '<p class="text-[11px] text-slate-500 truncate">' +
-          escapeHtml(nativeTitle) +
-          '</p>'
-
-          :
-
-          ''
-        )
-
-        +
-
-        '<p class="text-xs text-slate-400 mt-1">' +
-        escapeHtml(type) +
-
-        (
+        ${
           year
             ? " · " + escapeHtml(year)
             : ""
-        )
+        }
 
-        +
+      </p>
 
-        '</p>' +
 
-        '<span class="inline-block mt-1 text-[10px] bg-pink-600 text-white px-2 py-0.5 rounded-full">' +
-        badge +
-        '</span>' +
+      <span
+        class="inline-block mt-1 text-[10px] bg-pink-600 text-white px-2 py-0.5 rounded-full"
+      >
+        VIEW
+      </span>
 
-      '</div>' +
+    </div>
 
-    '</a>'
+    `;
 
+
+  /* =========================================================
+     CLICK RESULT
+
+     USE THE SAME FLOW AS HOMEPAGE WATCH BUTTON
+
+     Search
+       ↓
+     Search Result
+       ↓
+     /api/anime?idMal=...
+       ↓
+     openAnime()
+       ↓
+     watch.html
+========================================================= */
+
+  resultElement.addEventListener(
+    "click",
+    async function(event) {
+
+      event.preventDefault();
+
+
+      console.log(
+        "🎬 SEARCH RESULT CLICKED:",
+        anime
+      );
+
+
+      /*
+        IMPORTANT:
+
+        openAnime() already exists in api.js.
+
+        We use that exact function.
+
+        This means homepage and search now
+        open the watch page through the same
+        system.
+      */
+
+      if (
+        typeof window.openAnime ===
+        "function"
+      ) {
+
+        await window.openAnime(
+          {
+            mal_id:
+              malId,
+
+            title:
+              title,
+
+            title_english:
+              title
+          }
+        );
+
+      }
+
+      else {
+
+        console.error(
+          "❌ openAnime() is not available."
+        );
+
+
+        /*
+          FALLBACK
+
+          If api.js hasn't loaded correctly,
+          at least open the watch page using
+          the MAL ID.
+
+          This is only a fallback.
+        */
+
+        if (malId) {
+
+          window.location.href =
+            `watch.html?malId=${encodeURIComponent(
+              malId
+            )}&anime=${encodeURIComponent(
+              title
+            )}&ep=1`;
+
+        }
+
+      }
+
+    }
   );
 
+
+  return resultElement;
+
 }
+
+
+/* =========================================================
+   INITIALIZE SEARCH
+========================================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -268,13 +378,13 @@ document.addEventListener(
     );
 
 
-    var searchInput =
+    const searchInput =
       document.getElementById(
         "searchInput"
       );
 
 
-    var searchResults =
+    const searchResults =
       document.getElementById(
         "searchResults"
       );
@@ -286,7 +396,7 @@ document.addEventListener(
     ) {
 
       console.error(
-        "SEARCH ELEMENTS NOT FOUND"
+        "❌ SEARCH ELEMENTS NOT FOUND"
       );
 
       return;
@@ -295,56 +405,95 @@ document.addEventListener(
 
 
     console.log(
-      "SEARCH ELEMENTS FOUND"
+      "✅ SEARCH ELEMENTS FOUND"
     );
 
 
-    var timer = null;
+    let timer =
+      null;
 
-    var requestNumber = 0;
 
+    let requestNumber =
+      0;
+
+
+    /* =====================================================
+       SEARCH INPUT
+    ===================================================== */
 
     searchInput.addEventListener(
       "input",
       function() {
 
-        clearTimeout(timer);
+        clearTimeout(
+          timer
+        );
 
 
-        var query =
+        const query =
           searchInput.value.trim();
 
+
+        /* ===============================================
+           EMPTY SEARCH
+        =============================================== */
 
         if (!query) {
 
           searchResults.innerHTML =
             "";
 
+
           searchResults.classList.add(
             "hidden"
           );
+
 
           return;
 
         }
 
 
-        if (query.length < 2) {
+        /* ===============================================
+           TOO SHORT
+        =============================================== */
+
+        if (
+          query.length < 2
+        ) {
 
           searchResults.innerHTML =
-            '<p class="text-xs text-slate-400 text-center p-4">Type at least 2 characters...</p>';
+            `
+            <p
+              class="text-xs text-slate-400 text-center p-4"
+            >
+              Type at least 2 characters...
+            </p>
+            `;
+
 
           searchResults.classList.remove(
             "hidden"
           );
 
+
           return;
 
         }
 
 
+        /* ===============================================
+           LOADING
+        =============================================== */
+
         searchResults.innerHTML =
-          '<p class="text-xs text-slate-400 text-center p-4">Searching...</p>';
+          `
+          <p
+            class="text-xs text-slate-400 text-center p-4"
+          >
+            Searching...
+          </p>
+          `;
 
 
         searchResults.classList.remove(
@@ -352,21 +501,39 @@ document.addEventListener(
         );
 
 
+        /* ===============================================
+           DELAY SEARCH
+        =============================================== */
+
         timer =
           setTimeout(
             async function() {
 
-              var currentRequest =
+              const currentRequest =
                 ++requestNumber;
 
 
               try {
 
-                var data =
+                const data =
                   await searchAnime(
                     query
                   );
 
+
+                /*
+                  Ignore old requests.
+
+                  Example:
+
+                  User types:
+
+                  Naruto
+                  Naruto Sh
+                  Naruto Shi
+
+                  We only show the newest result.
+                */
 
                 if (
                   currentRequest !==
@@ -378,7 +545,7 @@ document.addEventListener(
                 }
 
 
-                var results =
+                const results =
                   normalizeResults(
                     data
                   );
@@ -390,42 +557,70 @@ document.addEventListener(
                 );
 
 
+                /* =========================================
+                   NO RESULTS
+                ========================================= */
+
                 if (
                   results.length === 0
                 ) {
 
                   searchResults.innerHTML =
-                    '<p class="text-sm text-slate-400 text-center p-5">No anime found.</p>';
+                    `
+                    <p
+                      class="text-sm text-slate-400 text-center p-5"
+                    >
+                      No anime found.
+                    </p>
+                    `;
+
 
                   return;
 
                 }
 
 
-                var html =
-                  '<div class="px-3 pt-3 pb-1">' +
-                  '<p class="text-[10px] font-bold uppercase tracking-widest text-pink-500">' +
-                  "SEARCH RESULTS" +
-                  "</p>" +
-                  "</div>";
+                /* =========================================
+                   SEARCH HEADER
+                ========================================= */
 
+                searchResults.innerHTML =
+                  `
+                  <div
+                    class="px-3 pt-3 pb-1"
+                  >
+
+                    <p
+                      class="text-[10px] font-bold uppercase tracking-widest text-pink-500"
+                    >
+                      SEARCH RESULTS
+                    </p>
+
+                  </div>
+                  `;
+
+
+                /* =========================================
+                   ADD RESULTS
+                ========================================= */
 
                 for (
-                  var i = 0;
+                  let i = 0;
                   i < results.length;
                   i++
                 ) {
 
-                  html +=
+                  const resultElement =
                     createResult(
                       results[i]
                     );
 
+
+                  searchResults.appendChild(
+                    resultElement
+                  );
+
                 }
-
-
-                searchResults.innerHTML =
-                  html;
 
 
                 searchResults.classList.remove(
@@ -438,17 +633,27 @@ document.addEventListener(
                   results.length
                 );
 
+              }
 
-              } catch (error) {
+
+              catch (
+                error
+              ) {
 
                 console.error(
-                  "SEARCH ERROR:",
+                  "❌ SEARCH ERROR:",
                   error
                 );
 
 
                 searchResults.innerHTML =
-                  '<p class="text-xs text-red-400 text-center p-4">Search is temporarily unavailable.</p>';
+                  `
+                  <p
+                    class="text-xs text-red-400 text-center p-4"
+                  >
+                    Search is temporarily unavailable.
+                  </p>
+                  `;
 
               }
 
@@ -460,16 +665,25 @@ document.addEventListener(
     );
 
 
+    /* =====================================================
+       CLOSE SEARCH WHEN CLICKING OUTSIDE
+    ===================================================== */
+
     document.addEventListener(
       "click",
       function(event) {
 
         if (
+
           !searchResults.contains(
             event.target
-          ) &&
+          )
+
+          &&
+
           event.target !==
             searchInput
+
         ) {
 
           searchResults.classList.add(
@@ -481,6 +695,10 @@ document.addEventListener(
       }
     );
 
+
+    /* =====================================================
+       REOPEN RESULTS ON FOCUS
+    ===================================================== */
 
     searchInput.addEventListener(
       "focus",
