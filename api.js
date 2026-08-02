@@ -95,10 +95,9 @@ async function openAnime(anime) {
        3. Jikan
     ======================================================= */
 
-    const response =
-      await fetch(
-        `/api/anime?idMal=${encodeURIComponent(malId)}`
-      );
+    const response = await fetch(
+      `https://danimeverse.vercel.app/api/anime?idMal=${encodeURIComponent(malId)}`
+    );
 
 
     if (!response.ok) {
