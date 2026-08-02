@@ -837,18 +837,26 @@
       let apiUrl = "";
 
 
-      if (malId) {
+        if (anilistId) {
 
-        apiUrl =
-          `/api/anime?idMal=${encodeURIComponent(malId)}`;
+          apiUrl =
+            `/api/anime?id=${encodeURIComponent(anilistId)}`;
 
-      }
+        }
 
-      else if (anilistId) {
+        else if (malId) {
 
-        apiUrl =
-          `/api/anime?id=${encodeURIComponent(anilistId)}`;
+          apiUrl =
+            `/api/anime?idMal=${encodeURIComponent(malId)}`;
 
+        }
+
+        else if (animeParam) {
+
+          apiUrl =
+            `/api/anime?search=${encodeURIComponent(animeParam)}`;
+
+        }
       }
 
       else if (animeParam) {
