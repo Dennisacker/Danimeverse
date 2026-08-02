@@ -1358,535 +1358,331 @@
   }
 
 
-  /* =========================================================
-     LOAD EPISODE FROM FIRESTORE
-  ========================================================= */
+          async function loadEpisode(anime) {
 
-  async function loadEpisode(
-    anime
-  ) {
+            try {
 
-    try {
+              /* =====================================================
+                 DETERMINE FIRESTORE ANIME ID
 
-      /* =====================================================
-         DETERMINE FIRESTORE ANIME ID
+                 Your Firestore structure uses MAL IDs:
 
-         Your Firestore structure:
+                 animes
+                   └── 20
+                        └── episodes
+                             ├── ep_1
+                             ├── ep_2
+                             └── ep_3
 
-         animes
-           └── {AniList ID}
-                └── episodes
-                     └── ep_1
+                 Naruto MAL ID = 20
 
-         Example:
+                 We therefore prioritize MAL ID first.
+              ===================================================== */
 
-         Attack on Titan
-         AniList ID = 16498? NO
+              const firestoreAnimeId =
+                anime?.malId
+                  ? String(anime.malId)
+                  : malId
+                    ? String(malId)
+                    : anime?.anilistId
+                      ? String(anime.anilistId)
+                      : anilistId
+                        ? String(anilistId)
+                        : null;
 
-         IMPORTANT:
 
-         The API response must provide
-         the AniList ID.
+              /* =====================================================
+                 CHECK ANIME ID
+              ===================================================== */
 
-         If the API does not provide one,
-         we fall back to the URL anilistId.
-      ===================================================== */
+              if (!firestoreAnimeId) {
 
+                console.warn(
+                  "⚠️ No MAL ID or AniList ID available for Firestore."
+                );
 
-      const firestoreAnimeId =
-      anime?.malId
-        ? String(
-            anime.malId
-          )
-        : malId
-          ? String(
-              malId
-            )
-          : anime?.anilistId
-            ? String(
-                anime.anilistId
-              )
-            : anilistId
-              ? String(
-                  anilistId
-                )
-              : null;
+                showEpisodeError(
+                  "Episode Not Available",
+                  "Could not identify this anime in the episode database."
+                );
 
+                return;
 
-      if (!firestoreAnimeId) {
+              }
 
-        console.warn(
-          "⚠️ No AniList ID available for Firestore."
-        );
 
+              console.log(
+                "🔥 Looking for Firestore anime document:",
+                `animes/${firestoreAnimeId}`
+              );
 
-        showEpisodeError(
-          "Episode Not Available",
-          "Could not identify this anime in the episode database."
-        );
 
+              /* =====================================================
+                 GET ANIME DOCUMENT
 
-        return;
+                 Example for Naruto:
 
-      }
+                 animes/20
+              ===================================================== */
 
+              const animeRef =
+                doc(
+                  db,
+                  "animes",
+                  firestoreAnimeId
+                );
 
-      console.log(
-        "🔥 Looking for Firestore anime:",
-        firestoreAnimeId
-      );
 
+              const animeSnap =
+                await getDoc(
+                  animeRef
+                );
 
-      /* =====================================================
-         GET ANIME DOCUMENT
-      ===================================================== */
 
-      const animeRef =
-        doc(
-          db,
-          "animes",
-          firestoreAnimeId
-        );
+              /* =====================================================
+                 ANIME DOCUMENT NOT FOUND
+              ===================================================== */
 
+              if (
+                !animeSnap.exists()
+              ) {
 
-      const animeSnap =
-        await getDoc(
-          animeRef
-        );
+                console.warn(
+                  "⚠️ Anime document not found:",
+                  `animes/${firestoreAnimeId}`
+                );
 
 
-      if (
-        !animeSnap.exists()
-      ) {
+                episodeNum.textContent =
+                  `Episode ${ep}`;
 
-        console.warn(
-          "⚠️ Anime document not found:",
-          firestoreAnimeId
-        );
 
+                episodeTitle.textContent =
+                  `Episode ${ep}`;
 
-        episodeNum.textContent =
-          `Episode ${ep}`;
 
+                showEpisodeError(
+                  "Episode Not Uploaded Yet",
+                  "This anime is available in the catalog, but no episodes have been uploaded to Danimeverse yet."
+                );
 
-        episodeTitle.textContent =
-          `Episode ${ep}`;
 
+                return;
 
-        showEpisodeError(
-          "Episode Not Uploaded Yet",
-          "This anime is available in the catalog, but no episodes have been uploaded to Danimeverse yet."
-        );
+              }
 
 
-        return;
+              /* =====================================================
+                 ANIME DOCUMENT FOUND
+              ===================================================== */
 
-      }
+              const animeData =
+                animeSnap.data();
 
 
-      const animeData =
-        animeSnap.data();
+              console.log(
+                "✅ Anime document found:",
+                animeData
+              );
 
 
-      console.log(
-        "✅ Anime document found:",
-        animeData
-      );
+              /* =====================================================
+                 DISPLAY FIRESTORE TITLE
 
+                 Supports your current Naruto document:
 
-      /* =====================================================
-         DISPLAY FIRESTORE TITLE
-      ===================================================== */
+                 title: "naruto"
+              ===================================================== */
 
-      if (
-        animeData?.animeTitle
-      ) {
+              if (
+                animeData?.animeTitle
+              ) {
 
-        episodeAnimeName.textContent =
-          animeData.animeTitle;
+                episodeAnimeName.textContent =
+                  animeData.animeTitle;
 
-      }
+              }
 
-      else if (
-        animeData?.title
-      ) {
+              else if (
+                animeData?.title
+              ) {
 
-        episodeAnimeName.textContent =
-          animeData.title;
+                episodeAnimeName.textContent =
+                  animeData.title;
 
-      }
+              }
 
+              else if (
+                anime?.title
+              ) {
 
-      /* =====================================================
-         GET EPISODE
-      ===================================================== */
+                episodeAnimeName.textContent =
+                  anime.title;
 
-      const episodeRef =
-        doc(
-          db,
-          "animes",
-          firestoreAnimeId,
-          "episodes",
-          `ep_${ep}`
-        );
+              }
 
 
-      const episodeSnap =
-        await getDoc(
-          episodeRef
-        );
+              /* =====================================================
+                 GET EPISODE DOCUMENT
 
+                 Example:
 
-      if (
-        !episodeSnap.exists()
-      ) {
+                 animes/20/episodes/ep_1
+                 animes/20/episodes/ep_2
+                 animes/20/episodes/ep_3
+              ===================================================== */
 
-        console.warn(
-          "⚠️ Episode not found:",
-          `animes/${firestoreAnimeId}/episodes/ep_${ep}`
-        );
+              const episodeRef =
+                doc(
+                  db,
+                  "animes",
+                  firestoreAnimeId,
+                  "episodes",
+                  `ep_${ep}`
+                );
 
 
-        episodeNum.textContent =
-          `Episode ${ep}`;
+              console.log(
+                "🔥 Looking for episode:",
+                `animes/${firestoreAnimeId}/episodes/ep_${ep}`
+              );
 
 
-        episodeTitle.textContent =
-          `Episode ${ep}`;
+              const episodeSnap =
+                await getDoc(
+                  episodeRef
+                );
 
 
-        showEpisodeError(
-          "Episode Not Uploaded Yet",
-          "This episode hasn't been uploaded yet. Check back later."
-        );
+              /* =====================================================
+                 EPISODE NOT FOUND
+              ===================================================== */
 
+              if (
+                !episodeSnap.exists()
+              ) {
 
-        return;
+                console.warn(
+                  "⚠️ Episode not found:",
+                  `animes/${firestoreAnimeId}/episodes/ep_${ep}`
+                );
 
-      }
 
+                episodeNum.textContent =
+                  `Episode ${ep}`;
 
-      /* =====================================================
-         EPISODE FOUND
-      ===================================================== */
 
-      const data =
-        episodeSnap.data();
+                episodeTitle.textContent =
+                  `Episode ${ep}`;
 
 
-      console.log(
-        "✅ Episode data found:",
-        data
-      );
+                showEpisodeError(
+                  "Episode Not Uploaded Yet",
+                  "This episode hasn't been uploaded yet. Check back later."
+                );
 
 
-      episodeNum.textContent =
-        `Episode ${ep}`;
+                return;
 
+              }
 
-      episodeTitle.textContent =
-        data.title ||
-        `Episode ${ep}`;
 
+              /* =====================================================
+                 EPISODE FOUND
+              ===================================================== */
 
-      /* =====================================================
-         RENDER PLAYER
-      ===================================================== */
+              const data =
+                episodeSnap.data();
 
-      renderVideoPlayer(
-        data
-      );
 
+              console.log(
+                "✅ Episode data found:",
+                data
+              );
 
-      /* =====================================================
-         NAVIGATION
-      ===================================================== */
 
-      prevBtn.disabled =
-        ep <= 1;
+              /* =====================================================
+                 DISPLAY EPISODE INFORMATION
+              ===================================================== */
 
+              episodeNum.textContent =
+                `Episode ${ep}`;
 
-      nextBtn.disabled =
-        false;
 
+              episodeTitle.textContent =
+                data.title ||
+                `Episode ${ep}`;
 
-      /* =====================================================
-         EPISODE LIST
-      ===================================================== */
 
-      await loadEpisodeList(
-        firestoreAnimeId,
-        anime
-      );
+              /* =====================================================
+                 RENDER VIDEO PLAYER
+              ===================================================== */
 
+              renderVideoPlayer(
+                data
+              );
 
-    } catch (error) {
 
-      console.error(
-        "❌ Firestore episode error:",
-        error
-      );
+              /* =====================================================
+                 EPISODE NAVIGATION
+              ===================================================== */
 
+              prevBtn.disabled =
+                ep <= 1;
 
-      showEpisodeError(
-        "Error Loading Episode",
-        error.message ||
-        "Could not load episode data."
-      );
 
-    }
+              /*
+                Check whether the next episode actually exists
+                instead of always enabling the Next button.
+              */
 
-  }
+              const nextEpisodeRef =
+                doc(
+                  db,
+                  "animes",
+                  firestoreAnimeId,
+                  "episodes",
+                  `ep_${ep + 1}`
+                );
 
 
-  /* =========================================================
-     VIDEO PLAYER
-  ========================================================= */
+              const nextEpisodeSnap =
+                await getDoc(
+                  nextEpisodeRef
+                );
 
-  function renderVideoPlayer(
-    data
-  ) {
 
-    errorState.style.display =
-      "none";
+              nextBtn.disabled =
+                !nextEpisodeSnap.exists();
 
 
-    const febboxUrl =
-      data?.febboxUrl ||
-      "";
+              /* =====================================================
+                 LOAD EPISODE LIST
+              ===================================================== */
 
+              await loadEpisodeList(
+                firestoreAnimeId,
+                anime
+              );
 
-    const directVideoUrl =
-      data?.video ||
-      "";
 
+            } catch (error) {
 
-    const playerUrl =
-      data?.playerUrl ||
-      "";
+              console.error(
+                "❌ Firestore episode error:",
+                error
+              );
 
 
-    console.log(
-      "🎬 Video sources:",
-      {
-        febboxUrl,
-        directVideoUrl,
-        playerUrl
-      }
-    );
+              showEpisodeError(
+                "Error Loading Episode",
+                error.message ||
+                "Could not load episode data."
+              );
 
+            }
 
-    /* =====================================================
-       OPTION 1
-       PLAYER URL
-    ===================================================== */
-
-    if (
-      playerUrl
-    ) {
-
-      watchArea.innerHTML = `
-
-        <div
-          class="relative w-full overflow-hidden rounded-2xl bg-black"
-          style="aspect-ratio: 16 / 9;"
-        >
-
-          <iframe
-            src="${escapeAttribute(
-              playerUrl
-            )}"
-            class="absolute inset-0 w-full h-full"
-            frameborder="0"
-            scrolling="no"
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowfullscreen
-            referrerpolicy="no-referrer"
-          ></iframe>
-
-        </div>
-
-        <p class="text-center text-xs text-slate-600 mt-3">
-          ▶ Playing from video player
-        </p>
-
-      `;
-
-      return;
-
-    }
-
-
-    /* =====================================================
-       OPTION 2
-       DIRECT VIDEO
-    ===================================================== */
-
-    if (
-      directVideoUrl
-    ) {
-
-      watchArea.innerHTML = `
-
-        <div
-          class="relative w-full overflow-hidden rounded-2xl bg-black"
-          style="aspect-ratio: 16 / 9;"
-        >
-
-          <video
-            controls
-            playsinline
-            preload="metadata"
-            class="w-full h-full object-contain"
-          >
-
-            <source
-              src="${escapeAttribute(
-                directVideoUrl
-              )}"
-            >
-
-            Your browser does not support HTML5 video.
-
-          </video>
-
-        </div>
-
-        <p class="text-center text-xs text-slate-600 mt-3">
-          ▶ Direct video
-        </p>
-
-      `;
-
-      return;
-
-    }
-
-
-    /* =====================================================
-       OPTION 3
-       FEBBOX
-    ===================================================== */
-
-    if (
-      febboxUrl
-    ) {
-
-      watchArea.innerHTML = `
-
-        <a
-          href="${escapeAttribute(
-            febboxUrl
-          )}"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="watch-btn"
-        >
-
-          ▶ WATCH EPISODE
-
-        </a>
-
-        <p class="text-center text-xs text-slate-600 mt-3">
-          Opens video
-        </p>
-
-      `;
-
-      return;
-
-    }
-
-
-    /* =====================================================
-       NO VIDEO
-    ===================================================== */
-
-    watchArea.innerHTML = `
-
-      <div class="text-center py-5">
-
-        <p class="text-slate-400 text-sm">
-          ⚠️ No video link saved for this episode.
-        </p>
-
-      </div>
-
-    `;
-
-  }
-
-
-  /* =========================================================
-     EPISODE ERROR
-  ========================================================= */
-
-  function showEpisodeError(
-    title,
-    message
-  ) {
-
-    watchArea.innerHTML =
-      "";
-
-
-    errorState.style.display =
-      "block";
-
-
-    document.getElementById(
-      "errorTitle"
-    ).textContent =
-      title;
-
-
-    document.getElementById(
-      "errorMsg"
-    ).textContent =
-      message;
-
-  }
-
-
-  /* =========================================================
-     LOAD EPISODE LIST
-  ========================================================= */
-
-  async function loadEpisodeList(
-    animeId,
-    anime
-  ) {
-
-    try {
-
-      const episodesRef =
-        collection(
-          db,
-          "animes",
-          String(
-            animeId
-          ),
-          "episodes"
-        );
-
-
-      const snapshot =
-        await getDocs(
-          episodesRef
-        );
-
-
-      const allEpisodes =
-        [];
-
-
-      snapshot.forEach(
-        episodeDoc => {
-
-          const data =
-            episodeDoc.data();
-
-
+          }
           /* =================================================
              SUPPORT BOTH:
 
