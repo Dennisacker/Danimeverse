@@ -203,13 +203,16 @@
         error
       );
 
-      return res.status(500).json({
-        success: false,
-        error: "Internal server error",
-        message: error.message
-      });
-    }
+return res.status(500).json({
+  success: false,
+  error: "All anime APIs failed",
+  debug: {
+    message: "AniList, Jikan, and Kitsu did not return a usable result.",
+    search: search || null,
+    id: id || null,
+    idMal: idMal || null
   }
+});
 
 
   // =========================================================
