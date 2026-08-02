@@ -49,7 +49,7 @@ const db = getFirestore(app);
 ========================================================= */
 
 function slugify(title) {
-  return title
+  return String(title || "")
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
@@ -57,44 +57,111 @@ function slugify(title) {
 }
 
 
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(value) {
+
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
 function showToast(message, success = true) {
 
-  let toast = document.getElementById("wl-toast");
+  let toast =
+    document.getElementById("wl-toast");
+
 
   if (!toast) {
 
-    toast = document.createElement("div");
+    toast =
+      document.createElement("div");
 
-    toast.id = "wl-toast";
+    toast.id =
+      "wl-toast";
 
-    toast.style.position = "fixed";
-    toast.style.bottom = "30px";
-    toast.style.right = "30px";
-    toast.style.zIndex = "9999";
-    toast.style.padding = "14px 20px";
-    toast.style.borderRadius = "10px";
-    toast.style.color = "white";
-    toast.style.fontWeight = "600";
-    toast.style.fontSize = "14px";
-    toast.style.boxShadow = "0 10px 30px rgba(0,0,0,.4)";
-    toast.style.transition = "opacity .3s ease";
 
-    document.body.appendChild(toast);
+    toast.style.position =
+      "fixed";
+
+    toast.style.bottom =
+      "30px";
+
+    toast.style.right =
+      "30px";
+
+    toast.style.zIndex =
+      "9999";
+
+    toast.style.padding =
+      "14px 20px";
+
+    toast.style.borderRadius =
+      "10px";
+
+    toast.style.color =
+      "white";
+
+    toast.style.fontWeight =
+      "600";
+
+    toast.style.fontSize =
+      "14px";
+
+    toast.style.boxShadow =
+      "0 10px 30px rgba(0,0,0,.4)";
+
+    toast.style.transition =
+      "opacity .3s ease";
+
+
+    document.body.appendChild(
+      toast
+    );
+
   }
 
-  toast.textContent = message;
 
-  toast.style.background = success
-    ? "#ec4899"
-    : "#dc2626";
+  toast.textContent =
+    message;
 
-  toast.style.opacity = "1";
 
-  clearTimeout(toast._timer);
+  toast.style.background =
+    success
+      ? "#ec4899"
+      : "#dc2626";
 
-  toast._timer = setTimeout(() => {
-    toast.style.opacity = "0";
-  }, 2500);
+
+  toast.style.opacity =
+    "1";
+
+
+  clearTimeout(
+    toast._timer
+  );
+
+
+  toast._timer =
+    setTimeout(
+      () => {
+
+        toast.style.opacity =
+          "0";
+
+      },
+      2500
+    );
 
 }
 
@@ -105,17 +172,25 @@ function showToast(message, success = true) {
 
 async function getWatchlistSlugs(uid) {
 
-  const snapshot = await getDocs(
-    collection(
-      db,
-      "watchlists",
-      uid,
-      "items"
-    )
-  );
+  const snapshot =
+    await getDocs(
+
+      collection(
+        db,
+        "watchlists",
+        uid,
+        "items"
+      )
+
+    );
+
 
   return new Set(
-    snapshot.docs.map(doc => doc.id)
+
+    snapshot.docs.map(
+      item => item.id
+    )
+
   );
 
 }
@@ -127,9 +202,16 @@ async function getWatchlistSlugs(uid) {
 
 async function addItem(uid, anime) {
 
-  const slug = slugify(anime.title);
+  const title =
+    anime.title || "Unknown Anime";
+
+
+  const slug =
+    slugify(title);
+
 
   await setDoc(
+
     doc(
       db,
       "watchlists",
@@ -137,15 +219,43 @@ async function addItem(uid, anime) {
       "items",
       slug
     ),
+
     {
-      title: anime.title || "",
-      img: anime.img || "",
-      desc: anime.desc || "",
-      href: anime.href || "",
-      genres: anime.genres || "",
-      addedAt: Date.now()
+
+      title:
+        title,
+
+      img:
+        anime.img || "",
+
+      desc:
+        anime.desc || "",
+
+      href:
+        anime.href || "",
+
+      genres:
+        anime.genres || "",
+
+      /* NEW ID DATA */
+
+      malId:
+        anime.malId
+          ? Number(anime.malId)
+          : null,
+
+      anilistId:
+        anime.anilistId
+          ? Number(anime.anilistId)
+          : null,
+
+      addedAt:
+        Date.now()
+
     }
+
   );
+
 
   return slug;
 
@@ -156,9 +266,13 @@ async function addItem(uid, anime) {
    REMOVE ANIME
 ========================================================= */
 
-async function removeItem(uid, slug) {
+async function removeItem(
+  uid,
+  slug
+) {
 
   await deleteDoc(
+
     doc(
       db,
       "watchlists",
@@ -166,218 +280,784 @@ async function removeItem(uid, slug) {
       "items",
       slug
     )
+
   );
 
 }
 
 
 /* =========================================================
-   INJECT WATCHLIST BUTTONS
+   OPEN ANIME WATCH PAGE
 ========================================================= */
 
-function injectButtons(uid, slugs) {
+async function openWatchlistAnime(
+  anime
+) {
 
-  document
-    .querySelectorAll("article.glass-card")
-    .forEach(card => {
+  const title =
+    anime.title ||
+    "Unknown Anime";
 
-      if (card.querySelector(".wl-btn")) {
-        return;
-      }
 
-      const imgEl = card.querySelector("img");
-      const h3 = card.querySelector("h3");
-      const pEl = card.querySelector("p");
-      const genreEl = card.querySelector("[data-genres]");
-      const parentA = card.closest("a");
+  /* =======================================================
+     IF WE ALREADY HAVE ANILIST ID
+  ======================================================= */
 
-      if (!h3) {
-        return;
-      }
+  if (anime.anilistId) {
 
-      const anime = {
+    const params =
+      new URLSearchParams({
 
-        title:
-          h3.textContent.trim(),
+        anilistId:
+          String(anime.anilistId),
 
-        img:
-          imgEl?.src || "",
+        anime:
+          title,
 
-        desc:
-          pEl?.textContent.trim() || "",
+        ep:
+          "1",
 
-        href:
-          parentA?.getAttribute("href") || "",
+        ...(anime.malId
+          ? {
+              malId:
+                String(anime.malId)
+            }
+          }
+          : {})
 
-        genres:
-          genreEl?.dataset.genres || ""
+      });
 
-      };
 
-      const slug = slugify(anime.title);
+    window.location.href =
+      `watch.html?${params.toString()}`;
 
-      const inList = slugs.has(slug);
 
-      const btn = document.createElement("button");
+    return;
 
-      btn.className =
-        "wl-btn" +
-        (inList ? " in-list" : "");
+  }
 
-      btn.dataset.slug = slug;
 
-      btn.title =
-        inList
-          ? "Remove from My List"
-          : "Add to My List";
+  /* =======================================================
+     IF WE ONLY HAVE MAL ID
+     FIND ANILIST ID
+  ======================================================= */
 
-      btn.innerHTML = inList
-        ? `
-          <svg viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="3">
+  if (anime.malId) {
 
-            <polyline
-              points="20 6 9 17 4 12">
-            </polyline>
+    try {
 
-          </svg>
-        `
-        : `
-          <svg viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="3">
+      showToast(
+        "Opening anime..."
+      );
 
-            <line
-              x1="12"
-              y1="5"
-              x2="12"
-              y2="19">
-            </line>
 
-            <line
-              x1="5"
-              y1="12"
-              x2="19"
-              y2="12">
-            </line>
+      const query = `
 
-          </svg>
-        `;
+        query ($malId: Int) {
 
-      btn.addEventListener(
-        "click",
-        async e => {
+          Media(
+            idMal: $malId,
+            type: ANIME
+          ) {
 
-          e.preventDefault();
-          e.stopPropagation();
+            id
 
-          if (btn.disabled) {
-            return;
+            idMal
+
+            title {
+
+              romaji
+
+              english
+
+              native
+
+            }
+
           }
 
-          btn.disabled = true;
+        }
 
-          try {
+      `;
 
-            if (btn.classList.contains("in-list")) {
 
-              await removeItem(
-                uid,
-                btn.dataset.slug
+      const response =
+        await fetch(
+          "https://graphql.anilist.co",
+          {
+
+            method:
+              "POST",
+
+            headers: {
+
+              "Content-Type":
+                "application/json",
+
+              "Accept":
+                "application/json"
+
+            },
+
+            body:
+              JSON.stringify({
+
+                query:
+
+                  query,
+
+                variables: {
+
+                  malId:
+                    Number(
+                      anime.malId
+                    )
+
+                }
+
+              })
+
+          }
+        );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          `AniList HTTP ${response.status}`
+        );
+
+      }
+
+
+      const result =
+        await response.json();
+
+
+      const media =
+        result.data?.Media;
+
+
+      if (!media) {
+
+        throw new Error(
+          "Anime not found on AniList"
+        );
+
+      }
+
+
+      const animeTitle =
+
+        media.title?.english ||
+
+        media.title?.romaji ||
+
+        media.title?.native ||
+
+        title;
+
+
+      const params =
+        new URLSearchParams({
+
+          anilistId:
+            String(media.id),
+
+          anime:
+            animeTitle,
+
+          ep:
+            "1",
+
+          malId:
+            String(
+              anime.malId
+            )
+
+        });
+
+
+      window.location.href =
+        `watch.html?${params.toString()}`;
+
+
+      return;
+
+
+    } catch (error) {
+
+      console.error(
+        "❌ Failed to open anime:",
+        error
+      );
+
+
+      showToast(
+        "Could not open this anime. Please try again.",
+        false
+      );
+
+
+      return;
+
+    }
+
+  }
+
+
+  /* =======================================================
+     OLD WATCHLIST ITEM
+     NO MAL ID / NO ANILIST ID
+
+     SEARCH ANILIST BY TITLE
+  ======================================================= */
+
+  try {
+
+    showToast(
+      "Finding anime..."
+    );
+
+
+    const query = `
+
+      query ($search: String) {
+
+        Media(
+          search: $search,
+          type: ANIME
+        ) {
+
+          id
+
+          idMal
+
+          title {
+
+            romaji
+
+            english
+
+            native
+
+          }
+
+        }
+
+      }
+
+    `;
+
+
+    const response =
+      await fetch(
+        "https://graphql.anilist.co",
+        {
+
+          method:
+            "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+            "Accept":
+              "application/json"
+
+          },
+
+          body:
+            JSON.stringify({
+
+              query:
+
+                query,
+
+              variables: {
+
+                search:
+                  title
+
+              }
+
+            })
+
+        }
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        `AniList HTTP ${response.status}`
+      );
+
+    }
+
+
+    const result =
+      await response.json();
+
+
+    const media =
+      result.data?.Media;
+
+
+    if (!media) {
+
+      throw new Error(
+        "Anime not found"
+      );
+
+    }
+
+
+    const animeTitle =
+
+      media.title?.english ||
+
+      media.title?.romaji ||
+
+      media.title?.native ||
+
+      title;
+
+
+    /* =====================================================
+       UPDATE OLD FIREBASE DOCUMENT
+       SO NEXT TIME IT OPENS INSTANTLY
+    ===================================================== */
+
+    if (auth.currentUser) {
+
+      await setDoc(
+
+        doc(
+          db,
+          "watchlists",
+          auth.currentUser.uid,
+          "items",
+          slugify(title)
+        ),
+
+        {
+
+          anilistId:
+            media.id,
+
+          malId:
+            media.idMal || null
+
+        },
+
+        {
+          merge:
+            true
+        }
+
+      );
+
+    }
+
+
+    const params =
+      new URLSearchParams({
+
+        anilistId:
+          String(media.id),
+
+        anime:
+          animeTitle,
+
+        ep:
+          "1",
+
+        ...(media.idMal
+          ? {
+              malId:
+                String(
+                  media.idMal
+                )
+            }
+          : {})
+
+      });
+
+
+    window.location.href =
+      `watch.html?${params.toString()}`;
+
+
+  } catch (error) {
+
+    console.error(
+      "❌ Failed to find anime on AniList:",
+      error
+    );
+
+
+    showToast(
+      `Could not open ${title}. Please try again.`,
+      false
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   INJECT WATCHLIST BUTTONS ON HOMEPAGE
+========================================================= */
+
+function injectButtons(
+  uid,
+  slugs
+) {
+
+  document
+    .querySelectorAll(
+      "article.glass-card"
+    )
+    .forEach(
+      card => {
+
+        if (
+          card.querySelector(
+            ".wl-btn"
+          )
+        ) {
+
+          return;
+
+        }
+
+
+        const imgEl =
+          card.querySelector(
+            "img"
+          );
+
+
+        const h3 =
+          card.querySelector(
+            "h3"
+          );
+
+
+        const pEl =
+          card.querySelector(
+            "p"
+          );
+
+
+        const genreEl =
+          card.querySelector(
+            "[data-genres]"
+          );
+
+
+        if (!h3) {
+
+          return;
+
+        }
+
+
+        /* =====================================================
+           GET ORIGINAL ANIME DATA
+        ===================================================== */
+
+        const title =
+          h3.textContent.trim();
+
+
+        const image =
+          imgEl?.src || "";
+
+
+        const desc =
+          pEl?.textContent.trim() || "";
+
+
+        const genres =
+          genreEl?.dataset.genres || "";
+
+
+        /* =====================================================
+           FIND MAL ID FROM API DATA
+        ===================================================== */
+
+        let originalAnime =
+          null;
+
+
+        if (
+          window.danimeverseAnimeData
+        ) {
+
+          originalAnime =
+            window.danimeverseAnimeData
+              .find(
+                item =>
+                  item.mal_id &&
+                  (
+                    item.title_english ===
+                      title ||
+
+                    item.title ===
+                      title
+                  )
               );
 
-              btn.classList.remove("in-list");
+        }
 
-              btn.title = "Add to My List";
 
-              btn.innerHTML = `
-                <svg viewBox="0 0 24 24"
+        const anime = {
+
+          title:
+            title,
+
+          img:
+            image,
+
+          desc:
+            desc,
+
+          genres:
+            genres,
+
+          malId:
+            originalAnime?.mal_id ||
+            null,
+
+          anilistId:
+            originalAnime?.anilist_id ||
+            null
+
+        };
+
+
+        const slug =
+          slugify(
+            title
+          );
+
+
+        const inList =
+          slugs.has(
+            slug
+          );
+
+
+        const btn =
+          document.createElement(
+            "button"
+          );
+
+
+        btn.className =
+          "wl-btn" +
+          (
+            inList
+              ? " in-list"
+              : ""
+          );
+
+
+        btn.dataset.slug =
+          slug;
+
+
+        btn.title =
+          inList
+            ? "Remove from My List"
+            : "Add to My List";
+
+
+        function updateButton(
+          isInList
+        ) {
+
+          btn.innerHTML =
+            isInList
+
+              ? `
+
+                <svg
+                  viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="3">
+                  stroke-width="3"
+                >
+
+                  <polyline
+                    points="20 6 9 17 4 12"
+                  ></polyline>
+
+                </svg>
+
+              `
+
+              : `
+
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                >
 
                   <line
                     x1="12"
                     y1="5"
                     x2="12"
-                    y2="19">
-                  </line>
+                    y2="19"
+                  ></line>
 
                   <line
                     x1="5"
                     y1="12"
                     x2="19"
-                    y2="12">
-                  </line>
+                    y2="12"
+                  ></line>
 
                 </svg>
+
               `;
 
-              showToast(
-                "Removed from My List",
-                false
-              );
+        }
 
-            } else {
 
-              const newSlug =
-                await addItem(
-                  uid,
-                  anime
-                );
+        updateButton(
+          inList
+        );
 
-              btn.dataset.slug = newSlug;
 
-              btn.classList.add("in-list");
+        btn.addEventListener(
+          "click",
+          async e => {
 
-              btn.title = "Remove from My List";
+            e.preventDefault();
 
-              btn.innerHTML = `
-                <svg viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="3">
+            e.stopPropagation();
 
-                  <polyline
-                    points="20 6 9 17 4 12">
-                  </polyline>
 
-                </svg>
-              `;
+            if (
+              btn.disabled
+            ) {
 
-              showToast(
-                "Added to My List ✓"
-              );
+              return;
 
             }
 
-          } catch (error) {
 
-            console.error(
-              "Watchlist button error:",
+            btn.disabled =
+              true;
+
+
+            try {
+
+              if (
+                btn.classList.contains(
+                  "in-list"
+                )
+              ) {
+
+                await removeItem(
+                  uid,
+                  btn.dataset.slug
+                );
+
+
+                btn.classList.remove(
+                  "in-list"
+                );
+
+
+                btn.title =
+                  "Add to My List";
+
+
+                updateButton(
+                  false
+                );
+
+
+                showToast(
+                  "Removed from My List",
+                  false
+                );
+
+
+              } else {
+
+                const newSlug =
+                  await addItem(
+                    uid,
+                    anime
+                  );
+
+
+                btn.dataset.slug =
+                  newSlug;
+
+
+                btn.classList.add(
+                  "in-list"
+                );
+
+
+                btn.title =
+                  "Remove from My List";
+
+
+                updateButton(
+                  true
+                );
+
+
+                showToast(
+                  "Added to My List ✓"
+                );
+
+              }
+
+            } catch (
               error
-            );
+            ) {
 
-            showToast(
-              "Something went wrong. Please try again.",
-              false
-            );
+              console.error(
+                "Watchlist button error:",
+                error
+              );
 
-          } finally {
 
-            btn.disabled = false;
+              showToast(
+                "Something went wrong. Please try again.",
+                false
+              );
+
+            } finally {
+
+              btn.disabled =
+                false;
+
+            }
 
           }
 
-        }
-      );
+        );
 
-      card.appendChild(btn);
 
-    });
+        card.appendChild(
+          btn
+        );
+
+      }
+    );
 
 }
 
@@ -386,37 +1066,44 @@ function injectButtons(uid, slugs) {
    RENDER WATCHLIST PAGE
 ========================================================= */
 
-async function renderWatchlistPage(uid) {
+async function renderWatchlistPage(
+  uid
+) {
 
   const grid =
-    document.getElementById("watchlist-grid");
+    document.getElementById(
+      "watchlist-grid"
+    );
+
 
   const emptyState =
-    document.getElementById("watchlist-empty");
+    document.getElementById(
+      "watchlist-empty"
+    );
+
 
   const loading =
-    document.getElementById("watchlist-loading");
+    document.getElementById(
+      "watchlist-loading"
+    );
+
 
   const notSignedIn =
-    document.getElementById("watchlist-not-signed-in");
+    document.getElementById(
+      "watchlist-not-signed-in"
+    );
+
 
   const countEl =
-    document.getElementById("watchlist-count");
+    document.getElementById(
+      "watchlist-count"
+    );
 
 
   if (!grid) {
+
     return;
-  }
 
-
-  /* =====================================================
-     IMPORTANT:
-     REMOVE THE LOADING/SKELETON AREA IMMEDIATELY
-     SO IT CAN NEVER LEAVE A TRANSPARENT GAP
-  ===================================================== */
-
-  if (loading) {
-    loading.remove();
   }
 
 
@@ -430,53 +1117,62 @@ async function renderWatchlistPage(uid) {
 
     const snapshot =
       await getDocs(
+
         collection(
           db,
           "watchlists",
           uid,
           "items"
         )
+
       );
 
 
-    console.log(
-      "📋 Watchlist documents:",
-      snapshot.size
+    loading?.classList.add(
+      "hidden"
     );
 
 
-    notSignedIn?.classList.add("hidden");
+    notSignedIn?.classList.add(
+      "hidden"
+    );
 
 
-    /* =====================================================
-       EMPTY LIST
-    ===================================================== */
+    if (
+      snapshot.empty
+    ) {
 
-    if (snapshot.empty) {
+      grid.innerHTML =
+        "";
 
-      grid.innerHTML = "";
 
-      emptyState?.classList.remove("hidden");
+      emptyState?.classList.remove(
+        "hidden"
+      );
+
 
       if (countEl) {
-        countEl.textContent = "0 titles";
+
+        countEl.textContent =
+          "0 titles";
+
       }
+
 
       return;
 
     }
 
 
-    /* =====================================================
-       HIDE EMPTY STATE
-    ===================================================== */
-
-    emptyState?.classList.add("hidden");
+    emptyState?.classList.add(
+      "hidden"
+    );
 
 
     if (countEl) {
 
       countEl.textContent =
+
         `${snapshot.size} title${
           snapshot.size !== 1
             ? "s"
@@ -487,6 +1183,7 @@ async function renderWatchlistPage(uid) {
 
 
     const items =
+
       snapshot.docs.map(
         document => ({
 
@@ -501,61 +1198,55 @@ async function renderWatchlistPage(uid) {
 
     items.sort(
       (a, b) =>
+
         (b.addedAt || 0) -
+
         (a.addedAt || 0)
+
     );
 
 
-    grid.innerHTML = "";
+    grid.innerHTML =
+      "";
 
 
     items.forEach(
       anime => {
 
         const card =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
 
-        card.className = "wl-card";
+
+        card.className =
+          "wl-card";
 
 
         card.innerHTML = `
 
           <img
-            src="${anime.img || ""}"
-            alt="${anime.title || "Anime"}"
+            src="${escapeHTML(anime.img)}"
+            alt="${escapeHTML(anime.title || "Anime")}"
             loading="lazy"
-          />
-
+          >
 
           <div class="wl-card-overlay">
 
             <p class="wl-card-genres">
-              ${anime.genres || ""}
+              ${escapeHTML(anime.genres || "Anime")}
             </p>
 
-
             <h3 class="wl-card-title">
-              ${anime.title || "Unknown Anime"}
+              ${escapeHTML(anime.title || "Unknown Anime")}
             </h3>
-
 
             <div class="wl-card-actions">
 
-             <a
-  href="${anime.href || `watch.html?anime=${encodeURIComponent(anime.title)}`}"
-  class="wl-watch-btn"
-  onclick="event.stopPropagation();"
->
-  <svg
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    width="14"
-    height="14"
-  >
-    <polygon points="5,3 19,12 5,21" />
-  </svg>
-  Watch
-</a>
+              <button
+                type="button"
+                class="wl-watch-btn"
+              >
 
                 <svg
                   viewBox="0 0 24 24"
@@ -572,12 +1263,12 @@ async function renderWatchlistPage(uid) {
 
                 Watch
 
-              </a>
+              </button>
 
 
               <button
+                type="button"
                 class="wl-remove-btn"
-                data-slug="${anime.slug}"
               >
 
                 Remove
@@ -590,8 +1281,8 @@ async function renderWatchlistPage(uid) {
 
 
           <button
+            type="button"
             class="wl-remove-icon"
-            data-slug="${anime.slug}"
             title="Remove"
           >
 
@@ -603,25 +1294,99 @@ async function renderWatchlistPage(uid) {
 
 
         /* =====================================================
+           WATCH BUTTON
+        ===================================================== */
+
+        const watchButton =
+          card.querySelector(
+            ".wl-watch-btn"
+          );
+
+
+        watchButton?.addEventListener(
+          "click",
+          async e => {
+
+            e.preventDefault();
+
+            e.stopPropagation();
+
+
+            if (
+              watchButton.disabled
+            ) {
+
+              return;
+
+            }
+
+
+            watchButton.disabled =
+              true;
+
+
+            const originalText =
+              watchButton.innerHTML;
+
+
+            watchButton.innerHTML =
+              "Opening...";
+
+
+            try {
+
+              await openWatchlistAnime(
+                anime
+              );
+
+            } finally {
+
+              watchButton.disabled =
+                false;
+
+              watchButton.innerHTML =
+                originalText;
+
+            }
+
+          }
+        );
+
+
+        /* =====================================================
            REMOVE BUTTONS
         ===================================================== */
 
-        card
-          .querySelectorAll("[data-slug]")
-          .forEach(btn => {
+        const removeButtons =
+          card.querySelectorAll(
+            ".wl-remove-btn, .wl-remove-icon"
+          );
+
+
+        removeButtons.forEach(
+          btn => {
 
             btn.addEventListener(
               "click",
               async e => {
 
                 e.preventDefault();
+
                 e.stopPropagation();
 
-                if (btn.disabled) {
+
+                if (
+                  btn.disabled
+                ) {
+
                   return;
+
                 }
 
-                btn.disabled = true;
+
+                btn.disabled =
+                  true;
+
 
                 try {
 
@@ -643,6 +1408,7 @@ async function renderWatchlistPage(uid) {
 
 
                       const remaining =
+
                         grid.querySelectorAll(
                           ".wl-card"
                         ).length;
@@ -651,6 +1417,7 @@ async function renderWatchlistPage(uid) {
                       if (countEl) {
 
                         countEl.textContent =
+
                           `${remaining} title${
                             remaining !== 1
                               ? "s"
@@ -660,7 +1427,9 @@ async function renderWatchlistPage(uid) {
                       }
 
 
-                      if (!remaining) {
+                      if (
+                        remaining === 0
+                      ) {
 
                         emptyState?.classList.remove(
                           "hidden"
@@ -679,7 +1448,9 @@ async function renderWatchlistPage(uid) {
                   );
 
 
-                } catch (error) {
+                } catch (
+                  error
+                ) {
 
                   console.error(
                     "Remove error:",
@@ -693,23 +1464,29 @@ async function renderWatchlistPage(uid) {
                   );
 
 
-                  btn.disabled = false;
+                  btn.disabled =
+                    false;
 
                 }
 
               }
             );
 
-          });
+          }
+        );
 
 
-        grid.appendChild(card);
+        grid.appendChild(
+          card
+        );
 
       }
     );
 
 
-  } catch (error) {
+  } catch (
+    error
+  ) {
 
     console.error(
       "❌ WATCHLIST LOAD ERROR:",
@@ -717,45 +1494,43 @@ async function renderWatchlistPage(uid) {
     );
 
 
-    /* =====================================================
-       MAKE SURE LOADING AREA IS GONE ON ERROR TOO
-    ===================================================== */
-
-    if (loading) {
-      loading.remove();
-    }
+    loading?.classList.add(
+      "hidden"
+    );
 
 
     if (
-      error.code === "permission-denied"
+      error.code ===
+      "permission-denied"
     ) {
 
       grid.innerHTML = `
 
-        <div style="
-          grid-column: 1 / -1;
-          text-align: center;
-          padding: 80px 20px;
-        ">
+        <div
+          style="
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+          "
+        >
 
-          <h2 style="
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 10px;
-          ">
-
+          <h2
+            style="
+              font-size: 24px;
+              font-weight: 800;
+              margin-bottom: 10px;
+            "
+          >
             Watchlist Access Denied
-
           </h2>
 
-
-          <p style="
-            color: #888;
-            margin-bottom: 20px;
-          ">
-
+          <p
+            style="
+              color: #888;
+              margin-bottom: 20px;
+            "
+          >
             Your Firebase Firestore rules are blocking access to your watchlist.
-
           </p>
 
         </div>
@@ -766,29 +1541,30 @@ async function renderWatchlistPage(uid) {
 
       grid.innerHTML = `
 
-        <div style="
-          grid-column: 1 / -1;
-          text-align: center;
-          padding: 80px 20px;
-        ">
+        <div
+          style="
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+          "
+        >
 
-          <h2 style="
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 10px;
-          ">
-
+          <h2
+            style="
+              font-size: 24px;
+              font-weight: 800;
+              margin-bottom: 10px;
+            "
+          >
             Unable to load My List
-
           </h2>
 
-
-          <p style="
-            color: #888;
-          ">
-
+          <p
+            style="
+              color: #888;
+            "
+          >
             Please refresh the page and try again.
-
           </p>
 
         </div>
@@ -812,6 +1588,7 @@ onAuthStateChanged(
 
     console.log(
       "🔐 Auth state:",
+
       user
         ? user.email
         : "Not signed in"
@@ -819,7 +1596,9 @@ onAuthStateChanged(
 
 
     const myListLink =
-      document.getElementById("myListLink");
+      document.getElementById(
+        "myListLink"
+      );
 
 
     if (myListLink) {
@@ -844,10 +1623,6 @@ onAuthStateChanged(
       );
 
 
-    /* =====================================================
-       USER NOT SIGNED IN
-    ===================================================== */
-
     if (!user) {
 
       console.log(
@@ -855,11 +1630,9 @@ onAuthStateChanged(
       );
 
 
-      /* Remove skeleton immediately */
-
-      if (loading) {
-        loading.remove();
-      }
+      loading?.classList.add(
+        "hidden"
+      );
 
 
       notSignedIn?.classList.remove(
@@ -882,7 +1655,9 @@ onAuthStateChanged(
        HOMEPAGE WATCHLIST BUTTONS
     ===================================================== */
 
-    async function setupHomepageWatchlist(user) {
+    async function setupHomepageWatchlist(
+      currentUser
+    ) {
 
       try {
 
@@ -893,7 +1668,7 @@ onAuthStateChanged(
 
         const slugs =
           await getWatchlistSlugs(
-            user.uid
+            currentUser.uid
           );
 
 
@@ -905,25 +1680,17 @@ onAuthStateChanged(
             );
 
 
-          if (!cards.length) {
-
-            console.log(
-              "⏳ Anime cards not ready yet..."
-            );
+          if (
+            !cards.length
+          ) {
 
             return false;
 
           }
 
 
-          console.log(
-            "✅ Anime cards found:",
-            cards.length
-          );
-
-
           injectButtons(
-            user.uid,
+            currentUser.uid,
             slugs
           );
 
@@ -981,9 +1748,15 @@ onAuthStateChanged(
             observer.observe(
               container,
               {
-                childList: true,
-                subtree: true
+
+                childList:
+                  true,
+
+                subtree:
+                  true
+
               }
+
             );
 
           }
@@ -1000,7 +1773,9 @@ onAuthStateChanged(
         );
 
 
-      } catch (error) {
+      } catch (
+        error
+      ) {
 
         console.error(
           "❌ Could not load watchlist buttons:",
@@ -1013,7 +1788,33 @@ onAuthStateChanged(
 
 
     /* =====================================================
-       MY LIST PAGE
+       RUN HOMEPAGE WATCHLIST
+    ===================================================== */
+
+    if (
+      document.querySelector(
+        "article.glass-card"
+      ) ||
+      document.getElementById(
+        "popularAnimeContainer"
+      ) ||
+      document.getElementById(
+        "trendingAnimeContainer"
+      ) ||
+      document.getElementById(
+        "latestAnimeContainer"
+      )
+    ) {
+
+      await setupHomepageWatchlist(
+        user
+      );
+
+    }
+
+
+    /* =====================================================
+       RUN MY LIST PAGE
     ===================================================== */
 
     if (
@@ -1024,19 +1825,6 @@ onAuthStateChanged(
 
       await renderWatchlistPage(
         user.uid
-      );
-
-    }
-
-
-    /* =====================================================
-       HOMEPAGE
-    ===================================================== */
-
-    else {
-
-      await setupHomepageWatchlist(
-        user
       );
 
     }
