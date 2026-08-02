@@ -1668,7 +1668,39 @@
 
               } // ✅ CLOSES loadEpisode()
 
-   
+    /* =========================================================
+       SHOW EPISODE ERROR
+    ========================================================= */
+
+    function showEpisodeError(
+      title,
+      message
+    ) {
+
+      /* Hide the video/watch area */
+      watchArea.innerHTML = "";
+
+      watchArea.style.display =
+        "none";
+
+
+      /* Show error section */
+      errorState.style.display =
+        "block";
+
+
+      /* Set error title */
+      errorTitle.textContent =
+        title ||
+        "Episode Not Available";
+
+
+      /* Set error message */
+      errorMsg.textContent =
+        message ||
+        "This episode hasn't been uploaded yet.";
+
+    }
       /* =========================================================
          LOAD EPISODE LIST
       ========================================================= */
