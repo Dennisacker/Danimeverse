@@ -1,54 +1,86 @@
+
 console.log("🔥 SEARCH.JS LOADED");
 
 /* =========================================================
    DANIMEVERSE SEARCH — AniList GraphQL API
 
-   Searches any anime using AniList.
+   Search flow:
 
-   Keeps your existing system:
+   User searches
+        ↓
+   AniList GraphQL
+        ↓
+   Multiple anime results
+        ↓
+   Get MAL ID
+        ↓
    anime.html?malId=123
 
    IMPORTANT:
-   AniList's idMal is used because anime.html expects a MAL ID.
+   Your existing anime.html system uses MAL IDs.
+   Therefore, we always pass AniList's idMal.
 ========================================================= */
 
-const ANILIST_API = "https://graphql.anilist.co";
+const ANILIST_API =
+  "https://graphql.anilist.co";
 
 
 /* =========================================================
    SITE CATALOGUE
 
    Used only to show the "On Site" badge.
+
+   This does NOT control whether an anime can
+   be opened. It only controls the badge.
 ========================================================= */
 
 const SITE_CATALOG_TITLES = new Set([
+
   "naruto",
+
   "attack on titan",
   "shingeki no kyojin",
+
   "demon slayer",
   "kimetsu no yaiba",
+
   "jujutsu kaisen",
+
   "chainsaw man",
+
   "fire force",
   "enen no shouboutai",
+
   "dr. stone",
+
   "re:zero",
+
   "mushoku tensei",
+
   "my hero academia",
   "boku no hero academia",
+
   "assassination classroom",
   "ansatsu kyoushitsu",
+
   "fate/strange fake",
+
   "frieren",
   "sousou no frieren",
+
   "hell's paradise",
   "jigokuraku",
+
   "oshi no ko",
+
   "solo leveling",
   "ore dake level up na ken",
+
   "tokyo revengers",
+
   "witch hat atelier",
   "tongari booshi no atelier"
+
 ]);
 
 
@@ -58,28 +90,47 @@ const SITE_CATALOG_TITLES = new Set([
 
 function isOnSite(title) {
 
-  const t = (title || "")
-    .toLowerCase()
-    .trim();
+  const t =
+    (title || "")
+      .toLowerCase()
+      .trim();
+
 
   if (!t) {
+
     return false;
+
   }
 
-  if (SITE_CATALOG_TITLES.has(t)) {
+
+  /* Exact match */
+
+  if (
+    SITE_CATALOG_TITLES.has(t)
+  ) {
+
     return true;
+
   }
 
-  for (const k of SITE_CATALOG_TITLES) {
+
+  /* Partial / alternate title match */
+
+  for (
+    const k of SITE_CATALOG_TITLES
+  ) {
 
     if (
       t.includes(k) ||
       k.includes(t)
     ) {
+
       return true;
+
     }
 
   }
+
 
   return false;
 
@@ -89,13 +140,16 @@ function isOnSite(title) {
 /* =========================================================
    ANILIST SEARCH QUERY
 
-   AniList provides idMal.
+   We request multiple results.
 
-   We use that to keep:
+   idMal is extremely important because your
+   anime.html page currently uses:
+
    anime.html?malId=123
 ========================================================= */
 
 const ANILIST_SEARCH_QUERY = `
+
   query ($search: String!) {
 
     Page(
@@ -107,6 +161,7 @@ const ANILIST_SEARCH_QUERY = `
         search: $search
         type: ANIME
         isAdult: false
+        sort: SEARCH_MATCH
       ) {
 
         id
@@ -114,9 +169,13 @@ const ANILIST_SEARCH_QUERY = `
         idMal
 
         title {
+
           romaji
+
           english
+
           native
+
         }
 
         type
@@ -124,14 +183,19 @@ const ANILIST_SEARCH_QUERY = `
         format
 
         startDate {
+
           year
+
         }
 
         episodes
 
         coverImage {
+
           medium
+
           large
+
         }
 
       }
@@ -139,6 +203,7 @@ const ANILIST_SEARCH_QUERY = `
     }
 
   }
+
 `;
 
 
@@ -146,120 +211,194 @@ const ANILIST_SEARCH_QUERY = `
    SEARCH ANIME USING ANILIST
 ========================================================= */
 
-async function searchAnime(query) {
-
-console.log(
-"🔎 Searching Danimeverse API Gateway:",
-query
-);
-
-const response = await fetch(
-`/api/anime?search=${encodeURIComponent(query)}`
-);
-
-if (!response.ok) {
-
-```
-throw new Error(
-  `API Gateway HTTP ${response.status}`
-);
-```
-
-}
-
-const result =
-await response.json();
-
-console.log(
-"📡 Search API response:",
-result
-);
-
-if (
-!result.success ||
-!result.data
+async function searchAnime(
+  query
 ) {
 
-```
-throw new Error(
-  result.error ||
-  "Anime search failed"
-);
-```
+  console.log(
+    "🔎 Searching AniList:",
+    query
+  );
 
-}
 
-/*
-Your API gateway returns ONE anime result
-from the first provider that works.
+  /* =======================================================
+     SEND GRAPHQL REQUEST
+  ======================================================= */
 
-```
-For now, return it as an array
-so the rest of your existing search
-rendering code does not need to change.
-```
+  const response =
+    await fetch(
+      ANILIST_API,
+      {
 
-*/
+        method:
+          "POST",
 
-return [
-{
-id:
-result.data.anilistId ||
-result.data.id ||
-null,
+        headers: {
 
-```
-  idMal:
-    result.data.malId ||
-    null,
+          "Content-Type":
+            "application/json"
 
-  title: {
-    english:
-      result.data.title ||
-      "",
+        },
 
-    romaji:
-      result.data.title ||
-      "",
+        body:
+          JSON.stringify({
 
-    native:
-      result.data.nativeTitle ||
-      ""
-  },
+            query:
+              ANILIST_SEARCH_QUERY,
 
-  type:
-    result.data.type ||
-    "ANIME",
+            variables: {
 
-  format:
-    result.data.format ||
-    result.data.type ||
-    "TV",
+              search:
+                query
 
-  startDate: {
-    year:
-      result.data.year ||
-      null
-  },
+            }
 
-  episodes:
-    result.data.episodes ||
-    null,
+          })
 
-  coverImage: {
-    medium:
-      result.data.poster ||
-      "",
+      }
+    );
 
-    large:
-      result.data.poster ||
-      ""
+
+  /* =======================================================
+     CHECK HTTP STATUS
+  ======================================================= */
+
+  if (
+    !response.ok
+  ) {
+
+    throw new Error(
+      `AniList HTTP ${response.status}`
+    );
+
   }
 
-}
-```
 
-];
+  /* =======================================================
+     PARSE JSON
+  ======================================================= */
+
+  const result =
+    await response.json();
+
+
+  console.log(
+    "📡 AniList response:",
+    result
+  );
+
+
+  /* =======================================================
+     CHECK GRAPHQL ERRORS
+  ======================================================= */
+
+  if (
+    result.errors &&
+    result.errors.length
+  ) {
+
+    throw new Error(
+      result.errors[0]?.message ||
+      "AniList search failed."
+    );
+
+  }
+
+
+  /* =======================================================
+     GET RESULTS
+  ======================================================= */
+
+  const results =
+    result?.data?.Page?.media ||
+    [];
+
+
+  console.log(
+    "✅ AniList results:",
+    results.length
+  );
+
+
+  return results;
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+
+   Prevents anime titles/images from breaking
+   the search results HTML.
+========================================================= */
+
+function escapeHtml(
+  value
+) {
+
+  return String(
+    value || ""
+  )
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   ESCAPE URL ATTRIBUTE
+========================================================= */
+
+function escapeAttribute(
+  value
+) {
+
+  return String(
+    value || ""
+  )
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    );
 
 }
 
@@ -276,6 +415,10 @@ document.addEventListener(
       "🔎 Initializing Danimeverse search..."
     );
 
+
+    /* =====================================================
+       GET SEARCH ELEMENTS
+    ===================================================== */
 
     const searchInput =
       document.getElementById(
@@ -312,6 +455,10 @@ document.addEventListener(
     );
 
 
+    /* =====================================================
+       SEARCH STATE
+    ===================================================== */
+
     let debounceTimer;
 
     let searchRequestId = 0;
@@ -325,10 +472,18 @@ document.addEventListener(
       "input",
       () => {
 
+        /* =================================================
+           CANCEL PREVIOUS DEBOUNCE
+        ================================================= */
+
         clearTimeout(
           debounceTimer
         );
 
+
+        /* =================================================
+           GET SEARCH QUERY
+        ================================================= */
 
         const query =
           searchInput.value.trim();
@@ -338,7 +493,9 @@ document.addEventListener(
            EMPTY SEARCH
         ================================================= */
 
-        if (!query) {
+        if (
+          !query
+        ) {
 
           searchResults.classList.add(
             "hidden"
@@ -357,6 +514,7 @@ document.addEventListener(
         ================================================= */
 
         searchResults.innerHTML = `
+
           <p
             style="
               font-size:12px;
@@ -367,6 +525,7 @@ document.addEventListener(
           >
             Searching...
           </p>
+
         `;
 
 
@@ -378,13 +537,16 @@ document.addEventListener(
         /* =================================================
            DEBOUNCE SEARCH
 
-           Wait 400ms after the user
-           stops typing.
+           Wait 400ms after typing stops.
         ================================================= */
 
         debounceTimer =
           setTimeout(
             async () => {
+
+              /* =========================================
+                 CREATE REQUEST ID
+              ========================================= */
 
               const requestId =
                 ++searchRequestId;
@@ -398,6 +560,10 @@ document.addEventListener(
                 );
 
 
+                /* =========================================
+                   SEARCH ANILIST
+                ========================================= */
+
                 const items =
                   await searchAnime(
                     query
@@ -405,7 +571,7 @@ document.addEventListener(
 
 
                 /* =========================================
-                   IGNORE OLD REQUESTS
+                   IGNORE OLD REQUEST
                 ========================================= */
 
                 if (
@@ -419,14 +585,33 @@ document.addEventListener(
 
 
                 /* =========================================
+                   FILTER RESULTS
+
+                   Your anime.html currently needs
+                   a MAL ID.
+
+                   Therefore, remove AniList results
+                   that don't have an idMal.
+                ========================================= */
+
+                const validItems =
+                  items.filter(
+                    anime =>
+                      anime &&
+                      anime.idMal
+                  );
+
+
+                /* =========================================
                    NO RESULTS
                 ========================================= */
 
                 if (
-                  !items.length
+                  !validItems.length
                 ) {
 
                   searchResults.innerHTML = `
+
                     <p
                       style="
                         font-size:13px;
@@ -437,6 +622,7 @@ document.addEventListener(
                     >
                       No results found.
                     </p>
+
                   `;
 
                   return;
@@ -449,6 +635,7 @@ document.addEventListener(
                 ========================================= */
 
                 let html = `
+
                   <p
                     style="
                       font-size:10px;
@@ -461,6 +648,7 @@ document.addEventListener(
                   >
                     Search Results
                   </p>
+
                 `;
 
 
@@ -468,11 +656,11 @@ document.addEventListener(
                    BUILD RESULTS
                 ========================================= */
 
-                items.forEach(
+                validItems.forEach(
                   anime => {
 
                     /* =====================================
-                       GET ANIME TITLE
+                       TITLE
                     ===================================== */
 
                     const title =
@@ -482,10 +670,18 @@ document.addEventListener(
                       "Unknown Anime";
 
 
+                    /* =====================================
+                       ROMAJI TITLE
+                    ===================================== */
+
                     const romajiTitle =
                       anime.title?.romaji ||
                       "";
 
+
+                    /* =====================================
+                       NATIVE TITLE
+                    ===================================== */
 
                     const nativeTitle =
                       anime.title?.native ||
@@ -493,7 +689,7 @@ document.addEventListener(
 
 
                     /* =====================================
-                       GET YEAR
+                       YEAR
                     ===================================== */
 
                     const year =
@@ -502,7 +698,7 @@ document.addEventListener(
 
 
                     /* =====================================
-                       GET TYPE
+                       FORMAT
                     ===================================== */
 
                     const type =
@@ -512,7 +708,7 @@ document.addEventListener(
 
 
                     /* =====================================
-                       GET IMAGE
+                       IMAGE
                     ===================================== */
 
                     const image =
@@ -522,35 +718,15 @@ document.addEventListener(
 
 
                     /* =====================================
-                       GET MAL ID
-
-                       Your anime.html uses:
-
-                       anime.html?malId=123
+                       MAL ID
                     ===================================== */
 
                     const malId =
                       anime.idMal;
 
 
-                    /*
-                      Some AniList anime do not
-                      have a MAL ID.
-
-                      Skip them because your
-                      anime.html page requires
-                      a MAL ID.
-                    */
-
-                    if (!malId) {
-
-                      return;
-
-                    }
-
-
                     /* =====================================
-                       CHECK SITE CATALOGUE
+                       CHECK IF AVAILABLE ON SITE
                     ===================================== */
 
                     const onSite =
@@ -561,41 +737,101 @@ document.addEventListener(
 
                     /* =====================================
                        CREATE ANIME PAGE LINK
+
+                       Example:
+
+                       anime.html?malId=20
+
+                       Naruto:
+                       anime.html?malId=20
                     ===================================== */
 
                     const href =
-                      `anime.html?malId=${encodeURIComponent(malId)}`;
+                      `anime.html?malId=${encodeURIComponent(
+                        malId
+                      )}`;
 
 
                     /* =====================================
-                       ADD RESULT
+                       BUILD RESULT CARD
                     ===================================== */
 
                     html += `
+
                       <a
-                        href="${href}"
-                        class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition"
+
+                        href="${escapeAttribute(
+                          href
+                        )}"
+
+                        class="
+                          flex
+                          items-center
+                          gap-3
+                          p-3
+                          rounded-xl
+                          hover:bg-white/10
+                          transition
+                        "
+
                       >
 
                         ${
                           image
 
                             ? `
+
                               <img
-                                src="${image}"
-                                alt="${title}"
-                                class="w-12 h-16 object-cover rounded-lg flex-shrink-0"
+
+                                src="${escapeAttribute(
+                                  image
+                                )}"
+
+                                alt="${escapeHtml(
+                                  title
+                                )}"
+
+                                class="
+                                  w-12
+                                  h-16
+                                  object-cover
+                                  rounded-lg
+                                  flex-shrink-0
+                                "
+
                                 loading="lazy"
-                                onerror="this.style.display='none'"
+
+                                onerror="
+                                  this.style.display='none'
+                                "
+
                               >
+
                             `
 
                             : `
+
                               <div
-                                class="w-12 h-16 rounded-lg flex-shrink-0 bg-white/5 flex items-center justify-center text-xs text-slate-500"
+
+                                class="
+                                  w-12
+                                  h-16
+                                  rounded-lg
+                                  flex-shrink-0
+                                  bg-white/5
+                                  flex
+                                  items-center
+                                  justify-center
+                                  text-xs
+                                  text-slate-500
+                                "
+
                               >
+
                                 N/A
+
                               </div>
+
                             `
                         }
 
@@ -605,17 +841,38 @@ document.addEventListener(
                         >
 
                           <h4
-                            class="text-sm font-semibold text-white truncate"
+                            class="
+                              text-sm
+                              font-semibold
+                              text-white
+                              truncate
+                            "
                           >
-                            ${title}
+
+                            ${escapeHtml(
+                              title
+                            )}
+
                           </h4>
 
 
                           <p
-                            class="text-xs text-slate-400"
+                            class="
+                              text-xs
+                              text-slate-400
+                            "
                           >
-                            ${type}
-                            ${year ? ` · ${year}` : ""}
+
+                            ${escapeHtml(
+                              type
+                            )}
+
+                            ${
+                              year
+                                ? ` · ${year}`
+                                : ""
+                            }
+
                           </p>
 
 
@@ -623,7 +880,9 @@ document.addEventListener(
                             onSite
 
                               ? `
+
                                 <span
+
                                   style="
                                     font-size:10px;
                                     background:#ec4899;
@@ -631,13 +890,19 @@ document.addEventListener(
                                     padding:1px 7px;
                                     border-radius:999px;
                                   "
+
                                 >
+
                                   ▶ On Site
+
                                 </span>
+
                               `
 
                               : `
+
                                 <span
+
                                   style="
                                     font-size:10px;
                                     background:rgba(255,255,255,.1);
@@ -645,15 +910,20 @@ document.addEventListener(
                                     padding:1px 7px;
                                     border-radius:999px;
                                   "
+
                                 >
+
                                   ▶ View
+
                                 </span>
+
                               `
                           }
 
                         </div>
 
                       </a>
+
                     `;
 
                   }
@@ -678,7 +948,9 @@ document.addEventListener(
                 );
 
 
-              } catch (error) {
+              } catch (
+                error
+              ) {
 
                 console.error(
                   "❌ AniList search error:",
@@ -705,6 +977,7 @@ document.addEventListener(
                 ========================================= */
 
                 searchResults.innerHTML = `
+
                   <p
                     style="
                       font-size:12px;
@@ -713,8 +986,11 @@ document.addEventListener(
                       text-align:center;
                     "
                   >
+
                     Search is temporarily unavailable.
+
                   </p>
+
                 `;
 
               }
@@ -736,11 +1012,16 @@ document.addEventListener(
       event => {
 
         if (
+
           !searchResults.contains(
             event.target
-          ) &&
+          )
+
+          &&
+
           event.target !==
             searchInput
+
         ) {
 
           searchResults.classList.add(
@@ -752,6 +1033,6 @@ document.addEventListener(
       }
     );
 
-
   }
 );
+
