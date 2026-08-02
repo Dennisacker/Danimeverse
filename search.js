@@ -159,74 +159,34 @@ function createResult(anime) {
 
   var anilistId =
     anime.anilistId ||
-    anime.id ||
     "";
 
+
   /*
   =========================================================
-  BUILD WATCH PAGE URL
+  IMPORTANT
 
-  IMPORTANT:
+  ALWAYS OPEN THE SAME ANIME PAGE AS HOMEPAGE SEARCH/CARDS
 
-  Search results now go DIRECTLY to the SAME watch.html
-  used by the homepage anime cards.
-
-  We pass BOTH IDs so:
-
-  1. AniList information loads correctly
-  2. Firebase episodes can still be found
-  3. Naruto and Attack on Titan use the same new watch page
+  We use AniList ID as the primary identifier.
+  MAL ID is also included for Firebase episode matching.
   =========================================================
   */
-
-  var params =
-    new URLSearchParams();
-
-  if (anilistId) {
-
-    params.set(
-      "anilistId",
-      anilistId
-    );
-
-  }
-
-  if (malId) {
-
-    params.set(
-      "malId",
-      malId
-    );
-
-  }
-
-  params.set(
-    "anime",
-    title
-  );
 
   var href =
-    "watch.html?" +
-    params.toString();
+    "watch.html?anilistId=" +
+    encodeURIComponent(anilistId) +
+    "&malId=" +
+    encodeURIComponent(malId) +
+    "&anime=" +
+    encodeURIComponent(title);
 
-
-  /*
-  =========================================================
-  BADGE
-  =========================================================
-  */
 
   var badge =
     isOnSite(title)
       ? "ON SITE"
       : "VIEW";
 
-
-  /*
-  =========================================================
-  SEARCH RESULT CARD
-  =========================================================
-  */
 
   return (
 
