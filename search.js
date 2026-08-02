@@ -52,20 +52,19 @@ return false;
 
 function escapeHtml(value) {
 return String(value || "")
-.replace(/&/g, "&")
-.replace(/</g, "<")
-.replace(/>/g, ">")
-.replace(/"/g, """)
-.replace(/'/g, "'");
-}
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
 
 function escapeAttribute(value) {
 return String(value || "")
-.replace(/&/g, "&")
-.replace(/"/g, """)
-.replace(/</g, "<")
-.replace(/>/g, ">");
-}
+  .replace(/&/g, "&amp;")
+  .replace(/</g, "&lt;")
+  .replace(/>/g, "&gt;")
+  .replace(/"/g, "&quot;")
+  .replace(/'/g, "&#039;");
 
 async function searchAnime(query) {
 console.log("🔎 Searching Danimeverse API Gateway:", query);
