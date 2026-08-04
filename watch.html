@@ -203,7 +203,7 @@ content="width=device-width, initial-scale=1.0"
 
 <div class="w-full max-w-5xl mx-auto px-4 py-6">
 
-  <!-- BACK -->
+  <!-- BACK TO HOME -->
 
 <a
 id="backLink"
@@ -265,7 +265,6 @@ class="inline-flex items-center gap-2 text-slate-400 text-sm mb-5 hover:text-pin
 
   <div class="anime-info-layout">
 
-
     <!-- POSTER -->
 
     <div class="anime-poster-wrapper">
@@ -284,7 +283,6 @@ class="inline-flex items-center gap-2 text-slate-400 text-sm mb-5 hover:text-pin
 
     <div class="anime-details">
 
-
       <h1
         id="animeTitle"
         class="text-3xl md:text-5xl font-black mb-2"
@@ -300,7 +298,6 @@ class="inline-flex items-center gap-2 text-slate-400 text-sm mb-5 hover:text-pin
       <!-- QUICK INFO -->
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-
 
         <div class="glass rounded-xl p-3">
 
@@ -365,7 +362,6 @@ class="inline-flex items-center gap-2 text-slate-400 text-sm mb-5 hover:text-pin
 
         </div>
 
-
       </div>
 
 
@@ -401,7 +397,6 @@ class="inline-flex items-center gap-2 text-slate-400 text-sm mb-5 hover:text-pin
       <!-- ADDITIONAL INFO -->
 
       <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-
 
         <div>
 
@@ -450,9 +445,7 @@ class="inline-flex items-center gap-2 text-slate-400 text-sm mb-5 hover:text-pin
 
         </div>
 
-
       </div>
-
 
     </div>
 
@@ -606,7 +599,6 @@ class="inline-flex items-center gap-2 text-slate-400 text-sm mb-5 hover:text-pin
 </div>
 
 <script type="module">
-
 
 import { db } from "./firebase-config.js";
 
@@ -806,15 +798,8 @@ const ANILIST_QUERY = `
 
 async function loadAnimeInfo() {
 
-
   let id =
     anilistId;
-
-
-  /*
-  If AniList ID isn't available,
-  try to use MAL ID through AniList.
-  */
 
   let query;
 
@@ -843,15 +828,23 @@ async function loadAnimeInfo() {
           idMal
 
           title {
+
             romaji
+
             english
+
             native
+
           }
 
           coverImage {
+
             extraLarge
+
             large
+
             medium
+
           }
 
           bannerImage
@@ -991,7 +984,6 @@ function renderAnimeInfo(
   anime
 ) {
 
-
   const title =
 
     anime.title?.english ||
@@ -1129,36 +1121,15 @@ function renderAnimeInfo(
 
 
   /*
-  Back to anime details page
+  IMPORTANT:
+  The Back button ALWAYS goes
+  directly to the HOME PAGE.
+
+  It does NOT go to anime.html.
   */
 
-  if (anime.id) {
-
-    const backParams =
-      new URLSearchParams();
-
-
-    backParams.set(
-      "anilistId",
-      anime.id
-    );
-
-
-    if (anime.idMal) {
-
-      backParams.set(
-        "malId",
-        anime.idMal
-      );
-
-    }
-
-
-    backLink.href =
-      `anime.html?${backParams.toString()}`;
-
-  }
-
+  backLink.href =
+    "index.html";
 
 }
 
@@ -1171,13 +1142,8 @@ async function findFirestoreAnime(
   anime
 ) {
 
-
   const possibleIds = [];
 
-
-  /*
-  Try MAL ID first.
-  */
 
   if (anime?.idMal) {
 
@@ -1188,10 +1154,6 @@ async function findFirestoreAnime(
   }
 
 
-  /*
-  Try AniList ID.
-  */
-
   if (anime?.id) {
 
     possibleIds.push(
@@ -1200,10 +1162,6 @@ async function findFirestoreAnime(
 
   }
 
-
-  /*
-  Try URL IDs.
-  */
 
   if (malId) {
 
@@ -1242,9 +1200,7 @@ async function findFirestoreAnime(
     const id of uniqueIds
   ) {
 
-
     try {
-
 
       const animeRef =
         doc(
@@ -1264,7 +1220,6 @@ async function findFirestoreAnime(
         animeSnap.exists()
       ) {
 
-
         console.log(
           "✅ Found Firestore anime:",
           id
@@ -1280,23 +1235,18 @@ async function findFirestoreAnime(
 
         };
 
-
       }
-
 
     }
 
     catch (error) {
-
 
       console.warn(
         `Firestore check failed for ${id}:`,
         error
       );
 
-
     }
-
 
   }
 
@@ -1315,9 +1265,7 @@ async function loadEpisode(
   anime
 ) {
 
-
   try {
-
 
     episodeNum.textContent =
       `Episode ${ep}`;
@@ -1326,16 +1274,6 @@ async function loadEpisode(
     episodeTitle.textContent =
       `Episode ${ep}`;
 
-
-    /*
-    Try the most common document IDs.
-
-    Supports:
-
-    ep_1
-    1
-    episode_1
-    */
 
     const possibleEpisodeIds = [
 
@@ -1361,7 +1299,6 @@ async function loadEpisode(
       of possibleEpisodeIds
     ) {
 
-
       const episodeRef =
         doc(
           db,
@@ -1382,7 +1319,6 @@ async function loadEpisode(
         episodeSnap.exists()
       ) {
 
-
         episodeData =
           episodeSnap.data();
 
@@ -1393,15 +1329,12 @@ async function loadEpisode(
 
         break;
 
-
       }
-
 
     }
 
 
     if (!episodeData) {
-
 
       showEpisodeError(
 
@@ -1419,7 +1352,6 @@ async function loadEpisode(
 
 
       return;
-
 
     }
 
@@ -1448,12 +1380,10 @@ async function loadEpisode(
       anime
     );
 
-
   }
 
 
   catch (error) {
-
 
     console.error(
       "❌ Failed to load episode:",
@@ -1469,9 +1399,7 @@ async function loadEpisode(
 
     );
 
-
   }
-
 
 }
 
@@ -1484,9 +1412,7 @@ async function loadEpisodeList(
   firestoreAnimeId
 ) {
 
-
   try {
-
 
     const episodesRef =
       collection(
@@ -1507,13 +1433,11 @@ async function loadEpisodeList(
       snapshot.empty
     ) {
 
-
       epListWrap.style.display =
         "none";
 
 
       return;
-
 
     }
 
@@ -1523,7 +1447,6 @@ async function loadEpisodeList(
 
     snapshot.forEach(
       episodeDoc => {
-
 
         const data =
           episodeDoc.data();
@@ -1538,16 +1461,9 @@ async function loadEpisodeList(
           );
 
 
-        /*
-        Fallback:
-
-        ep_1
-        */
-
         if (
           !episodeNumber
         ) {
-
 
           const match =
 
@@ -1564,7 +1480,6 @@ async function loadEpisodeList(
               );
 
           }
-
 
         }
 
@@ -1591,7 +1506,6 @@ async function loadEpisodeList(
 
         });
 
-
       }
     );
 
@@ -1610,21 +1524,17 @@ async function loadEpisodeList(
       episodes
     );
 
-
   }
 
 
   catch (error) {
-
 
     console.error(
       "❌ Episode list error:",
       error
     );
 
-
   }
-
 
 }
 
@@ -1637,7 +1547,6 @@ function renderEpisodeList(
   episodes
 ) {
 
-
   epListWrap.style.display =
     "block";
 
@@ -1647,7 +1556,6 @@ function renderEpisodeList(
     episodes
       .map(
         episode => {
-
 
           const current =
 
@@ -1743,11 +1651,9 @@ function renderEpisodeList(
 
           `;
 
-
         }
       )
       .join("");
-
 
 }
 
@@ -1759,7 +1665,6 @@ function renderEpisodeList(
 function renderVideoPlayer(
   data
 ) {
-
 
   const videoUrl =
 
@@ -1776,7 +1681,6 @@ function renderVideoPlayer(
 
   if (!videoUrl) {
 
-
     showEpisodeError(
 
       "Video Not Available",
@@ -1787,7 +1691,6 @@ function renderVideoPlayer(
 
 
     return;
-
 
   }
 
@@ -1825,7 +1728,6 @@ function renderVideoPlayer(
 
   `;
 
-
 }
 
 
@@ -1838,47 +1740,33 @@ function updateNavigation(
   anime
 ) {
 
-
   prevBtn.disabled =
     currentEpisode <= 1;
 
 
-  /*
-  If AniList knows total episodes,
-  prevent going beyond it.
-
-  Otherwise allow next episode.
-  */
-
   if (
     anime?.episodes
   ) {
-
 
     nextBtn.disabled =
 
       currentEpisode >=
       anime.episodes;
 
-
   }
 
   else {
 
-
     nextBtn.disabled =
       false;
 
-
   }
-
 
 }
 
 
 prevBtn.onclick =
   () => {
-
 
     if (
       ep <= 1
@@ -1893,18 +1781,15 @@ prevBtn.onclick =
       ep - 1
     );
 
-
   };
 
 
 nextBtn.onclick =
   () => {
 
-
     goToEpisode(
       ep + 1
     );
-
 
   };
 
@@ -1912,7 +1797,6 @@ nextBtn.onclick =
 function goToEpisode(
   episode
 ) {
-
 
   const newParams =
     new URLSearchParams();
@@ -1958,7 +1842,6 @@ function goToEpisode(
 
     `watch.html?${newParams.toString()}`;
 
-
 }
 
 
@@ -1970,7 +1853,6 @@ function showEpisodeError(
   title,
   message
 ) {
-
 
   watchArea.innerHTML =
     "";
@@ -1997,7 +1879,6 @@ function showEpisodeError(
 
     "This episode hasn't been uploaded yet.";
 
-
 }
 
 
@@ -2008,7 +1889,6 @@ function showEpisodeError(
 function formatText(
   value
 ) {
-
 
   if (!value) {
 
@@ -2030,14 +1910,12 @@ function formatText(
         char.toUpperCase()
     );
 
-
 }
 
 
 function cleanDescription(
   description
 ) {
-
 
   return String(
     description
@@ -2053,14 +1931,12 @@ function cleanDescription(
       ""
     );
 
-
 }
 
 
 function escapeHtml(
   value
 ) {
-
 
   return String(
     value
@@ -2091,14 +1967,12 @@ function escapeHtml(
       "&#039;"
     );
 
-
 }
 
 
 function escapeAttribute(
   value
 ) {
-
 
   return String(
     value
@@ -2124,7 +1998,6 @@ function escapeAttribute(
       "&gt;"
     );
 
-
 }
 
 
@@ -2134,7 +2007,6 @@ function escapeAttribute(
 
 async function initializePage() {
 
-
   console.log(
     "🚀 Initializing Danimeverse watch page..."
   );
@@ -2142,14 +2014,13 @@ async function initializePage() {
 
   /*
   STEP 1
-  LOAD NARUTO DIRECTLY FROM ANILIST
+  LOAD ANIME DIRECTLY FROM ANILIST
   */
 
   let anime;
 
 
   try {
-
 
     anime =
       await loadAnimeInfo();
@@ -2159,12 +2030,10 @@ async function initializePage() {
       anime
     );
 
-
   }
 
 
   catch (error) {
-
 
     console.error(
       "❌ AniList anime error:",
@@ -2186,7 +2055,6 @@ async function initializePage() {
 
     return;
 
-
   }
 
 
@@ -2205,11 +2073,10 @@ async function initializePage() {
   /*
   If the anime exists on AniList
   but hasn't been uploaded to Firebase,
-  we still show the Naruto anime page.
+  we still show the anime information.
   */
 
   if (!firestoreAnime) {
-
 
     showEpisodeError(
 
@@ -2227,7 +2094,6 @@ async function initializePage() {
 
     return;
 
-
   }
 
 
@@ -2244,24 +2110,19 @@ async function initializePage() {
     firestoreData?.animeTitle
   ) {
 
-
     episodeAnimeName.textContent =
 
       firestoreData.animeTitle;
 
-
   }
-
 
   else if (
     firestoreData?.title
   ) {
 
-
     episodeAnimeName.textContent =
 
       firestoreData.title;
-
 
   }
 
@@ -2296,12 +2157,10 @@ async function initializePage() {
     "🎉 Danimeverse watch page ready."
   );
 
-
 }
 
 
 initializePage();
-
 
 </script>
 
