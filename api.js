@@ -12,28 +12,27 @@
       const JIKAN_BASE = "https://api.jikan.moe/v4";
 
 
-      /* =========================================================
-         UNIVERSAL ANIME OPEN FUNCTION
-
-         Jikan MAL ID
-              ↓
-         Find matching AniList ID
-              ↓
-         Open watch.html
-      ========================================================= */
 
 /* =========================================================
    UNIVERSAL ANIME OPEN FUNCTION
 
-   Jikan MAL ID
+   HOMEPAGE ANIME CARD
         ↓
-   /api/anime Gateway
+   WATCH BUTTON
         ↓
-   Kitsu → AniList → Jikan
+   /api/anime?idMal=...
         ↓
-   Open watch.html
-
-   The frontend NEVER calls AniList directly.
+   Get AniList ID + MAL ID
+        ↓
+   anime.html
+        ↓
+   Anime details + background + episodes
+        ↓
+   Click episode
+        ↓
+   watch.html
+        ↓
+   Video player
 ========================================================= */
 
 async function openAnime(anime) {
@@ -49,8 +48,15 @@ async function openAnime(anime) {
   }
 
 
+  /* =======================================================
+     GET MAL ID
+  ======================================================= */
+
   const malId =
-    anime.mal_id;
+    anime.mal_id ||
+    anime.malId ||
+    anime.idMal ||
+    "";
 
 
   if (!malId) {
@@ -69,14 +75,19 @@ async function openAnime(anime) {
   }
 
 
+  /* =======================================================
+     GET TITLE
+  ======================================================= */
+
   const title =
     anime.title_english ||
     anime.title ||
+    anime.nativeTitle ||
     "Unknown Anime";
 
 
   console.log(
-    "🎬 Opening anime:",
+    "🎬 Opening anime details:",
     title,
     "MAL ID:",
     malId
@@ -85,19 +96,21 @@ async function openAnime(anime) {
 
   try {
 
-    /* =======================================================
-       CALL OUR UNIVERSAL API GATEWAY
+    /* =====================================================
+       CALL UNIVERSAL API GATEWAY
 
-       /api/anime.js handles:
+       /api/anime?idMal=...
 
-       1. Kitsu
-       2. AniList
-       3. Jikan
-    ======================================================= */
+       This finds the anime through:
+       Kitsu → AniList → Jikan
+    ===================================================== */
 
-    const response = await fetch(
-      `https://danimeverse.vercel.app/api/anime?idMal=${encodeURIComponent(malId)}`
-    );
+    const response =
+      await fetch(
+        `https://danimeverse.vercel.app/api/anime?idMal=${encodeURIComponent(
+          malId
+        )}`
+      );
 
 
     if (!response.ok) {
@@ -119,9 +132,9 @@ async function openAnime(anime) {
     );
 
 
-    /* =======================================================
+    /* =====================================================
        CHECK API RESULT
-    ======================================================= */
+    ===================================================== */
 
     if (
       !result.success ||
@@ -136,39 +149,9 @@ async function openAnime(anime) {
     }
 
 
-    /* =======================================================
+    /* =====================================================
        NORMALIZED ANIME DATA
-
-       This data comes from whichever provider
-       successfully responded.
-
-       Kitsu:
-       {
-         id,
-         anilistId,
-         malId,
-         title,
-         ...
-       }
-
-       AniList:
-       {
-         id,
-         anilistId,
-         malId,
-         title,
-         ...
-       }
-
-       Jikan:
-       {
-         id,
-         anilistId,
-         malId,
-         title,
-         ...
-       }
-    ======================================================= */
+    ===================================================== */
 
     const animeData =
       result.data;
@@ -186,31 +169,27 @@ async function openAnime(anime) {
     );
 
 
-    /* =======================================================
-       GET ANILIST ID
+    /* =====================================================
+       GET IDs
 
-       If Kitsu found the anime, it may not have an AniList ID.
+       AniList ID:
+       Used by anime.html if available.
 
-       That's okay.
-
-       watch.html can still use:
-
-       anilistId
-       OR
-       malId
-       OR
-       anime title
-
-       So we use whichever IDs are available.
-    ======================================================= */
+       MAL ID:
+       Used by Firebase episode system.
+    ===================================================== */
 
     const anilistId =
       animeData.anilistId ||
+      animeData.id ||
+      anime.anilistId ||
+      anime.id ||
       "";
 
 
     const returnedMalId =
       animeData.malId ||
+      animeData.idMal ||
       malId ||
       "";
 
@@ -238,17 +217,17 @@ async function openAnime(anime) {
     );
 
 
-    /* =======================================================
-       BUILD WATCH PAGE URL
-    ======================================================= */
+    /* =====================================================
+       BUILD ANIME DETAILS PAGE URL
+    ===================================================== */
 
     const params =
       new URLSearchParams();
 
 
-    /*
-      Only add AniList ID if available.
-    */
+    /* -----------------------------------------------------
+       AniList ID
+    ----------------------------------------------------- */
 
     if (anilistId) {
 
@@ -260,23 +239,15 @@ async function openAnime(anime) {
     }
 
 
-    /*
-      Always add anime title.
-    */
+    /* -----------------------------------------------------
+       MAL ID
 
-    if (animeTitle) {
+       Important for your existing Firebase structure:
 
-      params.set(
-        "anime",
-        animeTitle
-      );
-
-    }
-
-
-    /*
-      Add MAL ID if available.
-    */
+       animes
+          └── MAL ID
+               └── episodes
+    ----------------------------------------------------- */
 
     if (returnedMalId) {
 
@@ -288,38 +259,55 @@ async function openAnime(anime) {
     }
 
 
-    /*
-      Start from episode 1.
-    */
+    /* -----------------------------------------------------
+       Anime title
+    ----------------------------------------------------- */
 
-    params.set(
-      "ep",
-      "1"
-    );
+    if (animeTitle) {
+
+      params.set(
+        "anime",
+        animeTitle
+      );
+
+    }
 
 
-    /* =======================================================
-       OPEN UNIVERSAL WATCH PAGE
-    ======================================================= */
+    /* =====================================================
+       OPEN ANIME DETAILS PAGE
 
-    const watchUrl =
-      `watch.html?${params.toString()}`;
+       NOT watch.html
+
+       The user will now see:
+
+       Anime background
+       Poster
+       Title
+       Genres
+       Synopsis
+       Episodes
+
+       Then clicking an episode opens watch.html.
+    ===================================================== */
+
+    const animeUrl =
+      `anime.html?${params.toString()}`;
 
 
     console.log(
-      "🚀 Opening watch page:",
-      watchUrl
+      "🚀 Opening anime details page:",
+      animeUrl
     );
 
 
     window.location.href =
-      watchUrl;
+      animeUrl;
 
 
   } catch (error) {
 
     console.error(
-      "❌ Failed to open anime:",
+      "❌ Failed to open anime details:",
       error
     );
 
@@ -331,6 +319,8 @@ async function openAnime(anime) {
   }
 
 }
+
+
       /* =========================================================
          GET HOMEPAGE CONTAINERS
       ========================================================= */

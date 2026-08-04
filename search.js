@@ -24,26 +24,19 @@ function escapeHtml(value) {
 
 async function searchAnime(query) {
 
-  console.log(
-    "SEARCHING:",
-    query
-  );
-
+  console.log("SEARCHING:", query);
 
   const url =
     "/api/anime?search=" +
     encodeURIComponent(query);
 
-
   const response =
     await fetch(url);
-
 
   console.log(
     "API STATUS:",
     response.status
   );
-
 
   if (!response.ok) {
 
@@ -54,16 +47,13 @@ async function searchAnime(query) {
 
   }
 
-
   const result =
     await response.json();
-
 
   console.log(
     "API RESULT:",
     result
   );
-
 
   if (
     !result.success ||
@@ -76,7 +66,6 @@ async function searchAnime(query) {
     );
 
   }
-
 
   return result.data;
 
@@ -95,13 +84,11 @@ function normalizeResults(data) {
 
   }
 
-
   if (data) {
 
     return [data];
 
   }
-
 
   return [];
 
@@ -141,18 +128,14 @@ function createResult(anime) {
 
 
   /*
-    IMPORTANT:
+    KEEP BOTH IDS
 
-    We keep BOTH IDs.
+    AniList ID:
+    Used by anime.html.
 
-    The search result itself does NOT directly
-    open anime.html anymore.
-
-    Instead, we store the anime information
-    inside the result element.
-
-    When clicked, we use the SAME openAnime()
-    function used by the homepage WATCH button.
+    MAL ID:
+    Used by the existing Firebase
+    episode system.
   */
 
   const malId =
@@ -167,6 +150,10 @@ function createResult(anime) {
     "";
 
 
+  /* =======================================================
+     CREATE RESULT BUTTON
+  ======================================================= */
+
   const resultElement =
     document.createElement("button");
 
@@ -178,6 +165,10 @@ function createResult(anime) {
   resultElement.className =
     "w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition text-left";
 
+
+  /* =======================================================
+     RESULT HTML
+  ======================================================= */
 
   resultElement.innerHTML =
 
@@ -266,24 +257,28 @@ function createResult(anime) {
 
 
   /* =========================================================
-     CLICK RESULT
+     CLICK SEARCH RESULT
 
-     USE THE SAME FLOW AS HOMEPAGE WATCH BUTTON
-
-     Search
-       ↓
-     Search Result
-       ↓
-     /api/anime?idMal=...
-       ↓
-     openAnime()
-       ↓
+     SEARCH
+        ↓
+     SEARCH RESULT
+        ↓
+     anime.html
+        ↓
+     ANIME DETAILS
+        ↓
+     EPISODES
+        ↓
+     WATCH EPISODE
+        ↓
      watch.html
-========================================================= */
+        ↓
+     VIDEO PLAYER
+  ========================================================= */
 
   resultElement.addEventListener(
     "click",
-    async function(event) {
+    function(event) {
 
       event.preventDefault();
 
@@ -294,67 +289,91 @@ function createResult(anime) {
       );
 
 
-      /*
-        IMPORTANT:
+      /* =====================================================
+         PREFERRED:
+         OPEN ANIME DETAILS PAGE USING ANILIST ID
+      ===================================================== */
 
-        openAnime() already exists in api.js.
+      if (anilistId) {
 
-        We use that exact function.
+        const params =
+          new URLSearchParams();
 
-        This means homepage and search now
-        open the watch page through the same
-        system.
-      */
 
-      if (
-        typeof window.openAnime ===
-        "function"
-      ) {
-
-        await window.openAnime(
-          {
-            mal_id:
-              malId,
-
-            title:
-              title,
-
-            title_english:
-              title
-          }
-        );
-
-      }
-
-      else {
-
-        console.error(
-          "❌ openAnime() is not available."
+        params.set(
+          "anilistId",
+          anilistId
         );
 
 
         /*
-          FALLBACK
+          Keep MAL ID.
 
-          If api.js hasn't loaded correctly,
-          at least open the watch page using
-          the MAL ID.
+          Your anime.html Firebase episode
+          system can use this to find:
 
-          This is only a fallback.
+          animes/{malId}/episodes
         */
 
         if (malId) {
 
-          window.location.href =
-            `watch.html?malId=${encodeURIComponent(
-              malId
-            )}&anime=${encodeURIComponent(
-              title
-            )}&ep=1`;
+          params.set(
+            "malId",
+            malId
+          );
 
         }
 
+
+        /*
+          Keep anime title as a fallback.
+        */
+
+        params.set(
+          "anime",
+          title
+        );
+
+
+        window.location.href =
+          `anime.html?${params.toString()}`;
+
+
+        return;
+
       }
+
+
+      /* =====================================================
+         FALLBACK:
+         IF ANILIST ID IS MISSING
+         USE MAL ID
+      ===================================================== */
+
+      if (malId) {
+
+        window.location.href =
+          `anime.html?malId=${encodeURIComponent(
+            malId
+          )}&anime=${encodeURIComponent(
+            title
+          )}`;
+
+
+        return;
+
+      }
+
+
+      /* =====================================================
+         NO ID FOUND
+      ===================================================== */
+
+      console.error(
+        "❌ Cannot open anime.",
+        "No AniList ID or MAL ID found.",
+        anime
+      );
 
     }
   );
@@ -434,9 +453,9 @@ document.addEventListener(
           searchInput.value.trim();
 
 
-        /* ===============================================
+        /* =================================================
            EMPTY SEARCH
-        =============================================== */
+        ================================================= */
 
         if (!query) {
 
@@ -454,9 +473,9 @@ document.addEventListener(
         }
 
 
-        /* ===============================================
+        /* =================================================
            TOO SHORT
-        =============================================== */
+        ================================================= */
 
         if (
           query.length < 2
@@ -482,9 +501,9 @@ document.addEventListener(
         }
 
 
-        /* ===============================================
+        /* =================================================
            LOADING
-        =============================================== */
+        ================================================= */
 
         searchResults.innerHTML =
           `
@@ -501,9 +520,9 @@ document.addEventListener(
         );
 
 
-        /* ===============================================
+        /* =================================================
            DELAY SEARCH
-        =============================================== */
+        ================================================= */
 
         timer =
           setTimeout(
@@ -526,13 +545,12 @@ document.addEventListener(
 
                   Example:
 
-                  User types:
-
                   Naruto
                   Naruto Sh
                   Naruto Shi
 
-                  We only show the newest result.
+                  Only the newest search
+                  result will be displayed.
                 */
 
                 if (
