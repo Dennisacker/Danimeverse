@@ -1295,161 +1295,122 @@
      LOAD EPISODE
   ========================================================= */
 
-  async function loadEpisode(
-    firestoreAnimeId,
-    anime
-  ) {
+    async function loadAnimeInfo() {
 
-    try {
+      try {
 
-      if (!firestoreAnimeId) {
+        let apiUrl = "";
 
-        showEpisodeError(
-          "Episode Not Available",
-          "Could not identify this anime in the episode database."
+        if (anilistId) {
+
+          apiUrl =
+            `/api/anime?id=${encodeURIComponent(anilistId)}`;
+
+        }
+
+        else if (malId) {
+
+          apiUrl =
+            `/api/anime?idMal=${encodeURIComponent(malId)}`;
+
+        }
+
+        else if (animeParam) {
+
+          apiUrl =
+            `/api/anime?search=${encodeURIComponent(animeParam)}`;
+
+        }
+
+        if (!apiUrl) {
+
+          throw new Error(
+            "No anime identifier available."
+          );
+
+        }
+
+        console.log(
+          "🔎 Fetching anime:",
+          apiUrl
         );
 
-        return;
+        const response =
+          await fetch(apiUrl);
+
+        if (!response.ok) {
+
+          throw new Error(
+            `API HTTP ${response.status}`
+          );
+
+        }
+
+        const result =
+          await response.json();
+
+        console.log(
+          "📡 API result:",
+          result
+        );
+
+        if (
+          !result.success ||
+          !result.data
+        ) {
+
+          throw new Error(
+            result.error ||
+            "Anime not found."
+          );
+
+        }
+
+        let anime =
+          Array.isArray(result.data)
+            ? result.data[0]
+            : result.data;
+
+        if (!anime) {
+
+          throw new Error(
+            "No anime result found."
+          );
+
+        }
+
+        window.currentAnime =
+          anime;
+
+        console.log(
+          "✅ Anime loaded:",
+          anime
+        );
+
+        renderAnimeInfo(
+          anime
+        );
+
+        return anime;
+
+      } catch (error) {
+
+        console.error(
+          "❌ Anime loading error:",
+          error
+        );
+
+        skeleton.style.display =
+          "none";
+
+        animeError.style.display =
+          "block";
+
+        return null;
 
       }
-
-
-      console.log(
-        "🔥 Loading episode:",
-        `animes/${firestoreAnimeId}/episodes/ep_${ep}`
-      );
-
-
-      const episodeRef =
-        doc(
-          db,
-          "animes",
-          firestoreAnimeId,
-          "episodes",
-          `ep_${ep}`
-        );
-
-
-      const episodeSnap =
-        await getDoc(
-          episodeRef
-        );
-
-
-      /*
-      EPISODE DOES NOT EXIST
-      */
-
-      if (
-        !episodeSnap.exists()
-      ) {
-
-        console.warn(
-          "⚠️ Episode not found."
-        );
-
-
-        episodeNum.textContent =
-          `Episode ${ep}`;
-
-
-        episodeTitle.textContent =
-          `Episode ${ep}`;
-
-
-        showEpisodeError(
-          "Episode Not Uploaded Yet",
-          "This episode hasn't been uploaded yet. Check back later."
-        );
-
-
-        return;
-
-      }
-
-
-      /*
-      EPISODE FOUND
-      */
-
-      const data =
-        episodeSnap.data();
-
-
-      console.log(
-        "✅ EPISODE FOUND:",
-        data
-      );
-
-
-      episodeNum.textContent =
-        `Episode ${ep}`;
-
-
-      episodeTitle.textContent =
-        data.title ||
-        `Episode ${ep}`;
-
-
-      /*
-      RENDER PLAYER
-      */
-
-      renderVideoPlayer(
-        data
-      );
-
-
-      /*
-      PREVIOUS
-      */
-
-      prevBtn.disabled =
-        ep <= 1;
-
-
-      /*
-      NEXT
-      */
-
-      const nextEpisodeRef =
-        doc(
-          db,
-          "animes",
-          firestoreAnimeId,
-          "episodes",
-          `ep_${ep + 1}`
-        );
-
-
-      const nextEpisodeSnap =
-        await getDoc(
-          nextEpisodeRef
-        );
-
-
-      nextBtn.disabled =
-        !nextEpisodeSnap.exists();
-
-
-    } catch (error) {
-
-      console.error(
-        "❌ Failed to load episode:",
-        error
-      );
-
-
-      showEpisodeError(
-        "Episode Error",
-        "Something went wrong while loading this episode."
-      );
 
     }
-
-  
-
-
   /* =========================================================
      LOAD EPISODE LIST
   ========================================================= */
