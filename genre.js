@@ -422,33 +422,31 @@ document.addEventListener("DOMContentLoaded", () => {
         // CLICK ANIME
         // =========================
 
-       
-        card.addEventListener(
-          "click",
-          () => {
+        card.addEventListener("click", () => {
 
-            const animeTitle =
-              anime.title.english ||
-              anime.title.romaji ||
-              anime.title.native ||
-              "Unknown Anime";
+          const animeTitle =
+            anime.title.english ||
+            anime.title.romaji ||
+            anime.title.native ||
+            "Unknown Anime";
 
-            const params = new URLSearchParams({
-              anilistId: anime.id,
-              anime: animeTitle,
-              ep: 1
-            });
+          const params = new URLSearchParams();
 
-            if (anime.idMal) {
-              params.set("malId", anime.idMal);
-            }
-
-            window.location.href =
-              `watch.html?${params.toString()}`;
-
+          // AniList ID (used for anime details)
+          if (anime.id) {
+            params.set("anilistId", anime.id);
           }
-        );
-       
+
+          // MAL ID (used for Firebase episodes)
+          if (anime.idMal) {
+            params.set("malId", anime.idMal);
+          }
+
+          params.set("anime", animeTitle);
+
+          window.location.href = `anime.html?${params.toString()}`;
+
+        });
 
         // =========================
         // ADD CARD
