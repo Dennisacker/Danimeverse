@@ -1395,22 +1395,25 @@
 
       } catch (error) {
 
+      } catch (error) {
+
         console.error(
-          "❌ Anime loading error:",
+          "❌ Failed to load episode:",
           error
         );
 
-        skeleton.style.display =
-          "none";
-
-        animeError.style.display =
-          "block";
-
-        return null;
+        showEpisodeError(
+          "Episode Error",
+          "Something went wrong while loading this episode."
+        );
 
       }
 
-    }
+    } // <-- THIS CLOSES loadEpisode()
+
+    /* =========================================================
+       LOAD EPISODE LIST
+    ========================================================= */
   /* =========================================================
      LOAD EPISODE LIST
   ========================================================= */
