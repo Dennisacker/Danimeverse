@@ -439,3 +439,8 @@ body::before {
 #watchlist-loading.hidden {
   display: none !important;
 }
+.danime-footer {
+    background: #0b0718;
+    border-top: 1px solid #6b21a8;
+    color: white;
+}
