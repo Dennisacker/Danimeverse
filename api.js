@@ -42,7 +42,16 @@ async function openAnime(anime) {
     console.error(
       "❌ No anime data provided."
     );
+    card.style.cursor = "pointer";
 
+    card.addEventListener("click", function (e) {
+      // Don't trigger when clicking the buttons
+      if (e.target.closest(".watch-btn") || e.target.closest(".download-btn")) {
+        return;
+      }
+
+      openAnime(anime);
+    });
     return;
 
   }
