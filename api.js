@@ -42,16 +42,7 @@ async function openAnime(anime) {
     console.error(
       "❌ No anime data provided."
     );
-    card.style.cursor = "pointer";
 
-    card.addEventListener("click", function (e) {
-      // Don't trigger when clicking the buttons
-      if (e.target.closest(".watch-btn") || e.target.closest(".download-btn")) {
-        return;
-      }
-
-      openAnime(anime);
-    });
     return;
 
   }
@@ -947,30 +938,41 @@ async function openAnime(anime) {
           );
 
 
-        if (downloadButton) {
+if (downloadButton) {
 
-          downloadButton.addEventListener(
-            "click",
-            function (event) {
+  downloadButton.addEventListener(
+    "click",
+    function (event) {
 
-              event.preventDefault();
+      event.preventDefault();
+      event.stopPropagation();
 
-              event.stopPropagation();
+      alert(
+        `Download links for ${title} will be available when this anime is added to the Danimeverse watch system.`
+      );
 
-              alert(
-                `Download links for ${title} will be available when this anime is added to the Danimeverse watch system.`
-              );
+    }
+  );
 
-            }
-          );
+}
 
-        }
+// Make the whole card clickable
+card.style.cursor = "pointer";
 
+card.addEventListener("click", function (e) {
 
-        return card;
+  if (
+    e.target.closest(".watch-btn") ||
+    e.target.closest(".download-btn")
+  ) {
+    return;
+  }
 
-      }
+  openAnime(anime);
 
+});
+
+return card;
 
       /* =========================================================
          RENDER ANIME
