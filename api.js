@@ -973,6 +973,7 @@ card.addEventListener("click", function (e) {
 });
 
 return card;
+      }
 
       /* =========================================================
          RENDER ANIME
