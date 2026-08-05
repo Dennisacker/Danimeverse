@@ -322,7 +322,7 @@ async function openWatchlistAnime(
               malId:
                 String(anime.malId)
             }
-          }
+          
           : {})
 
       });
