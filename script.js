@@ -68,7 +68,36 @@
   );
   });
   }
+/* =========================
+   MOBILE MENU
+========================= */
 
+document.addEventListener("DOMContentLoaded", () => {
+
+  const navToggle = document.getElementById("navToggle");
+  const mobileMenu = document.getElementById("mobileMenu");
+
+  if (!navToggle || !mobileMenu) return;
+
+  navToggle.addEventListener("click", () => {
+
+    mobileMenu.classList.toggle("hidden");
+    mobileMenu.classList.toggle("flex");
+
+  });
+
+  mobileMenu.querySelectorAll("a").forEach(link => {
+
+    link.addEventListener("click", () => {
+
+      mobileMenu.classList.add("hidden");
+      mobileMenu.classList.remove("flex");
+
+    });
+
+  });
+
+});
   /* =========================
   GENRE CARD NAVIGATION
   AND UNDERLINE ANIMATION
