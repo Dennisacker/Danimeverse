@@ -716,10 +716,7 @@ function injectButtons(
   slugs
 ) {
 
-      document
-      .querySelectorAll(
-        "article.group.relative.overflow-hidden"
-      )
+        document.querySelectorAll(".glass-card")
     .forEach(
       card => {
 
@@ -1603,14 +1600,7 @@ async function renderWatchlistPage(
    WATCHLIST BUTTON CLICK HANDLER
 ========================================================= */
 
-document.addEventListener(
-  "click",
-  async (e) => {
 
-    const button =
-      e.target.closest(
-        ".watchlist-btn"
-      );
 
 
     if (!button) return;
