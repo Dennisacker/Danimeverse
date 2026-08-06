@@ -1593,3 +1593,33 @@ async function renderWatchlistPage(
   }
 
 }
+/* =========================================================
+   INITIALIZE WATCHLIST
+========================================================= */
+
+onAuthStateChanged(auth, async (user) => {
+
+  console.log("🔥 Auth state changed:", user);
+
+  if (!user) {
+    console.log("❌ No user signed in.");
+    return;
+  }
+
+  try {
+
+    const slugs = await getWatchlistSlugs(user.uid);
+
+    console.log("📚 Watchlist loaded:", slugs);
+
+    injectButtons(user.uid, slugs);
+
+    renderWatchlistPage(user.uid);
+
+  } catch (err) {
+
+    console.error("Watchlist init failed:", err);
+
+  }
+
+});
