@@ -403,7 +403,7 @@ async function openAnime(anime) {
               class="w-full h-[280px] rounded-2xl bg-white/10"
             ></div>
 
-            <div class="mt-4 space-y-3">
+           <div class="p-5 space-y-4">
 
               <div
                 class="h-4 bg-white/10 rounded w-1/2"
@@ -684,7 +684,7 @@ async function openAnime(anime) {
         }
 
         card.className =
-          "glass-card group overflow-hidden rounded-[2rem] border border-white/10 p-4 shadow-soft transition duration-500 hover:-translate-y-2 hover:shadow-glow";
+          "glass-card group relative overflow-hidden rounded-3xl border border-white/10 bg-[#111827]/80 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:border-pink-500/40";
 
 
         /* =========================================================
@@ -695,14 +695,12 @@ async function openAnime(anime) {
 
           card.innerHTML = `
 
-            <div
-              class="relative overflow-hidden rounded-2xl"
-            >
+          <div class="relative overflow-hidden rounded-t-3xl">
 
               <img
                 src="${image}"
                 alt="${title}"
-                class="w-full h-[320px] sm:h-[250px] md:h-[290px] object-cover transition duration-500 group-hover:scale-105"
+              class="w-full aspect-[2/3] object-cover transition duration-700 group-hover:scale-110"
                 loading="lazy"
               >
 
@@ -734,9 +732,7 @@ async function openAnime(anime) {
             </div>
 
 
-            <div
-              class="mt-4 space-y-3"
-            >
+          <div class="p-5 space-y-4">
 
               <h3
                 class="text-xl font-bold text-white line-clamp-2"
@@ -794,14 +790,12 @@ async function openAnime(anime) {
 
           card.innerHTML = `
 
-            <div
-              class="relative overflow-hidden rounded-2xl"
-            >
+          <div class="relative overflow-hidden rounded-t-3xl">
 
               <img
                 src="${image}"
                 alt="${title}"
-                class="w-full h-[320px] sm:h-[250px] md:h-[290px] object-cover transition duration-500 group-hover:scale-105"
+                class="w-full aspect-[2/3] object-cover transition duration-700 group-hover:scale-110"
                 loading="lazy"
               >
 
@@ -833,10 +827,7 @@ async function openAnime(anime) {
 
             </div>
 
-
-            <div
-              class="mt-4 space-y-3"
-            >
+<div class="p-5 space-y-4">
 
               <div>
 
