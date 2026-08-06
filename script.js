@@ -77,24 +77,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const navToggle = document.getElementById("navToggle");
   const mobileMenu = document.getElementById("mobileMenu");
 
-  if (!navToggle || !mobileMenu) return;
+  if (!navToggle || !mobileMenu) {
+    console.log("❌ Mobile menu elements not found");
+    return;
+  }
+
+  console.log("✅ Mobile menu initialized");
 
   navToggle.addEventListener("click", () => {
-
     mobileMenu.classList.toggle("hidden");
     mobileMenu.classList.toggle("flex");
-
-  });
-
-  mobileMenu.querySelectorAll("a").forEach(link => {
-
-    link.addEventListener("click", () => {
-
-      mobileMenu.classList.add("hidden");
-      mobileMenu.classList.remove("flex");
-
-    });
-
   });
 
 });
