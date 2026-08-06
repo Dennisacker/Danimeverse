@@ -698,7 +698,6 @@ async function openAnime(anime) {
             <img
     src="${image}"
     alt="${title}"
-    class="
       class="
 w-full
 aspect-[2/3]
