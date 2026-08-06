@@ -125,7 +125,7 @@ body::before {
  
   <body class="scroll-smooth relative overflow-x-hidden">
     <div class="pointer-events-none fixed inset-0 -z-10 bg-anime-dusk"></div>
-<header class="sticky top-0 z-50 border-b border-white/10 bg-[#05070f] shadow-lg">
+  <header class="absolute top-0 left-0 w-full z-50 border-b border-white/10 bg-black/20 backdrop-blur-md">
 
   <div class="w-full px-4 lg:px-10 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
 
@@ -238,54 +238,96 @@ body::before {
 
   </div>
 </header>
+                <!-- Hero Banner Section -->
+                    <section id="hero"
+                    style="
+                    height:550px;
+                    background-image: url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1920&q=90');
+                    background-size:cover;
+                    background-position:center;
+                    ">
+                  <div class="absolute inset-0 bg-red-500/50"></div>
+          <!-- Dark overlay -->
+          <div class="absolute inset-0 bg-black/65"></div>
+            <div class="absolute bottom-0 left-0 w-full h-56 
+            bg-gradient-to-t from-[#07030f] via-[#07030f]/60 to-transparent">
+            </div>
+          <div class="hero-fade"></div>
+
+          <!-- Floating particles -->
+          <!-- Cinematic atmosphere -->
+          <div class="hero-effects absolute inset-0 pointer-events-none">
+
+          <div class="light-beam"></div>
+
+          <div class="glow-orb orb-one"></div>
+
+          <div class="glow-orb orb-two"></div>
+
+          <div class="dust"></div>
+
+          </div>
+          <div class="absolute bottom-0 left-0 w-full h-48 
+          bg-gradient-to-t from-[#07030f] to-transparent z-10">
+          </div>
+                      <!-- Text content -->
+                      <div class="relative z-20 flex flex-col items-center justify-center h-full text-center text-white px-6">
+
+                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight 
+                                   bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-300
+                                   bg-clip-text text-transparent
+                                   drop-shadow-[0_0_25px_rgba(168,85,247,0.5)]">
+                          Welcome to Danimeverse
+                        </h1>
+
+
+                        <p class="mt-5 text-lg md:text-2xl text-white/90 font-medium
+                                  max-w-xl
+                                  drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
+            
+                          Stream your favorite worlds anytime, anywhere.
+                        </p>
+
+
+                        <div class="mt-8 flex gap-4">
+
+                          <button
+                          class="px-8 py-4 rounded-full
+                                 bg-gradient-to-r from-pink-500 to-purple-600
+                                 text-white font-bold text-lg
+                                 shadow-[0_0_35px_rgba(236,72,153,0.5)]
+                                 hover:scale-105
+                                 transition duration-300">
+
+                            ▶ Watch Now
+
+                          </button>
+
+
+                          <button
+                          class="px-8 py-4 rounded-full
+                                 border border-white/30
+                                 bg-white/10
+                                 backdrop-blur-md
+                                 text-white font-semibold
+                                 hover:bg-white/20
+                                 transition">
+
+                            + My List
+
+                          </button>
+
+                        </div>
+
+                      </div>
+    </section>
 
     <main class="relative mx-auto max-w-7xl px-6 pb-20 pt-0 lg:px-4 sm:px-6 lg:px-8">
-     <!-- Hero Banner Section -->
-<section class="relative bg-cover bg-center h-[220px] sm:h-[300px] md:h-[500px]"
-  style="background-image: url('https://i1-c.pinimg.com/1200x/29/3f/22/293f22c5adb144b09b43baa65835658f.jpg');">
-  <!-- Dark overlay for cinematic look -->
-  <div class="absolute inset-0 bg-black bg-opacity-5"></div>
-
-  <!-- Text content -->
-  <div class="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-6">
-    <!-- Logo image (same picture) -->
-   <div class="flex items-start justify-start">
-  <img src="https://i.pinimg.com/1200x/00/0e/8f/000e8f627e52c2b0ce97a57471e45a07.jpg"
-       alt="AnimeVerse Logo"
-       class="h-14 w-14 md:h-20 md:w-20 lg:h-24 lg:w-24
-              rounded-full object-cover
-              border-4 border-neonpurple shadow-lg" loading="lazy">
-</div>
-    
-    <!-- Headline -->
-    <h1 class="text-2xl md:text-3xl md:text-5xl font-bold text-white">
-  Welcome to AnimeVerse
-</h1>
-
-    
-    <!-- Tagline -->
-  <p class="text-sm md:text-lg text-white">
-  Watch anime without limits
-</p>
-
-
-
-
-    
-    <!-- Buttons -->
-   <div class="space-x-4">
-  <button class="bg-pink-500 text-white px-6 py-2 rounded-full 
-       hover:bg-black hover:shadow-black/30 hover:shadow-lg transition">
-  Watch Now
-</button>
-</div>
-  </div>
-</section>
-
+   
 
 
       <!-- FAN FAVORITES -->
-      <section id="trending" class="mt-20 section-fade animated-fade">
+      <section id="trending" class="mt-20 section-fade animated-fade -mt-24 relative z-20">
 
         <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
@@ -361,9 +403,19 @@ body::before {
         <!-- FRESH DROPS -->
         <div
           id="latestAnimeContainer"
-          class="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
-        >
-        </div>
+          class="
+            mt-8
+            flex
+            gap-5
+            overflow-x-auto
+            overflow-y-hidden
+            pb-4
+            snap-x
+            snap-mandatory
+            scroll-smooth
+            no-scrollbar
+          "
+        ></div>
       </section>
    <section id="genres" class="mt-20 section-fade animated-fade">
 

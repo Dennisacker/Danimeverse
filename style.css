@@ -1,10 +1,14 @@
-
 :root {
-  --bg: #ffffff;
-  --text: #0f172a;
+  --bg:#07030f;
+  --text:#e8ecff;
 
-  --glow-1: rgba(0, 0, 0, 0.05);
-  --glow-2: rgba(0, 0, 0, 0.02);
+  --glow-1: rgba(0,0,0,0.05);
+  --glow-2: rgba(0,0,0,0.02);
+}
+
+
+body{
+  background:#07030f;
 }
 
 /* DARK MODE = NETFLIX STYLE */
@@ -155,13 +159,31 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
+  body::before{
 
+  content:"";
+
+  position:fixed;
+
+  inset:0;
+
+  z-index:-1;
+
+  background:
+
+  radial-gradient(
+  circle at top,
+  rgba(168,85,247,.15),
+  transparent 40%
+  ),
+
+  radial-gradient(
+  circle at bottom,
+  rgba(236,72,153,.10),
+  transparent 50%
+  );
+
+  }
   background:
     radial-gradient(circle at top left, var(--glow-1), transparent 45%),
     radial-gradient(circle at bottom right, var(--glow-2), transparent 50%);
@@ -336,28 +358,22 @@ body::before {
 
 /* Mobile */
 #popularAnimeContainer,
-#trendingAnimeContainer,
-#latestAnimeContainer {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
+#trendingAnimeContainer{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:20px;
 }
 
-/* Tablet */
-@media (min-width: 640px) {
+@media (min-width:640px){
   #popularAnimeContainer,
-  #trendingAnimeContainer,
-  #latestAnimeContainer {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  #trendingAnimeContainer{
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
 }
-
-/* Desktop */
-@media (min-width: 1024px) {
+@media (min-width:1024px){
   #popularAnimeContainer,
-  #trendingAnimeContainer,
-  #latestAnimeContainer {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  #trendingAnimeContainer{
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 /* =====================================================
@@ -444,3 +460,198 @@ body::before {
     border-top: 1px solid #6b21a8;
     color: white;
 }
+/* =========================================================
+   FRESH DROPS - NETFLIX STYLE
+========================================================= */
+
+#latestAnimeContainer{
+    display:flex !important;
+    gap:16px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    padding-bottom:12px;
+    scroll-snap-type:x mandatory;
+}
+
+#latestAnimeContainer::-webkit-scrollbar{
+    display:none;
+}
+
+.fresh-card{
+    flex:0 0 160px !important;
+    width:160px !important;
+    min-width:160px !important;
+    max-width:160px !important;
+    scroll-snap-align:start;
+}
+
+.fresh-card .relative{
+    aspect-ratio:2/3;
+#hero{
+  animation: heroZoom 25s ease-in-out infinite alternate;
+}
+
+
+@keyframes heroZoom{
+
+from{
+  background-size: cover;
+}
+
+to{
+  background-size: 115%;
+}
+
+} 
+
+/* ===================================
+   DANIMEVERSE CINEMATIC HERO EFFECTS
+=================================== */
+
+
+.hero-effects{
+overflow:hidden;
+}
+
+
+/* Moving light beam */
+
+.light-beam{
+
+position:absolute;
+width:600px;
+height:600px;
+
+background:
+radial-gradient(
+circle,
+rgba(168,85,247,0.35),
+transparent 65%
+);
+
+top:-250px;
+left:-200px;
+
+filter:blur(30px);
+
+animation:
+beamMove 12s infinite alternate ease-in-out;
+
+}
+
+
+@keyframes beamMove{
+
+from{
+transform:translate(0,0);
+}
+
+to{
+transform:translate(500px,200px);
+}
+
+}
+
+
+
+/* Glowing floating energy */
+
+.glow-orb{
+
+position:absolute;
+
+border-radius:50%;
+
+filter:blur(50px);
+
+opacity:.5;
+
+animation:
+orbFloat 10s infinite alternate;
+
+}
+
+
+.orb-one{
+
+width:250px;
+height:250px;
+
+background:#9333ea;
+
+right:10%;
+top:20%;
+
+}
+
+
+.orb-two{
+
+width:180px;
+height:180px;
+
+background:#ec4899;
+
+left:15%;
+bottom:10%;
+
+animation-delay:3s;
+
+}
+
+
+
+@keyframes orbFloat{
+
+from{
+transform:translateY(0);
+}
+
+to{
+transform:translateY(-50px);
+}
+
+}
+
+
+
+/* Film grain / dust */
+
+.dust{
+
+position:absolute;
+
+inset:0;
+
+background-image:
+radial-gradient(
+white 1px,
+transparent 1px
+);
+
+background-size:
+120px 120px;
+
+opacity:.08;
+
+animation:
+dustMove 20s linear infinite;
+
+}
+
+
+
+@keyframes dustMove{
+
+from{
+transform:translateY(0);
+}
+
+to{
+transform:translateY(-120px);
+}
+
+  #hero {
+    min-height: 900px;
+    background-position: center top;
+  } 

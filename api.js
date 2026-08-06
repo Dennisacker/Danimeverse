@@ -403,7 +403,7 @@ async function openAnime(anime) {
               class="w-full h-[280px] rounded-2xl bg-white/10"
             ></div>
 
-           <div class="p-5 space-y-4">
+           <div class="p-4 space-y-4">
 
               <div
                 class="h-4 bg-white/10 rounded w-1/2"
@@ -683,163 +683,92 @@ async function openAnime(anime) {
           window.danimeverseAnimeData.push(anime);
         }
 
-        card.className =
-        "glass-card group relative overflow-hidden rounded-3xl transition-all duration-500 hover:-translate-y-2";
+        if (isFreshDrop) {
+          card.className =
+          "glass-card fresh-card group relative overflow-hidden rounded-3xl transition-all duration-500 hover:-translate-y-2";
+        } else {
+          card.className =
+          "glass-card group relative overflow-hidden rounded-3xl transition-all duration-500 hover:-translate-y-2";
+        }
         /* =========================================================
            FRESH DROPS
         ========================================================= */
+         if (isFreshDrop) {
+        card.innerHTML = `
 
-        if (isFreshDrop) {
+          <div class="relative overflow-hidden rounded-2xl">
 
-          card.innerHTML = `
-
-         <div class="relative aspect-[2/3] overflow-hidden rounded-3xl">
-
-            <img
-    src="${image}"
-    alt="${title}"
- class="
-w-full
-h-full
-object-cover
-transition-all
-duration-700
-group-hover:scale-110
-"
-    loading="lazy"
->
-
-              <div
-                class="absolute top-3 left-3"
+              <img
+                  src="${image}"
+                  alt="${title}"
+                  class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                  loading="lazy"
               >
 
+              <!-- Dark Overlay -->
+             class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent translate-y-full group-hover:translate-y-0 transition-all duration-300"
+              <!-- Airing -->
               <span
-class="
-absolute
-top-3
-left-3
-z-30
-bg-gradient-to-r
-from-green-500
-to-emerald-600
-text-white
-text-xs
-font-bold
-px-3
-py-1
-rounded-full
-shadow-lg
-">
-🟢 AIRING
-</span>
+                  class="absolute top-3 left-3 z-30 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                  🟢 AIRING
+              </span>
 
-              </div>
-
-
-              <div
-                class="absolute top-3 right-3"
-              >
-
-                <span
-                  class="bg-black/70 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full"
-                >
+              <!-- Type -->
+              <span
+                  class="absolute top-3 right-3 z-30 bg-black/70 backdrop-blur text-white text-xs px-3 py-1 rounded-full">
                   ${type}
-                </span>
+              </span>
 
-              </div>
+              <!-- Play -->
+              <button
+                  class="watch-btn absolute inset-0 z-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
 
-            </div>
+                  <div
+                      class="w-14 h-14 rounded-full bg-white/10 backdrop-blur-2xl border border-white/40 shadow-[0_0_40px_rgba(236,72,153,.45)] flex items-center justify-center group-hover:scale-110 transition-all duration-300">
 
+                      <div
+                          class="ww-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-fuchsia-600 flex items-center justify-center shadow-xl">
 
-          <div class="p-5 space-y-4">
+                          <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="white"
+                              class="w-7 h-7 ml-1">
 
-             
+                              <path d="M8 5v14l11-7z"/>
 
+                          </svg>
 
-         
+                      </div>
 
+                  </div>
 
+              </button>
+
+              <!-- Bottom Info -->
               <div
-                class="flex flex-wrap gap-3 pt-3"
-              >
+                  class="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-all duration-500">
 
-          <button
-class="
-watch-btn
-absolute
-inset-0
-z-40
-flex
-items-center
-justify-center
-opacity-0
-group-hover:opacity-100
-transition-all
-duration-500
-"
->
+                  <h3 class="text-xl font-bold line-clamp-2">
+                      ${title}
+                  </h3>
 
-<div
-class="
-w-20
-h-20
-rounded-full
-bg-white/10
-backdrop-blur-2xl
-border
-border-white/40
-shadow-[0_0_40px_rgba(236,72,153,.45)]
-flex
-items-center
-justify-center
-group-hover:scale-110
-transition-all
-duration-300
-"
->
+                  <p class="text-green-400 text-sm mt-1">
+                      ${episodes}
+                  </p>
 
-<div
-class="
-w-14
-h-14
-rounded-full
-bg-gradient-to-br
-from-pink-500
-to-fuchsia-600
-flex
-items-center
-justify-center
-shadow-xl
-"
->
+                  <div class="mt-2">
+                      <span class="inline-block bg-emerald-600 text-xs px-3 py-1 rounded-full">
+                          ${genres}
+                      </span>
+                  </div>
 
-<svg
-xmlns="http://www.w3.org/2000/svg"
-viewBox="0 0 24 24"
-fill="white"
-class="w-7 h-7 ml-1">
-
-<path d="M8 5v14l11-7z"/>
-
-</svg>
-
-</div>
-
-</div>
-
-</button>
-
-
-               
               </div>
 
-            </div>
+          </div>
 
           `;
-
-        }
-
-
+      }
         /* =========================================================
            FAN FAVORITES + TOP PICKS
         ========================================================= */
@@ -848,8 +777,7 @@ class="w-7 h-7 ml-1">
 
         card.innerHTML = `
 
-        <div class="relative aspect-[2/3] overflow-hidden rounded-3xl">
-
+       <div class="relative aspect-[2/3] overflow-hidden rounded-2xl">
             <!-- Poster -->
             <img
                 src="${image}"
@@ -1020,7 +948,7 @@ class="w-7 h-7 ml-1">
                 bottom-0
                 left-0
                 right-0
-                p-5
+               p-4
                translate-y-full
 group-hover:translate-y-0
                 group-hover:translate-y-0
