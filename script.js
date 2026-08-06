@@ -68,28 +68,7 @@
   );
   });
   }
-/* =========================
-   MOBILE MENU
-========================= */
 
-document.addEventListener("DOMContentLoaded", () => {
-
-  const navToggle = document.getElementById("navToggle");
-  const mobileMenu = document.getElementById("mobileMenu");
-
-  if (!navToggle || !mobileMenu) {
-    console.log("❌ Mobile menu elements not found");
-    return;
-  }
-
-  console.log("✅ Mobile menu initialized");
-
-  navToggle.addEventListener("click", () => {
-    mobileMenu.classList.toggle("hidden");
-    mobileMenu.classList.toggle("flex");
-  });
-
-});
   /* =========================
   GENRE CARD NAVIGATION
   AND UNDERLINE ANIMATION
@@ -270,3 +249,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   }
   );
+/* =========================
+   MOBILE MENU
+========================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const navToggle = document.getElementById("navToggle");
+  const mobileMenu = document.getElementById("mobileMenu");
+
+  if (!navToggle || !mobileMenu) {
+    console.log("❌ Mobile menu elements not found");
+    return;
+  }
+
+  console.log("✅ Mobile menu initialized");
+
+  navToggle.addEventListener("click", () => {
+    mobileMenu.classList.toggle("hidden");
+    mobileMenu.classList.toggle("flex");
+  });
+
+});
