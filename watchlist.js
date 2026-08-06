@@ -710,7 +710,7 @@ async function openWatchlistAnime(
 /* =========================================================
    INJECT WATCHLIST BUTTONS ON HOMEPAGE
 ========================================================= */
-
+console.log("🔥 injectButtons() called");
 function injectButtons(
   uid,
   slugs
@@ -718,7 +718,7 @@ function injectButtons(
 
         document.querySelectorAll(".glass-card")
     .forEach(
-      card => {
+      card => {console.log("Card found:", card);
 
         if (
           card.querySelector(
