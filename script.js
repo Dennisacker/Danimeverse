@@ -249,25 +249,24 @@
 
   }
   );
-/* =========================
-   MOBILE MENU
-========================= */
+console.log("✅ script.js reached the end");
 
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("✅ DOM loaded");
 
-  const navToggle = document.getElementById("navToggle");
-  const mobileMenu = document.getElementById("mobileMenu");
+    const navToggle = document.getElementById("navToggle");
+    const mobileMenu = document.getElementById("mobileMenu");
 
-  if (!navToggle || !mobileMenu) {
-    console.log("❌ Mobile menu elements not found");
-    return;
-  }
+    console.log(navToggle);
+    console.log(mobileMenu);
 
-  console.log("✅ Mobile menu initialized");
+    if (navToggle && mobileMenu) {
+        console.log("✅ Attaching mobile menu");
 
-  navToggle.addEventListener("click", () => {
-    mobileMenu.classList.toggle("hidden");
-    mobileMenu.classList.toggle("flex");
-  });
-
+        navToggle.addEventListener("click", () => {
+            console.log("🍔 Menu clicked");
+            mobileMenu.classList.toggle("hidden");
+            mobileMenu.classList.toggle("flex");
+        });
+    }
 });
