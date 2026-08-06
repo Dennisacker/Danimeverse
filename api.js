@@ -684,8 +684,7 @@ async function openAnime(anime) {
         }
 
         card.className =
-        "group relative overflow-hidden rounded-3xl transition-all duration-500 hover:-translate-y-2";
-
+        "glass-card group relative overflow-hidden rounded-3xl transition-all duration-500 hover:-translate-y-2";
         /* =========================================================
            FRESH DROPS
         ========================================================= */
@@ -920,39 +919,7 @@ to-transparent
             </span>
 
             <!-- Watchlist -->
-           <button
-    class="
-    watchlist-btn
-    absolute
-    left-3
-    bottom-24
-    z-40
-    w-11
-    h-11
-    rounded-full
-    bg-black/60
-    backdrop-blur
-    border
-    border-white/20
-    flex
-    items-center
-    justify-center
-    hover:bg-pink-600
-    hover:scale-110
-    transition-all
-    duration-300
-    "
-    data-id="${anime.mal_id}"
-    data-title="${title}"
-    data-image="${image}"
-    data-score="${score}"
-    data-type="${type}"
-    data-episodes="${episodes}"
-    data-genres="${genres}"
->
-    ❤️
-</button>
-
+      
             <!-- Favourite -->
             <button
                 class="

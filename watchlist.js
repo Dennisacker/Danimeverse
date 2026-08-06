@@ -716,10 +716,10 @@ function injectButtons(
   slugs
 ) {
 
-  document
-    .querySelectorAll(
-      "article.glass-card"
-    )
+      document
+      .querySelectorAll(
+        "article.group.relative.overflow-hidden"
+      )
     .forEach(
       card => {
 
