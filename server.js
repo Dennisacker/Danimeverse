@@ -1,3 +1,4 @@
+require("dotenv").config();
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -39,7 +40,59 @@ const COMPRESSIBLE = new Set([
   'application/json', 'image/svg+xml'
 ]);
 
-const server = http.createServer((req, res) => {
+  const server = http.createServer(async (req, res) => {
+
+  // TMDB BACKDROP API
+  if (req.url.startsWith("/api/backdrop")) {
+
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const anime = url.searchParams.get("anime");
+
+    if (!anime) {
+      res.writeHead(400, {
+        "Content-Type": "application/json"
+      });
+
+      return res.end(JSON.stringify({
+        error: "Anime name missing"
+      }));
+    }
+
+    try {
+
+      const response = await fetch(
+        `https://api.themoviedb.org/3/search/tv?api_key=${process.env.TMDB_KEY}&query=${encodeURIComponent(anime)}`
+      );
+
+      const data = await response.json();
+
+      const result = data.results?.[0];
+
+      res.writeHead(200, {
+        "Content-Type": "application/json"
+      });
+
+      return res.end(JSON.stringify({
+        backdrop: result?.backdrop_path
+          ? `https://image.tmdb.org/t/p/original${result.backdrop_path}`
+          : null
+      }));
+
+    } catch(error) {
+
+      console.error(error);
+
+      res.writeHead(500, {
+        "Content-Type": "application/json"
+      });
+
+      return res.end(JSON.stringify({
+        error: "TMDB failed"
+      }));
+    }
+  }
+
+
   let urlPath = req.url.split('?')[0];
   if (urlPath === '/') urlPath = '/index.html';
 

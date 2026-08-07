@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Danimeverse | Stream Anime online</title>
      <link rel="icon" type="image/png" href="https://i.pinimg.com/736x/fc/8d/c0/fc8dc0a1f0db8842d9c58373acd655a8.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="tailwind.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
@@ -125,7 +126,7 @@ body::before {
  
   <body class="scroll-smooth relative overflow-x-hidden">
     <div class="pointer-events-none fixed inset-0 -z-10 bg-anime-dusk"></div>
-  <header class="absolute top-0 left-0 w-full z-50 border-b border-white/10 bg-black/20 backdrop-blur-md">
+    <header class="fixed top-0 left-0 w-full z-50 border-b border-white/10 bg-[#090909]/95 backdrop-blur-xl">
 
   <div class="w-full px-4 lg:px-10 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
 
@@ -237,95 +238,132 @@ body::before {
     </a>
 
   </div>
-</header>
-                <!-- Hero Banner Section -->
-                        <section id="hero"
-                        class="relative overflow-hidden"
-                        style="
-                        height:750px;
-                        background-image:url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1920&q=90');
-                        background-size:cover;
-                        background-position:center;
-                        ">
-              
-                      <!-- Dark overlay -->
-                      <div class="absolute inset-0 bg-black/65 z-10"></div>
+    </header>
+
+          <section id="hero"
+          class="relative h-[55vh] min-h-[500px] overflow-hidden">
 
 
-                        <div class="absolute bottom-0 left-0 w-full h-[350px]
-                        bg-gradient-to-t from-[#07030f] via-[#07030f]/90 to-transparent z-20">
-                        </div>
-
-                      <!-- Floating particles -->
-                      <div class="hero-effects absolute inset-0 pointer-events-none z-15">
-
-                        <div class="light-beam"></div>
-
-                        <div class="glow-orb orb-one"></div>
-
-                        <div class="glow-orb orb-two"></div>
-
-                        <div class="dust"></div>
-
-                      </div>
-                      <!-- Text content -->
-                      <div class="relative z-20 flex flex-col items-center justify-center h-full text-center text-white px-6">
-
-                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight 
-                                   bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-300
-                                   bg-clip-text text-transparent
-                                   drop-shadow-[0_0_25px_rgba(168,85,247,0.5)]">
-                          Welcome to Danimeverse
-                        </h1>
+    <!-- BACKGROUND LAYERS -->
+            <div
+                id="welcomeBg"
+                class="absolute inset-0 bg-cover bg-center transition-opacity duration-[2000ms]"
+                style="background-image:url('https://cdn.dribbble.com/userupload/13740270/file/original-cf61d97d48aff752c4fb6eba190aa94e.jpg'); opacity:1;">
+            </div>
+            <div id="heroBgA"
+            class="hero-bg absolute inset-0 bg-cover bg-center opacity-100 transition-opacity duration-1000">
+            </div>
 
 
-                        <p class="mt-5 text-lg md:text-2xl text-white/90 font-medium
-                                  max-w-xl
-                                  drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
-            
-                          Stream your favorite worlds anytime, anywhere.
-                        </p>
+            <div id="heroBgB"
+            class="hero-bg absolute inset-0 bg-cover bg-center opacity-0 transition-opacity duration-1000">
+            </div>
 
 
-                        <div class="mt-8 flex gap-4">
 
-                          <button
-                          class="px-8 py-4 rounded-full
-                                 bg-gradient-to-r from-pink-500 to-purple-600
-                                 text-white font-bold text-lg
-                                 shadow-[0_0_35px_rgba(236,72,153,0.5)]
-                                 hover:scale-105
-                                 transition duration-300">
+    <!-- DARK GRADIENT -->
 
-                            ▶ Watch Now
-
-                          </button>
+    <div class="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
 
 
-                          <button
-                          class="px-8 py-4 rounded-full
-                                 border border-white/30
-                                 bg-white/10
-                                 backdrop-blur-md
-                                 text-white font-semibold
-                                 hover:bg-white/20
-                                 transition">
 
-                            + My List
+    <!-- CONTENT -->
 
-                          </button>
+            <div class="absolute inset-0 z-20 flex items-end">
 
-                        </div>
+              <div class="w-full max-w-[1600px] mx-auto px-6 md:px-16 pb-20 md:pb-28">
+    <!-- WELCOME -->
 
-                      </div>
+    <div id="welcomeContent"
+    class="transition-all duration-1000">
+
+
+      <span
+      class="inline-block text-pink-500 text-sm md:text-base font-extrabold uppercase tracking-[0.6em]">
+      WELCOME TO
+      </span>
+
+
+      <h1
+      class="logo-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white uppercase">
+      ANIMEVERSE
+      </h1>
+      <p class="text-gray-300 text-lg md:text-xl mt-5 max-w-2xl leading-relaxed">
+    Stream your favourite anime worlds.
+    Discover new adventures.
+    Experience anime like never before.
+    </p>
+
+
+    </div>
+
+
+
+    <!-- FEATURED ANIME -->
+
+        <div id="animeContent"
+        class="hidden transition-all duration-1000">
+
+    <span class="text-pink-500 font-bold tracking-widest">
+    FEATURED
+    </span>
+
+
+    <h1 id="animeTitle"
+      class="text-5xl md:text-6xl lg:text-7xl font-black text-white mt-4 leading-tight">
+    </h1>
+
+
+    <div class="flex gap-3 mt-5">
+
+    <span id="rating"
+    class="bg-white/20 px-4 py-2 rounded-full text-white">
+    </span>
+
+
+    <span id="genre"
+    class="bg-white/20 px-4 py-2 rounded-full text-white">
+    </span>
+
+    </div>
+
+
+    <p id="animeDesc"
+    class="text-gray-300 text-lg mt-6 max-w-xl">
+    </p>
+
+
+    </div>
+
+
+    </div>
+
+    </div>
+
+
+    <div id="heroDots"
+    class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-3">
+    </div>
+
+
     </section>
-
-    <main class="relative mx-auto max-w-7xl px-6 pb-20 pt-0 lg:px-4 sm:px-6 lg:px-8">
+            <main
+              class="
+                relative
+              -mt-16
+                z-40
+                bg-[#11152A]
+                rounded-t-[40px]
+                px-5
+                sm:px-6
+                lg:px-10
+                xl:px-14
+              ">
    
 
 
       <!-- FAN FAVORITES -->
-      <section id="trending" class="mt-20 section-fade animated-fade -mt-24 relative z-20">
+      <section id="trending" class="mt-20 section-fade animated-fade  relative z-20">
 
         <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
@@ -645,8 +683,8 @@ body::before {
   <div class="h-8"></div>
   <div></div>
   <div class="text-center my-6"></div>
-
-</div><!-- COMMUNITY SECTION -->
+     </main>
+<!-- COMMUNITY SECTION -->
     <section class="bg-purple-900 text-white py-8 text-center mt-12">
       <h2 class="text-xl font-bold">Join Danimeverse Community</h2>
 
@@ -721,12 +759,13 @@ body::before {
       </a>
 
     </div>
+  
      <script src="navbar.js" defer></script>
      <script src="footer.js" defer></script>
      <script src="modal.js" defer></script>
      <script src="api.js" defer></script>
      <script src="search.js" defer></script>
-
+    <script src="hero.js" defer></script>
      <script type="module" src="auth.js"></script>
      <script type="module" src="auth-state.js"></script>
      <script type="module" src="watchlist.js"></script>

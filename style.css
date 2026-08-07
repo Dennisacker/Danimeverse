@@ -487,6 +487,7 @@ body {
 
 .fresh-card .relative{
     aspect-ratio:2/3;
+}
 #hero{
   animation: heroZoom 25s ease-in-out infinite alternate;
 }
@@ -651,7 +652,21 @@ to{
 transform:translateY(-120px);
 }
 
-  #hero {
-    min-height: 900px;
+}
+
+#hero {
+    min-height: 600px;
     background-position: center top;
-  } 
+}
+  #heroAnimeContainer .anime-card {
+  transform: translateY(0);
+  transition:0.4s ease;
+  }
+
+  #heroAnimeContainer .anime-card:hover {
+  transform:translateY(-15px) scale(1.05);
+  }
+  .logo-title {
+      font-family: "Black Ops One", cursive;
+      -webkit-text-stroke: 1px rgba(255,255,255,0.15);
+  }

@@ -1107,6 +1107,30 @@ group-hover:translate-y-0
         );
 
       }
+  async function getAnimeBackdrop(anime){
+
+      try {
+
+          const response = await fetch(
+              `/api/backdrop?anime=${encodeURIComponent(anime)}`
+          );
+
+
+          const data = await response.json();
+
+
+          return data.backdrop;
+
+
+      } catch(error){
+
+          console.error("Backdrop error:", error);
+
+          return null;
+
+      }
+
+  }
 
 
       /* =========================================================
@@ -1283,3 +1307,34 @@ group-hover:translate-y-0
 
       }
     
+  window.featuredAnime = [
+
+{
+title:"Solo Leveling",
+desc:"The weakest hunter rises to become humanity's strongest.",
+rating:"⭐ 9.4",
+genre:"Action • Fantasy"
+},
+
+{
+title:"Attack on Titan",
+desc:"Humanity fights for survival against terrifying Titans.",
+rating:"⭐ 9.8",
+genre:"Action • Dark Fantasy"
+},
+
+{
+title:"Jujutsu Kaisen",
+desc:"Sorcerers battle deadly curses threatening humanity.",
+rating:"⭐ 9.1",
+genre:"Action • Supernatural"
+},
+
+{
+title:"Naruto",
+desc:"A young ninja dreams of becoming Hokage.",
+rating:"⭐ 8.7",
+genre:"Adventure • Ninja"
+}
+
+];
