@@ -950,22 +950,20 @@ function injectButtons(
         );
 
 
-        btn.addEventListener(
-          "click",
-          async e => {
+            btn.addEventListener(
+              "click",
+              async e => {
 
-            e.preventDefault();
+                e.preventDefault();
+                e.stopPropagation();
 
-            e.stopPropagation();
+                if (e.stopImmediatePropagation) {
+                  e.stopImmediatePropagation();
+                }
 
-
-            if (
-              btn.disabled
-            ) {
-
-              return;
-
-            }
+                if (btn.disabled) {
+                  return;
+                }
 
 
             btn.disabled =
@@ -2533,17 +2531,21 @@ function injectFavouriteButtons(uid) {
       IMPORTANT:
       Stop the card/link from opening watch.html
     */
-    button.addEventListener(
-      "click",
-      async (e) => {
+            button.addEventListener(
+              "click",
+              async (e) => {
 
-        e.preventDefault();
+                e.preventDefault();
 
-        e.stopPropagation();
+                e.stopPropagation();
 
-        if (button.disabled) {
-          return;
-        }
+                if (e.stopImmediatePropagation) {
+                  e.stopImmediatePropagation();
+                }
+
+                if (button.disabled) {
+                  return;
+                }
 
         button.disabled = true;
 
@@ -3317,20 +3319,22 @@ function injectDashboardStyles() {
    INITIALIZE DASHBOARD
 ========================================================= */
 
-async function initializeDanimeverseDashboard(
-  user
-) {
+  async function initializeDanimeverseDashboard(user) {
 
   if (!user) return;
 
+  // ONLY run the dashboard on the watchlist page
+  const watchlistGrid =
+    document.getElementById("watchlist-grid");
+
+  if (!watchlistGrid) {
+    console.log("🏠 Homepage detected — dashboard disabled.");
+    return;
+  }
 
   injectDashboardStyles();
 
-
-  await updateUserActivity(
-    user.uid
-  );
-
+  await updateUserActivity(user.uid);
 
   const watchlistSnapshot =
     await getDocs(
