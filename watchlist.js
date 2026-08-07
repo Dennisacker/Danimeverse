@@ -14,10 +14,10 @@ import {
   setDoc,
   deleteDoc,
   collection,
-  getDocs
+  getDocs,
+  getDoc,
+  increment
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-console.log("WATCHLIST LOADED");
-
 /* =========================================================
    FIREBASE CONFIG
 ========================================================= */
@@ -62,16 +62,13 @@ function slugify(title) {
 ========================================================= */
 
 function escapeHTML(value) {
-
   return String(value || "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
-
 }
-
 
 /* =========================================================
    TOAST
@@ -1594,32 +1591,1506 @@ async function renderWatchlistPage(
 
 }
 /* =========================================================
-   INITIALIZE WATCHLIST
+   DANIMEVERSE USER PROFILE + XP SYSTEM
 ========================================================= */
 
-onAuthStateChanged(auth, async (user) => {
+async function updateUserActivity(uid) {
 
-  console.log("🔥 Auth state changed:", user);
-
-  if (!user) {
-    console.log("❌ No user signed in.");
-    return;
-  }
+  const userRef = doc(
+    db,
+    "users",
+    uid
+  );
 
   try {
 
-    const slugs = await getWatchlistSlugs(user.uid);
+    await setDoc(
+      userRef,
+      {
+        visitCount: increment(1),
+        xp: increment(5),
+        lastVisit: Date.now()
+      },
+      {
+        merge: true
+      }
+    );
 
-    console.log("📚 Watchlist loaded:", slugs);
+  } catch (error) {
 
-    injectButtons(user.uid, slugs);
-
-    renderWatchlistPage(user.uid);
-
-  } catch (err) {
-
-    console.error("Watchlist init failed:", err);
+    console.error(
+      "❌ Could not update user activity:",
+      error
+    );
 
   }
 
-});
+}
+
+
+/* =========================================================
+   GET USER PROFILE
+========================================================= */
+
+async function getUserProfile(uid) {
+
+  const userRef =
+    doc(
+      db,
+      "users",
+      uid
+    );
+
+  const snapshot =
+    await getDoc(userRef);
+
+  if (!snapshot.exists()) {
+
+    await setDoc(
+      userRef,
+      {
+        xp: 5,
+        visitCount: 1,
+        createdAt: Date.now(),
+        lastVisit: Date.now()
+      },
+      {
+        merge: true
+      }
+    );
+
+    return {
+      xp: 5,
+      visitCount: 1
+    };
+
+  }
+
+  return snapshot.data();
+
+}
+
+
+/* =========================================================
+   USER RANK
+========================================================= */
+
+function getUserRank(xp) {
+
+  if (xp >= 5000) {
+
+    return {
+      name: "Danimeverse Legend",
+      icon: "👑",
+      next: null,
+      current: 5000
+    };
+
+  }
+
+  if (xp >= 2500) {
+
+    return {
+      name: "Anime Master",
+      icon: "🔥",
+      next: 5000,
+      current: 2500
+    };
+
+  }
+
+  if (xp >= 1200) {
+
+    return {
+      name: "Hardcore Otaku",
+      icon: "⚡",
+      next: 2500,
+      current: 1200
+    };
+
+  }
+
+  if (xp >= 600) {
+
+    return {
+      name: "Anime Fan",
+      icon: "⭐",
+      next: 1200,
+      current: 600
+    };
+
+  }
+
+  if (xp >= 250) {
+
+    return {
+      name: "Otaku",
+      icon: "🍥",
+      next: 600,
+      current: 250
+    };
+
+  }
+
+  return {
+    name: "Anime Newbie",
+    icon: "🌱",
+    next: 250,
+    current: 0
+  };
+
+}
+
+
+/* =========================================================
+   CREATE PROFILE DASHBOARD
+========================================================= */
+
+async function renderUserDashboard(
+  user,
+  watchlistCount,
+  favouriteCount
+) {
+
+  let dashboard =
+    document.getElementById(
+      "danimeverse-user-dashboard"
+    );
+
+  if (!dashboard) {
+
+    dashboard =
+      document.createElement("section");
+
+    dashboard.id =
+      "danimeverse-user-dashboard";
+
+    const main =
+      document.querySelector(".wl-main");
+
+    if (main) {
+
+      main.prepend(
+        dashboard
+      );
+
+    } else {
+
+      document.body.prepend(
+        dashboard
+      );
+
+    }
+
+  }
+
+
+  const profile =
+    await getUserProfile(
+      user.uid
+    );
+
+
+  const xp =
+    Number(profile.xp || 0);
+
+
+  const visits =
+    Number(
+      profile.visitCount || 0
+    );
+
+
+  const rank =
+    getUserRank(xp);
+
+
+  let progress = 100;
+
+
+  if (rank.next) {
+
+    progress =
+      Math.min(
+        100,
+        Math.max(
+          0,
+          ((xp - rank.current) /
+            (rank.next - rank.current)) *
+            100
+        )
+      );
+
+  }
+
+
+  const displayName =
+    user.displayName ||
+    user.email?.split("@")[0] ||
+    "Anime Fan";
+
+
+  const email =
+    user.email ||
+    "";
+
+
+  const avatar =
+    user.photoURL ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      displayName
+    )}&background=ec4899&color=fff&size=200`;
+
+
+  dashboard.innerHTML = `
+
+    <div class="dv-profile-card">
+
+      <div class="dv-profile-main">
+
+        <img
+          src="${escapeHTML(avatar)}"
+          class="dv-profile-avatar"
+          alt="Profile"
+        >
+
+        <div class="dv-profile-info">
+
+          <div class="dv-profile-name">
+            ${escapeHTML(displayName)}
+          </div>
+
+          <div class="dv-profile-email">
+            ${escapeHTML(email)}
+          </div>
+
+          <div class="dv-profile-rank">
+
+            <span>
+              ${rank.icon}
+            </span>
+
+            ${rank.name}
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="dv-xp-section">
+
+        <div class="dv-xp-top">
+
+          <span>
+            Danimeverse Rating
+          </span>
+
+          <strong>
+            ${xp} XP
+          </strong>
+
+        </div>
+
+
+        <div class="dv-xp-bar">
+
+          <div
+            class="dv-xp-progress"
+            style="width:${progress}%"
+          ></div>
+
+        </div>
+
+
+        <div class="dv-xp-bottom">
+
+          <span>
+            ${xp} XP
+          </span>
+
+          <span>
+            ${
+              rank.next
+                ? `${rank.next} XP to next rank`
+                : "MAX RANK"
+            }
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="dv-user-stats">
+
+        <div class="dv-stat">
+
+          <span class="dv-stat-icon">
+            📋
+          </span>
+
+          <strong>
+            ${watchlistCount}
+          </strong>
+
+          <small>
+            My List
+          </small>
+
+        </div>
+
+
+        <div class="dv-stat">
+
+          <span class="dv-stat-icon">
+            ⭐
+          </span>
+
+          <strong>
+            ${favouriteCount}
+          </strong>
+
+          <small>
+            Favourites
+          </small>
+
+        </div>
+
+
+        <div class="dv-stat">
+
+          <span class="dv-stat-icon">
+            👀
+          </span>
+
+          <strong>
+            ${visits}
+          </strong>
+
+          <small>
+            Visits
+          </small>
+
+        </div>
+
+
+        <div class="dv-stat">
+
+          <span class="dv-stat-icon">
+            🏆
+          </span>
+
+          <strong>
+            ${xp}
+          </strong>
+
+          <small>
+            Rating XP
+          </small>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   FAVOURITES
+========================================================= */
+
+async function getFavouriteItems(uid) {
+
+  const snapshot =
+    await getDocs(
+      collection(
+        db,
+        "favourites",
+        uid,
+        "items"
+      )
+    );
+
+
+  return snapshot.docs.map(
+    document => ({
+      id: document.id,
+      ...document.data()
+    })
+  );
+
+}
+
+
+/* =========================================================
+   ADD FAVOURITE
+========================================================= */
+
+async function addFavourite(
+  uid,
+  anime
+) {
+
+  const title =
+    anime.title ||
+    "Unknown Anime";
+
+
+  const slug =
+    slugify(title);
+
+
+  await setDoc(
+    doc(
+      db,
+      "favourites",
+      uid,
+      "items",
+      slug
+    ),
+    {
+      title: title,
+      img: anime.img || "",
+      genres: anime.genres || "",
+      desc: anime.desc || "",
+      malId: anime.malId
+        ? Number(anime.malId)
+        : null,
+      anilistId: anime.anilistId
+        ? Number(anime.anilistId)
+        : null,
+      addedAt: Date.now()
+    },
+    {
+      merge: true
+    }
+  );
+
+
+  await setDoc(
+    doc(
+      db,
+      "users",
+      uid
+    ),
+    {
+      xp: increment(25)
+    },
+    {
+      merge: true
+    }
+  );
+
+}
+
+
+/* =========================================================
+   REMOVE FAVOURITE
+========================================================= */
+
+async function removeFavourite(
+  uid,
+  slug
+) {
+
+  await deleteDoc(
+    doc(
+      db,
+      "favourites",
+      uid,
+      "items",
+      slug
+    )
+  );
+
+}
+
+
+/* =========================================================
+   RENDER FAVOURITES
+========================================================= */
+
+async function renderFavourites(
+  uid
+) {
+
+  const favourites =
+    await getFavouriteItems(
+      uid
+    );
+
+
+  let section =
+    document.getElementById(
+      "danimeverse-favourites-section"
+    );
+
+
+  if (!section) {
+
+    section =
+      document.createElement(
+        "section"
+      );
+
+    section.id =
+      "danimeverse-favourites-section";
+
+    const grid =
+      document.getElementById(
+        "watchlist-grid"
+      );
+
+    if (grid?.parentElement) {
+
+      grid.parentElement.insertBefore(
+        section,
+        grid
+      );
+
+    }
+
+  }
+
+
+  section.innerHTML = `
+
+    <div class="dv-section-heading">
+
+      <div>
+
+        <span class="dv-section-eyebrow">
+          YOUR COLLECTION
+        </span>
+
+        <h2>
+          ⭐ My Favourites
+        </h2>
+
+      </div>
+
+      <span class="dv-section-count">
+        ${favourites.length} ${
+          favourites.length === 1
+            ? "title"
+            : "titles"
+        }
+      </span>
+
+    </div>
+
+
+    <div
+      id="dv-favourites-grid"
+      class="dv-favourites-grid"
+    ></div>
+
+  `;
+
+
+  const favouriteGrid =
+    document.getElementById(
+      "dv-favourites-grid"
+    );
+
+
+  if (!favourites.length) {
+
+    favouriteGrid.innerHTML = `
+
+      <div class="dv-empty-favourites">
+
+        <div>
+          ⭐
+        </div>
+
+        <h3>
+          No favourites yet
+        </h3>
+
+        <p>
+          Tap the ⭐ on any anime you love
+          and it will appear here.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  favourites.sort(
+    (a, b) =>
+      (b.addedAt || 0) -
+      (a.addedAt || 0)
+  );
+
+
+  favourites.forEach(
+    anime => {
+
+      const card =
+        document.createElement(
+          "article"
+        );
+
+
+      card.className =
+        "dv-favourite-card";
+
+
+      card.innerHTML = `
+
+        <img
+          src="${escapeHTML(anime.img || "")}"
+          alt="${escapeHTML(anime.title)}"
+          loading="lazy"
+        >
+
+
+        <div class="dv-favourite-overlay">
+
+          <div class="dv-favourite-title">
+            ${escapeHTML(anime.title)}
+          </div>
+
+          <div class="dv-favourite-actions">
+
+            <button
+              class="dv-favourite-watch"
+            >
+              ▶ Watch
+            </button>
+
+            <button
+              class="dv-favourite-remove"
+            >
+              ✕
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+
+      const watchButton =
+        card.querySelector(
+          ".dv-favourite-watch"
+        );
+
+
+      const removeButton =
+        card.querySelector(
+          ".dv-favourite-remove"
+        );
+
+
+      watchButton?.addEventListener(
+        "click",
+        async e => {
+
+          e.stopPropagation();
+
+          await openWatchlistAnime(
+            anime
+          );
+
+        }
+      );
+
+
+      removeButton?.addEventListener(
+        "click",
+        async e => {
+
+          e.stopPropagation();
+
+          await removeFavourite(
+            uid,
+            anime.id
+          );
+
+          card.remove();
+
+          showToast(
+            "Removed from favourites",
+            false
+          );
+
+          await refreshUserDashboard(
+            uid
+          );
+
+        }
+      );
+
+
+      card.addEventListener(
+        "click",
+        () => {
+
+          openWatchlistAnime(
+            anime
+          );
+
+        }
+      );
+
+
+      favouriteGrid.appendChild(
+        card
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   REFRESH PROFILE + FAVOURITES
+========================================================= */
+
+async function refreshUserDashboard(
+  uid
+) {
+
+  const watchlistSnapshot =
+    await getDocs(
+      collection(
+        db,
+        "watchlists",
+        uid,
+        "items"
+      )
+    );
+
+
+  const favouriteSnapshot =
+    await getDocs(
+      collection(
+        db,
+        "favourites",
+        uid,
+        "items"
+      )
+    );
+
+
+  const user =
+    auth.currentUser;
+
+
+  if (!user) return;
+
+
+  await renderUserDashboard(
+    user,
+    watchlistSnapshot.size,
+    favouriteSnapshot.size
+  );
+
+
+  await renderFavourites(
+    uid
+  );
+
+}
+
+
+/* =========================================================
+   FAVOURITE BUTTONS ON ANIME CARDS
+========================================================= */
+
+function injectFavouriteButtons(
+  uid
+) {
+
+  document
+    .querySelectorAll(
+      ".favourite-btn"
+    )
+    .forEach(
+      button => {
+
+        if (
+          button.dataset.favouriteReady ===
+          "true"
+        ) {
+          return;
+        }
+
+
+        button.dataset.favouriteReady =
+          "true";
+
+
+        const malId =
+          button.dataset.id;
+
+
+        button.addEventListener(
+          "click",
+          async e => {
+
+            e.preventDefault();
+            e.stopPropagation();
+
+
+            const anime =
+              window.danimeverseAnimeData
+                ?.find(
+                  item =>
+                    String(
+                      item.mal_id
+                    ) ===
+                    String(
+                      malId
+                    )
+                );
+
+
+            if (!anime) {
+
+              showToast(
+                "Anime information unavailable.",
+                false
+              );
+
+              return;
+
+            }
+
+
+            const favouriteData = {
+
+              title:
+                anime.title_english ||
+                anime.title ||
+                "Unknown Anime",
+
+              img:
+                anime.images?.jpg?.large_image_url ||
+                anime.images?.jpg?.image_url ||
+                "",
+
+              genres:
+                anime.genres
+                  ?.slice(0, 3)
+                  ?.map(
+                    g => g.name
+                  )
+                  ?.join(", ") ||
+                "Anime",
+
+              desc:
+                anime.synopsis ||
+                "",
+
+              malId:
+                anime.mal_id,
+
+              anilistId:
+                anime.anilist_id ||
+
+                anime.anilistId ||
+
+                null
+
+            };
+
+
+            const slug =
+              slugify(
+                favouriteData.title
+              );
+
+
+            const favouriteRef =
+              doc(
+                db,
+                "favourites",
+                uid,
+                "items",
+                slug
+              );
+
+
+            const existing =
+              await getDoc(
+                favouriteRef
+              );
+
+
+            if (
+              existing.exists()
+            ) {
+
+              await deleteDoc(
+                favouriteRef
+              );
+
+
+              button.classList.remove(
+                "favourite-active"
+              );
+
+
+              button.innerHTML =
+                "⭐";
+
+
+              showToast(
+                "Removed from favourites",
+                false
+              );
+
+            } else {
+
+              await addFavourite(
+                uid,
+                favouriteData
+              );
+
+
+              button.classList.add(
+                "favourite-active"
+              );
+
+
+              button.innerHTML =
+                "★";
+
+
+              showToast(
+                "Added to favourites ⭐"
+              );
+
+            }
+
+
+            await refreshUserDashboard(
+              uid
+            );
+
+          }
+
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   ADD FAVOURITE BUTTON STYLING
+========================================================= */
+
+function injectDashboardStyles() {
+
+  if (
+    document.getElementById(
+      "danimeverse-dashboard-styles"
+    )
+  ) {
+    return;
+  }
+
+
+  const style =
+    document.createElement(
+      "style"
+    );
+
+
+  style.id =
+    "danimeverse-dashboard-styles";
+
+
+  style.textContent = `
+
+    #danimeverse-user-dashboard {
+      margin-bottom: 45px;
+    }
+
+    .dv-profile-card {
+      background:
+        linear-gradient(
+          135deg,
+          rgba(236,72,153,.16),
+          rgba(79,70,229,.12)
+        );
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 28px;
+      padding: 28px;
+      backdrop-filter: blur(20px);
+      box-shadow:
+        0 20px 60px rgba(0,0,0,.25);
+    }
+
+    .dv-profile-main {
+      display:flex;
+      align-items:center;
+      gap:18px;
+      margin-bottom:25px;
+    }
+
+    .dv-profile-avatar {
+      width:76px;
+      height:76px;
+      border-radius:50%;
+      object-fit:cover;
+      border:3px solid rgba(236,72,153,.7);
+      box-shadow:
+        0 0 30px rgba(236,72,153,.3);
+    }
+
+    .dv-profile-name {
+      font-size:25px;
+      font-weight:900;
+    }
+
+    .dv-profile-email {
+      color:#999;
+      font-size:13px;
+      margin-top:3px;
+    }
+
+    .dv-profile-rank {
+      display:inline-flex;
+      gap:6px;
+      margin-top:9px;
+      padding:5px 11px;
+      border-radius:999px;
+      background:rgba(236,72,153,.15);
+      color:#f9a8d4;
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .dv-xp-section {
+      margin-bottom:25px;
+    }
+
+    .dv-xp-top,
+    .dv-xp-bottom {
+      display:flex;
+      justify-content:space-between;
+      font-size:13px;
+      color:#aaa;
+    }
+
+    .dv-xp-top strong {
+      color:#f9a8d4;
+    }
+
+    .dv-xp-bar {
+      height:9px;
+      margin:9px 0;
+      background:rgba(255,255,255,.08);
+      border-radius:999px;
+      overflow:hidden;
+    }
+
+    .dv-xp-progress {
+      height:100%;
+      border-radius:999px;
+      background:
+        linear-gradient(
+          90deg,
+          #ec4899,
+          #8b5cf6
+        );
+      transition:width .7s ease;
+    }
+
+    .dv-user-stats {
+      display:grid;
+      grid-template-columns:
+        repeat(4,1fr);
+      gap:10px;
+    }
+
+    .dv-stat {
+      background:rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:18px;
+      padding:16px;
+      text-align:center;
+    }
+
+    .dv-stat-icon {
+      display:block;
+      font-size:20px;
+      margin-bottom:5px;
+    }
+
+    .dv-stat strong {
+      display:block;
+      font-size:21px;
+      font-weight:900;
+    }
+
+    .dv-stat small {
+      color:#888;
+      font-size:11px;
+    }
+
+    .dv-section-heading {
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      margin-bottom:20px;
+    }
+
+    .dv-section-eyebrow {
+      color:#ec4899;
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.15em;
+    }
+
+    .dv-section-heading h2 {
+      margin-top:3px;
+      font-size:27px;
+      font-weight:900;
+    }
+
+    .dv-section-count {
+      color:#888;
+      font-size:13px;
+    }
+
+    .dv-favourites-grid {
+      display:grid;
+      grid-template-columns:
+        repeat(6,1fr);
+      gap:8px;
+      margin-bottom:50px;
+    }
+
+    .dv-favourite-card {
+      position:relative;
+      aspect-ratio:2/3;
+      overflow:hidden;
+      border-radius:10px;
+      cursor:pointer;
+      background:#181827;
+      transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+    }
+
+    .dv-favourite-card:hover {
+      transform:scale(1.05);
+      z-index:5;
+      box-shadow:
+        0 20px 40px rgba(0,0,0,.7);
+    }
+
+    .dv-favourite-card img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .dv-favourite-overlay {
+      position:absolute;
+      inset:auto 0 0 0;
+      padding:35px 9px 9px;
+      background:
+        linear-gradient(
+          to top,
+          rgba(0,0,0,.95),
+          transparent
+        );
+    }
+
+    .dv-favourite-title {
+      font-size:12px;
+      font-weight:800;
+      margin-bottom:7px;
+      line-height:1.3;
+    }
+
+    .dv-favourite-actions {
+      display:flex;
+      gap:5px;
+    }
+
+    .dv-favourite-watch {
+      flex:1;
+      border:0;
+      border-radius:5px;
+      padding:6px;
+      background:white;
+      color:black;
+      font-size:10px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .dv-favourite-remove {
+      width:30px;
+      border:0;
+      border-radius:5px;
+      background:rgba(255,255,255,.15);
+      color:white;
+      cursor:pointer;
+    }
+
+    .dv-empty-favourites {
+      grid-column:1/-1;
+      padding:55px 20px;
+      text-align:center;
+      border-radius:20px;
+      border:1px dashed rgba(255,255,255,.1);
+      color:#777;
+    }
+
+    .dv-empty-favourites div {
+      font-size:45px;
+      opacity:.35;
+    }
+
+    .dv-empty-favourites h3 {
+      color:#ddd;
+      margin-top:10px;
+      font-size:18px;
+    }
+
+    .dv-empty-favourites p {
+      margin-top:5px;
+      font-size:13px;
+    }
+
+    .favourite-btn.favourite-active {
+      background:#facc15 !important;
+      color:#111 !important;
+      box-shadow:
+        0 0 25px rgba(250,204,21,.5);
+      transform:scale(1.08);
+    }
+
+    @media(max-width:900px) {
+
+      .dv-favourites-grid {
+        grid-template-columns:
+          repeat(4,1fr);
+      }
+
+    }
+
+    @media(max-width:600px) {
+
+      .dv-profile-card {
+        padding:20px;
+      }
+
+      .dv-user-stats {
+        grid-template-columns:
+          repeat(2,1fr);
+      }
+
+      .dv-favourites-grid {
+        grid-template-columns:
+          repeat(3,1fr);
+      }
+
+      .dv-profile-avatar {
+        width:60px;
+        height:60px;
+      }
+
+      .dv-profile-name {
+        font-size:20px;
+      }
+
+    }
+
+    @media(max-width:400px) {
+
+      .dv-favourites-grid {
+        grid-template-columns:
+          repeat(2,1fr);
+      }
+
+    }
+
+  `;
+
+
+  document.head.appendChild(
+    style
+  );
+
+}
+
+
+/* =========================================================
+   INITIALIZE DASHBOARD
+========================================================= */
+
+async function initializeDanimeverseDashboard(
+  user
+) {
+
+  if (!user) return;
+
+
+  injectDashboardStyles();
+
+
+  await updateUserActivity(
+    user.uid
+  );
+
+
+  const watchlistSnapshot =
+    await getDocs(
+      collection(
+        db,
+        "watchlists",
+        user.uid,
+        "items"
+      )
+    );
+
+
+  const favouriteSnapshot =
+    await getDocs(
+      collection(
+        db,
+        "favourites",
+        user.uid,
+        "items"
+      )
+    );
+
+
+  await renderUserDashboard(
+    user,
+    watchlistSnapshot.size,
+    favouriteSnapshot.size
+  );
+
+
+  await renderFavourites(
+    user.uid
+  );
+
+
+  injectFavouriteButtons(
+    user.uid
+  );
+
+}
+/* =========================================================
+   INITIALIZE WATCHLIST
+========================================================= */
+
+onAuthStateChanged(
+  auth,
+  async user => {
+
+    console.log(
+      "🔥 Auth state changed:",
+      user
+    );
+
+
+    if (!user) {
+
+      console.log(
+        "❌ No user signed in."
+      );
+
+      return;
+
+    }
+
+
+    try {
+
+      const slugs =
+        await getWatchlistSlugs(
+          user.uid
+        );
+
+
+      console.log(
+        "📚 Watchlist loaded:",
+        slugs
+      );
+
+
+      injectButtons(
+        user.uid,
+        slugs
+      );
+
+
+      await renderWatchlistPage(
+        user.uid
+      );
+
+
+      await initializeDanimeverseDashboard(
+        user
+      );
+
+
+      /*
+        Homepage cards are sometimes
+        rendered asynchronously.
+
+        Run this again after they appear.
+      */
+
+      setTimeout(
+        () => {
+
+          injectFavouriteButtons(
+            user.uid
+          );
+
+        },
+        1500
+      );
+
+
+      setTimeout(
+        () => {
+
+          injectFavouriteButtons(
+            user.uid
+          );
+
+        },
+        3500
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "❌ Danimeverse dashboard initialization failed:",
+        error
+      );
+
+    }
+
+  }
+);
