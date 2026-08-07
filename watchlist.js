@@ -2413,172 +2413,221 @@ async function refreshUserDashboard(
    FAVOURITE BUTTONS ON ANIME CARDS
 ========================================================= */
 
-function injectFavouriteButtons(
-  uid
-) {
+function injectFavouriteButtons(uid) {
 
-  document
-    .querySelectorAll(
-      ".favourite-btn"
-    )
-    .forEach(
-      button => {
+  document.querySelectorAll(".glass-card").forEach(card => {
 
-        if (
-          button.dataset.favouriteReady ===
-          "true"
-        ) {
+    // Don't create it twice
+    if (card.querySelector(".favourite-btn")) {
+      return;
+    }
+
+    const imgEl = card.querySelector("img");
+    const h3 = card.querySelector("h3");
+    const pEl = card.querySelector("p");
+
+    if (!h3) {
+      return;
+    }
+
+    const title = h3.textContent.trim();
+
+    const image = imgEl?.src || "";
+
+    const desc =
+      pEl?.textContent.trim() || "";
+
+    /*
+      Find original anime data
+    */
+    let originalAnime = null;
+
+    if (window.danimeverseAnimeData) {
+
+      originalAnime =
+        window.danimeverseAnimeData.find(item => {
+
+          const animeTitle =
+            item.title_english ||
+            item.title ||
+            "";
+
+          return (
+            animeTitle.trim().toLowerCase() ===
+            title.trim().toLowerCase()
+          );
+
+        });
+
+    }
+
+    /*
+      Create favourite data
+    */
+    const anime = {
+
+      title: title,
+
+      img: image,
+
+      desc: desc,
+
+      genres:
+        originalAnime?.genres
+          ?.slice(0, 3)
+          ?.map(g => g.name)
+          ?.join(", ") ||
+        "Anime",
+
+      malId:
+        originalAnime?.mal_id ||
+        null,
+
+      anilistId:
+        originalAnime?.anilist_id ||
+        originalAnime?.anilistId ||
+        null
+
+    };
+
+
+    /*
+      Create favourite button
+    */
+    const button =
+      document.createElement("button");
+
+    button.type = "button";
+
+    button.className = `
+      favourite-btn
+      absolute
+      right-3
+      bottom-24
+      z-50
+      w-11
+      h-11
+      rounded-full
+      bg-black/60
+      backdrop-blur
+      border
+      border-white/20
+      flex
+      items-center
+      justify-center
+      text-white
+      hover:bg-yellow-500
+      hover:text-black
+      hover:scale-110
+      transition-all
+      duration-300
+    `;
+
+    button.innerHTML = "⭐";
+
+    button.title =
+      "Add to Favourites";
+
+
+    /*
+      IMPORTANT:
+      Stop the card/link from opening watch.html
+    */
+    button.addEventListener(
+      "click",
+      async (e) => {
+
+        e.preventDefault();
+
+        e.stopPropagation();
+
+        if (button.disabled) {
           return;
         }
 
-
-        button.dataset.favouriteReady =
-          "true";
+        button.disabled = true;
 
 
-        const malId =
-          button.dataset.id;
+        try {
+
+          const slug =
+            slugify(anime.title);
+
+          const favouriteRef =
+            doc(
+              db,
+              "favourites",
+              uid,
+              "items",
+              slug
+            );
+
+          const existing =
+            await getDoc(
+              favouriteRef
+            );
 
 
-        button.addEventListener(
-          "click",
-          async e => {
+          /*
+            REMOVE
+          */
+          if (existing.exists()) {
 
-            e.preventDefault();
-            e.stopPropagation();
+            await deleteDoc(
+              favouriteRef
+            );
 
+            button.classList.remove(
+              "favourite-active"
+            );
 
-            const anime =
-              window.danimeverseAnimeData
-                ?.find(
-                  item =>
-                    String(
-                      item.mal_id
-                    ) ===
-                    String(
-                      malId
-                    )
-                );
+            button.innerHTML = "⭐";
 
+            button.title =
+              "Add to Favourites";
 
-            if (!anime) {
+            showToast(
+              "Removed from favourites",
+              false
+            );
 
-              showToast(
-                "Anime information unavailable.",
-                false
-              );
+          }
 
-              return;
+          /*
+            ADD
+          */
+          else {
 
-            }
+            await addFavourite(
+              uid,
+              anime
+            );
 
+            button.classList.add(
+              "favourite-active"
+            );
 
-            const favouriteData = {
+            button.innerHTML = "★";
 
-              title:
-                anime.title_english ||
-                anime.title ||
-                "Unknown Anime",
+            button.title =
+              "Remove from Favourites";
 
-              img:
-                anime.images?.jpg?.large_image_url ||
-                anime.images?.jpg?.image_url ||
-                "",
+            showToast(
+              "Added to favourites ⭐"
+            );
 
-              genres:
-                anime.genres
-                  ?.slice(0, 3)
-                  ?.map(
-                    g => g.name
-                  )
-                  ?.join(", ") ||
-                "Anime",
-
-              desc:
-                anime.synopsis ||
-                "",
-
-              malId:
-                anime.mal_id,
-
-              anilistId:
-                anime.anilist_id ||
-
-                anime.anilistId ||
-
-                null
-
-            };
+          }
 
 
-            const slug =
-              slugify(
-                favouriteData.title
-              );
-
-
-            const favouriteRef =
-              doc(
-                db,
-                "favourites",
-                uid,
-                "items",
-                slug
-              );
-
-
-            const existing =
-              await getDoc(
-                favouriteRef
-              );
-
-
-            if (
-              existing.exists()
-            ) {
-
-              await deleteDoc(
-                favouriteRef
-              );
-
-
-              button.classList.remove(
-                "favourite-active"
-              );
-
-
-              button.innerHTML =
-                "⭐";
-
-
-              showToast(
-                "Removed from favourites",
-                false
-              );
-
-            } else {
-
-              await addFavourite(
-                uid,
-                favouriteData
-              );
-
-
-              button.classList.add(
-                "favourite-active"
-              );
-
-
-              button.innerHTML =
-                "★";
-
-
-              showToast(
-                "Added to favourites ⭐"
-              );
-
-            }
-
+          /*
+            Refresh the profile/favourite
+            section on watchlist.html
+          */
+          if (
+            document.getElementById(
+              "danimeverse-user-dashboard"
+            )
+          ) {
 
             await refreshUserDashboard(
               uid
@@ -2586,14 +2635,78 @@ function injectFavouriteButtons(
 
           }
 
-        );
+        }
+
+        catch (error) {
+
+          console.error(
+            "❌ Favourite error:",
+            error
+          );
+
+          showToast(
+            "Could not update favourites.",
+            false
+          );
+
+        }
+
+        finally {
+
+          button.disabled = false;
+
+        }
 
       }
     );
 
+
+    /*
+      Add button to card
+    */
+    card.appendChild(button);
+
+
+    /*
+      Check if already favourited
+    */
+    getDoc(
+      doc(
+        db,
+        "favourites",
+        uid,
+        "items",
+        slugify(anime.title)
+      )
+    )
+    .then(snapshot => {
+
+      if (snapshot.exists()) {
+
+        button.classList.add(
+          "favourite-active"
+        );
+
+        button.innerHTML = "★";
+
+        button.title =
+          "Remove from Favourites";
+
+      }
+
+    })
+    .catch(error => {
+
+      console.error(
+        "❌ Could not check favourite:",
+        error
+      );
+
+    });
+
+  });
+
 }
-
-
 /* =========================================================
    ADD FAVOURITE BUTTON STYLING
 ========================================================= */

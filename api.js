@@ -1278,7 +1278,9 @@ group-hover:translate-y-0
                 1500
               )
           );
-
+          setTimeout(() => {
+            injectFavouriteButtons(user.uid);
+          }, 6000);
           await loadLatestAnime();
 
           console.log(
