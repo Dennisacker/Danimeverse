@@ -1025,17 +1025,19 @@ function createAnimeCard(anime, isFreshDrop = false) {
        FAN FAVORITES / TOP PICKS
     ========================================================= */
 
-    else {
+      else {
 
-        card.className = `
-            group
-            relative
-            cursor-pointer
-            transition-all
-            duration-500
-            hover:-translate-y-2
-        `;
-
+      card.className = `
+          group
+          relative
+          cursor-pointer
+          transition-all
+          duration-500
+          hover:-translate-y-2
+         w-[160px]
+sm:w-[185px]
+md:w-full
+      `;
         card.innerHTML = `
 
            <div
