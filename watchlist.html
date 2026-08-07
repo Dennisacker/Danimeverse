@@ -251,25 +251,7 @@
 </head>
 <body>
 
-  <!-- NAVBAR -->
-  <nav class="wl-nav">
-    <a href="index.html" class="wl-nav-logo">DANIMEVERSE</a>
-    <div class="wl-nav-links">
-      <a href="index.html">Home</a>
-      <a href="index.html#trending">Trending</a>
-      <a href="index.html#popular">Popular</a>
-      <div id="userProfile" class="flex items-center gap-2 text-sm"></div>
-    </div>
-  </nav>
-
-  <!-- HERO BAND -->
-  <div class="wl-hero">
-    <h1>My List</h1>
-    <p class="wl-hero-sub" id="watchlist-count"></p>
-  </div>
-
-  <!-- MAIN CONTENT -->
-  <div class="wl-main">
+  <main class="wl-main">
 
     <!-- LOADING SKELETONS -->
     <div id="watchlist-loading" class="wl-skeleton">
@@ -288,19 +270,29 @@
     <div id="watchlist-empty" class="hidden">
       <div class="wl-empty-icon">📋</div>
       <h2>Your list is empty</h2>
-      <p>Add anime to your list by clicking the <strong>+</strong> button on any show.</p>
-      <a href="index.html" class="wl-browse-btn">Browse Anime</a>
+      <p>
+        Add anime to your list by clicking the
+        <strong>+</strong> button on any show.
+      </p>
+      <a href="index.html" class="wl-browse-btn">
+        Browse Anime
+      </a>
     </div>
 
     <!-- NOT SIGNED IN -->
     <div id="watchlist-not-signed-in" class="hidden">
       <div class="wl-empty-icon">🔐</div>
       <h2>Sign in to see your list</h2>
-      <p>Create an account or sign in to save anime to your personal watchlist.</p>
-      <a href="sign-in.html" class="wl-signin-btn">Sign In</a>
+      <p>
+        Create an account or sign in to save anime
+        to your personal watchlist.
+      </p>
+      <a href="sign-in.html" class="wl-signin-btn">
+        Sign In
+      </a>
     </div>
 
-  </div>
+  </main>
 
    <script type="module" src="watchlist.js"></script>
   <div id="footer"></div>
