@@ -622,9 +622,6 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
     const card = document.createElement("div");
 
-    card.className =
-        "group relative cursor-pointer transition-all duration-500 hover:-translate-y-2";
-
     /* =========================================================
        ANIME DATA
     ========================================================= */
@@ -657,8 +654,12 @@ function createAnimeCard(anime, isFreshDrop = false) {
             : "N/A";
 
     const genres =
-        anime.genres?.slice(0, 2).join(" • ") ||
-        "Anime";
+        anime.genres?.length
+            ? anime.genres
+                .slice(0, 2)
+                .map(g => g.name)
+                .join(" • ")
+            : "Anime";
 
     const description =
         anime.synopsis ||
@@ -668,37 +669,36 @@ function createAnimeCard(anime, isFreshDrop = false) {
     const animeId =
         anime.mal_id ||
         anime.id ||
-        anime.anilist_id;
+        anime.anilist_id ||
+        "";
+
 
     /* =========================================================
        LOCAL STORAGE
     ========================================================= */
 
-    let watchlist =
+    const watchlist =
         JSON.parse(
             localStorage.getItem("watchlist")
         ) || [];
 
-    let favourites =
+    const favourites =
         JSON.parse(
             localStorage.getItem("favourites")
         ) || [];
 
-
     const isInWatchlist =
         watchlist.some(
             item =>
-                String(
-                    item.mal_id || item.id
-                ) === String(animeId)
+                String(item.mal_id || item.id) ===
+                String(animeId)
         );
 
     const isFavourite =
         favourites.some(
             item =>
-                String(
-                    item.mal_id || item.id
-                ) === String(animeId)
+                String(item.mal_id || item.id) ===
+                String(animeId)
         );
 
 
@@ -708,20 +708,48 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
     if (isFreshDrop) {
 
+      card.className = `
+          group
+          relative
+          shrink-0
+          flex-none
+          w-[190px]
+          min-w-[190px]
+          h-[285px]
+          min-h-[285px]
+          snap-start
+          cursor-pointer
+          overflow-hidden
+          rounded-2xl
+          bg-slate-900
+          border
+          border-white/10
+          transition-all
+          duration-500
+          hover:-translate-y-2
+          hover:border-pink-500/40
+          hover:shadow-[0_0_35px_rgba(236,72,153,0.25)]
+      `;
+      card.style.width = "190px";
+      card.style.minWidth = "190px";
+      card.style.height = "285px";
+      card.style.minHeight = "285px";
+      card.style.flexShrink = "0";
         card.innerHTML = `
 
-        <div class="relative aspect-[2/3] overflow-hidden rounded-2xl">
-
-            <!-- Poster -->
+            <!-- POSTER -->
 
             <img
                 src="${image}"
                 alt="${title}"
                 class="
+                    absolute
+                    inset-0
+                    z-0
                     w-full
                     h-full
                     object-cover
-                    transition-all
+                    transition-transform
                     duration-700
                     group-hover:scale-110
                 "
@@ -729,12 +757,13 @@ function createAnimeCard(anime, isFreshDrop = false) {
             >
 
 
-            <!-- Dark Overlay -->
+            <!-- DARK OVERLAY -->
 
             <div
                 class="
                     absolute
                     inset-0
+                    z-10
                     bg-gradient-to-t
                     from-black
                     via-black/30
@@ -744,7 +773,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
             ></div>
 
 
-            <!-- Airing -->
+            <!-- AIRING -->
 
             <span
                 class="
@@ -752,23 +781,20 @@ function createAnimeCard(anime, isFreshDrop = false) {
                     top-3
                     left-3
                     z-30
-                    bg-gradient-to-r
-                    from-green-500
-                    to-emerald-600
+                    bg-green-500
                     text-white
-                    text-xs
+                    text-[10px]
                     font-bold
                     px-3
                     py-1
                     rounded-full
-                    shadow-lg
                 "
             >
                 🟢 AIRING
             </span>
 
 
-            <!-- Type -->
+            <!-- TYPE -->
 
             <span
                 class="
@@ -777,9 +803,8 @@ function createAnimeCard(anime, isFreshDrop = false) {
                     right-3
                     z-30
                     bg-black/70
-                    backdrop-blur
                     text-white
-                    text-xs
+                    text-[10px]
                     px-3
                     py-1
                     rounded-full
@@ -792,23 +817,22 @@ function createAnimeCard(anime, isFreshDrop = false) {
             <!-- WATCHLIST -->
 
             <button
+                type="button"
                 class="
                     watchlist-btn
                     absolute
                     right-3
                     bottom-24
-                    z-50
-                    w-11
-                    h-11
+                    z-[60]
+                    w-10
+                    h-10
                     rounded-full
-                    bg-black/70
-                    backdrop-blur
+                    bg-black/80
                     border
                     border-white/20
                     flex
                     items-center
                     justify-center
-                    text-lg
                     hover:bg-pink-500
                     hover:scale-110
                     transition-all
@@ -831,23 +855,22 @@ function createAnimeCard(anime, isFreshDrop = false) {
             <!-- FAVOURITE -->
 
             <button
+                type="button"
                 class="
                     favourite-btn
                     absolute
                     right-3
                     bottom-12
-                    z-50
-                    w-11
-                    h-11
+                    z-[60]
+                    w-10
+                    h-10
                     rounded-full
-                    bg-black/70
-                    backdrop-blur
+                    bg-black/80
                     border
                     border-white/20
                     flex
                     items-center
                     justify-center
-                    text-lg
                     hover:bg-yellow-500
                     hover:text-black
                     hover:scale-110
@@ -871,6 +894,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
             <!-- PLAY -->
 
             <button
+                type="button"
                 class="
                     watch-btn
                     absolute
@@ -881,8 +905,8 @@ function createAnimeCard(anime, isFreshDrop = false) {
                     justify-center
                     opacity-0
                     group-hover:opacity-100
-                    transition-all
-                    duration-500
+                    transition-opacity
+                    duration-300
                 "
                 aria-label="Watch ${title}"
             >
@@ -892,17 +916,14 @@ function createAnimeCard(anime, isFreshDrop = false) {
                         w-14
                         h-14
                         rounded-full
-                        bg-white/10
-                        backdrop-blur-2xl
+                        bg-black/50
+                        backdrop-blur-xl
                         border
                         border-white/40
-                        shadow-[0_0_40px_rgba(236,72,153,.45)]
                         flex
                         items-center
                         justify-center
-                        group-hover:scale-110
-                        transition-all
-                        duration-300
+                        shadow-[0_0_35px_rgba(236,72,153,.5)]
                     "
                 >
 
@@ -917,7 +938,6 @@ function createAnimeCard(anime, isFreshDrop = false) {
                             flex
                             items-center
                             justify-center
-                            shadow-xl
                         "
                     >
 
@@ -925,7 +945,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                             fill="white"
-                            class="w-7 h-7 ml-1"
+                            class="w-6 h-6 ml-1"
                         >
                             <path d="M8 5v14l11-7z"/>
                         </svg>
@@ -937,7 +957,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
             </button>
 
 
-            <!-- Bottom Info -->
+            <!-- BOTTOM INFORMATION -->
 
             <div
                 class="
@@ -945,19 +965,24 @@ function createAnimeCard(anime, isFreshDrop = false) {
                     bottom-0
                     left-0
                     right-0
-                    p-4
                     z-30
+                    p-3
+                    bg-gradient-to-t
+                    from-black
+                    via-black/80
+                    to-transparent
                     translate-y-full
                     group-hover:translate-y-0
-                    transition-all
+                    transition-transform
                     duration-500
                 "
             >
 
                 <h3
                     class="
-                        text-xl
+                        text-sm
                         font-bold
+                        text-white
                         line-clamp-2
                     "
                 >
@@ -967,33 +992,29 @@ function createAnimeCard(anime, isFreshDrop = false) {
                 <p
                     class="
                         text-green-400
-                        text-sm
+                        text-xs
                         mt-1
                     "
                 >
                     ${episodes}
                 </p>
 
-                <div class="mt-2">
-
-                    <span
-                        class="
-                            inline-block
-                            bg-emerald-600
-                            text-xs
-                            px-3
-                            py-1
-                            rounded-full
-                        "
-                    >
-                        ${genres}
-                    </span>
-
-                </div>
+                <span
+                    class="
+                        inline-block
+                        mt-2
+                        bg-emerald-600
+                        text-[9px]
+                        text-white
+                        px-2
+                        py-1
+                        rounded-full
+                    "
+                >
+                    ${genres}
+                </span>
 
             </div>
-
-        </div>
 
         `;
 
@@ -1001,220 +1022,175 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
 
     /* =========================================================
-       FAN FAVORITES + TOP PICKS
+       FAN FAVORITES / TOP PICKS
     ========================================================= */
 
     else {
 
+        card.className = `
+            group
+            relative
+            cursor-pointer
+            transition-all
+            duration-500
+            hover:-translate-y-2
+        `;
+
         card.innerHTML = `
-
-        <div class="relative aspect-[2/3] overflow-hidden rounded-2xl">
-
-            <!-- Poster -->
-
-            <img
-                src="${image}"
-                alt="${title}"
-                class="
-                    w-full
-                    h-full
-                    object-cover
-                    transition-all
-                    duration-700
-                    group-hover:scale-110
-                "
-                loading="lazy"
-            >
-
-
-            <!-- Dark Overlay -->
 
             <div
                 class="
-                    absolute
-                    inset-0
-                    bg-gradient-to-t
-                    from-black
-                    via-black/55
-                    to-transparent
-                    opacity-80
-                    pointer-events-none
-                "
-            ></div>
-
-
-            <!-- Score -->
-
-            <span
-                class="
-                    absolute
-                    top-3
-                    left-3
-                    z-30
-                    bg-pink-600
-                    text-white
-                    text-xs
-                    font-bold
-                    px-3
-                    py-1
-                    rounded-full
-                    shadow-lg
+                    relative
+                    aspect-[2/3]
+                    overflow-hidden
+                    rounded-2xl
+                    bg-slate-900
                 "
             >
-                ⭐ ${score}
-            </span>
 
-
-            <!-- Type -->
-
-            <span
-                class="
-                    absolute
-                    top-3
-                    right-3
-                    z-30
-                    bg-black/70
-                    backdrop-blur
-                    text-white
-                    text-xs
-                    px-3
-                    py-1
-                    rounded-full
-                "
-            >
-                ${type}
-            </span>
-
-
-            <!-- WATCHLIST -->
-
-            <button
-                class="
-                    watchlist-btn
-                    absolute
-                    right-3
-                    bottom-24
-                    z-50
-                    w-11
-                    h-11
-                    rounded-full
-                    bg-black/60
-                    backdrop-blur
-                    border
-                    border-white/20
-                    flex
-                    items-center
-                    justify-center
-                    text-lg
-                    hover:bg-pink-500
-                    hover:scale-110
-                    transition-all
-                "
-                data-id="${animeId}"
-                title="${
-                    isInWatchlist
-                        ? "Remove from Watchlist"
-                        : "Add to Watchlist"
-                }"
-            >
-                ${
-                    isInWatchlist
-                        ? "✅"
-                        : "🔖"
-                }
-            </button>
-
-
-            <!-- FAVOURITE -->
-
-            <button
-                class="
-                    favourite-btn
-                    absolute
-                    right-3
-                    bottom-12
-                    z-50
-                    w-11
-                    h-11
-                    rounded-full
-                    bg-black/60
-                    backdrop-blur
-                    border
-                    border-white/20
-                    flex
-                    items-center
-                    justify-center
-                    text-lg
-                    hover:bg-yellow-500
-                    hover:text-black
-                    hover:scale-110
-                    transition-all
-                "
-                data-id="${animeId}"
-                title="${
-                    isFavourite
-                        ? "Remove from Favourites"
-                        : "Add to Favourites"
-                }"
-            >
-                ${
-                    isFavourite
-                        ? "💛"
-                        : "⭐"
-                }
-            </button>
-
-
-            <!-- PLAY -->
-
-            <button
-                class="
-                    watch-btn
-                    absolute
-                    inset-0
-                    z-40
-                    flex
-                    items-center
-                    justify-center
-                    opacity-0
-                    group-hover:opacity-100
-                    transition-all
-                    duration-500
-                "
-                aria-label="Watch ${title}"
-            >
+                <img
+                    src="${image}"
+                    alt="${title}"
+                    class="
+                        w-full
+                        h-full
+                        object-cover
+                        transition-transform
+                        duration-700
+                        group-hover:scale-110
+                    "
+                    loading="lazy"
+                >
 
                 <div
                     class="
-                        w-14
-                        h-14
+                        absolute
+                        inset-0
+                        bg-gradient-to-t
+                        from-black
+                        via-black/55
+                        to-transparent
+                        pointer-events-none
+                    "
+                ></div>
+
+
+                <span
+                    class="
+                        absolute
+                        top-3
+                        left-3
+                        z-30
+                        bg-pink-600
+                        text-white
+                        text-xs
+                        font-bold
+                        px-3
+                        py-1
                         rounded-full
-                        bg-white/10
-                        backdrop-blur-2xl
-                        border
-                        border-white/40
-                        shadow-[0_0_40px_rgba(236,72,153,.45)]
+                    "
+                >
+                    ⭐ ${score}
+                </span>
+
+
+                <span
+                    class="
+                        absolute
+                        top-3
+                        right-3
+                        z-30
+                        bg-black/70
+                        text-white
+                        text-xs
+                        px-3
+                        py-1
+                        rounded-full
+                    "
+                >
+                    ${type}
+                </span>
+
+
+                <button
+                    type="button"
+                    class="
+                        watchlist-btn
+                        absolute
+                        right-3
+                        bottom-24
+                        z-50
+                        w-11
+                        h-11
+                        rounded-full
+                        bg-black/70
                         flex
                         items-center
                         justify-center
-                        group-hover:scale-110
-                        transition-all
-                        duration-300
                     "
+                    data-id="${animeId}"
+                >
+                    ${
+                        isInWatchlist
+                            ? "✅"
+                            : "🔖"
+                    }
+                </button>
+
+
+                <button
+                    type="button"
+                    class="
+                        favourite-btn
+                        absolute
+                        right-3
+                        bottom-12
+                        z-50
+                        w-11
+                        h-11
+                        rounded-full
+                        bg-black/70
+                        flex
+                        items-center
+                        justify-center
+                    "
+                    data-id="${animeId}"
+                >
+                    ${
+                        isFavourite
+                            ? "💛"
+                            : "⭐"
+                    }
+                </button>
+
+
+                <button
+                    type="button"
+                    class="
+                        watch-btn
+                        absolute
+                        inset-0
+                        z-40
+                        flex
+                        items-center
+                        justify-center
+                        opacity-0
+                        group-hover:opacity-100
+                        transition-opacity
+                    "
+                    aria-label="Watch ${title}"
                 >
 
                     <div
                         class="
-                            w-10
-                            h-10
+                            w-14
+                            h-14
                             rounded-full
-                            bg-gradient-to-br
-                            from-pink-500
-                            to-fuchsia-600
+                            bg-pink-600
                             flex
                             items-center
                             justify-center
-                            shadow-xl
+                            shadow-[0_0_40px_rgba(236,72,153,.5)]
                         "
                     >
 
@@ -1229,87 +1205,69 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
                     </div>
 
-                </div>
-
-            </button>
+                </button>
 
 
-            <!-- Bottom Info -->
-
-            <div
-                class="
-                    absolute
-                    bottom-0
-                    left-0
-                    right-0
-                    p-4
-                    z-30
-                    translate-y-full
-                    group-hover:translate-y-0
-                    transition-all
-                    duration-500
-                "
-            >
-
-                <h3
+                <div
                     class="
-                        text-xl
-                        font-bold
-                        line-clamp-2
+                        absolute
+                        bottom-0
+                        left-0
+                        right-0
+                        p-4
+                        z-30
+                        translate-y-full
+                        group-hover:translate-y-0
+                        transition-transform
+                        duration-500
                     "
                 >
-                    ${title}
-                </h3>
 
-                <p
-                    class="
-                        text-pink-400
-                        text-sm
-                        mt-1
-                    "
-                >
-                    ${episodes}
-                </p>
+                    <h3 class="text-xl font-bold line-clamp-2">
+                        ${title}
+                    </h3>
 
-                <div class="mt-2">
+                    <p class="text-pink-400 text-sm mt-1">
+                        ${episodes}
+                    </p>
 
-                    <span
+                    <div class="mt-2">
+
+                        <span
+                            class="
+                                inline-block
+                                bg-indigo-600
+                                text-xs
+                                px-3
+                                py-1
+                                rounded-full
+                            "
+                        >
+                            ${genres}
+                        </span>
+
+                    </div>
+
+                    <p
                         class="
-                            inline-block
-                            bg-indigo-600
-                            text-xs
-                            px-3
-                            py-1
-                            rounded-full
+                            mt-3
+                            text-sm
+                            text-slate-300
+                            line-clamp-3
                         "
                     >
-                        ${genres}
-                    </span>
+                        ${description}
+                    </p>
 
                 </div>
 
-                <p
-                    class="
-                        mt-3
-                        text-sm
-                        text-slate-300
-                        line-clamp-3
-                    "
-                >
-                    ${description}
-                </p>
-
             </div>
-
-        </div>
-
         `;
-
     }
 
 
     /* =========================================================
-       PLAY / WATCH BUTTON
+       PLAY BUTTON
     ========================================================= */
 
     const watchButton =
@@ -1333,7 +1291,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
 
     /* =========================================================
-       WATCHLIST BUTTON
+       WATCHLIST
     ========================================================= */
 
     const watchlistButton =
@@ -1348,12 +1306,10 @@ function createAnimeCard(anime, isFreshDrop = false) {
                 event.preventDefault();
                 event.stopPropagation();
 
-
                 let currentWatchlist =
                     JSON.parse(
                         localStorage.getItem("watchlist")
                     ) || [];
-
 
                 const existingIndex =
                     currentWatchlist.findIndex(
@@ -1362,11 +1318,6 @@ function createAnimeCard(anime, isFreshDrop = false) {
                                 item.mal_id || item.id
                             ) === String(animeId)
                     );
-
-
-                /* =========================
-                   REMOVE
-                ========================= */
 
                 if (existingIndex !== -1) {
 
@@ -1381,14 +1332,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
                     watchlistButton.title =
                         "Add to Watchlist";
 
-                }
-
-
-                /* =========================
-                   ADD
-                ========================= */
-
-                else {
+                } else {
 
                     currentWatchlist.push(anime);
 
@@ -1397,9 +1341,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
                     watchlistButton.title =
                         "Remove from Watchlist";
-
                 }
-
 
                 localStorage.setItem(
                     "watchlist",
@@ -1415,7 +1357,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
 
     /* =========================================================
-       FAVOURITE BUTTON
+       FAVOURITES
     ========================================================= */
 
     const favouriteButton =
@@ -1430,12 +1372,10 @@ function createAnimeCard(anime, isFreshDrop = false) {
                 event.preventDefault();
                 event.stopPropagation();
 
-
                 let currentFavourites =
                     JSON.parse(
                         localStorage.getItem("favourites")
                     ) || [];
-
 
                 const existingIndex =
                     currentFavourites.findIndex(
@@ -1444,11 +1384,6 @@ function createAnimeCard(anime, isFreshDrop = false) {
                                 item.mal_id || item.id
                             ) === String(animeId)
                     );
-
-
-                /* =========================
-                   REMOVE
-                ========================= */
 
                 if (existingIndex !== -1) {
 
@@ -1463,14 +1398,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
                     favouriteButton.title =
                         "Add to Favourites";
 
-                }
-
-
-                /* =========================
-                   ADD
-                ========================= */
-
-                else {
+                } else {
 
                     currentFavourites.push(anime);
 
@@ -1479,9 +1407,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
                     favouriteButton.title =
                         "Remove from Favourites";
-
                 }
-
 
                 localStorage.setItem(
                     "favourites",
@@ -1500,32 +1426,17 @@ function createAnimeCard(anime, isFreshDrop = false) {
        CARD CLICK
     ========================================================= */
 
-    card.style.cursor = "pointer";
-
     card.addEventListener(
         "click",
         function(event) {
-
-            /*
-             * If user clicked ANY interactive button,
-             * do NOT open the watch page.
-             */
 
             if (
                 event.target.closest(".watch-btn") ||
                 event.target.closest(".watchlist-btn") ||
                 event.target.closest(".favourite-btn")
             ) {
-
                 return;
-
             }
-
-
-            /*
-             * Otherwise clicking the card
-             * opens the anime watch page.
-             */
 
             openAnime(anime);
 
@@ -1534,9 +1445,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
 
     return card;
-
 }
-
 
 
       /* =========================================================
@@ -1582,7 +1491,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
         animeList
           .slice(
             0,
-            12
+            24
           )
           .forEach(
             anime => {
@@ -1607,7 +1516,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
           animeList
             .slice(
               0,
-              12
+            24
             )
             .length,
           "anime"
@@ -1665,7 +1574,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
         const anime =
           await fetchAnime(
-            "/top/anime?filter=bypopularity&limit=12"
+            "/top/anime?filter=bypopularity&limit=24"
           );
 
 
@@ -1702,7 +1611,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
         const anime =
           await fetchAnime(
-            "/seasons/now?limit=12"
+            "/seasons/now?limit=24"
           );
 
 
@@ -1714,136 +1623,289 @@ function createAnimeCard(anime, isFreshDrop = false) {
       }
 
 
-      /* =========================================================
-         FRESH DROPS
-      ========================================================= */
 
-      async function loadLatestAnime() {
+/* =========================================================
+   FRESH DROPS
+========================================================= */
 
-        if (!latestContainer) {
+/* =========================================================
+   FRESH DROPS
+   HORIZONTAL SLIDER
+========================================================= */
 
-          console.error(
+async function loadLatestAnime() {
+
+    if (!latestContainer) {
+
+        console.error(
             "❌ latestAnimeContainer NOT FOUND"
-          );
+        );
 
-          return;
+        return;
+    }
+
+    console.log(
+        "🔥 LOADING FRESH DROPS..."
+    );
+
+
+    /* =====================================================
+       SLIDER CONTAINER
+    ===================================================== */
+
+    latestContainer.classList.remove(
+        "grid",
+        "grid-cols-1",
+        "grid-cols-2",
+        "md:grid-cols-3",
+        "lg:grid-cols-4"
+    );
+
+    latestContainer.classList.add(
+        "flex",
+        "gap-5",
+        "overflow-x-auto",
+        "overflow-y-hidden",
+        "scroll-smooth",
+        "snap-x",
+        "snap-mandatory",
+        "pb-4",
+        "no-scrollbar"
+    );
+
+
+    /* =====================================================
+       LOADING
+    ===================================================== */
+
+    showLoading(
+        latestContainer,
+        6
+    );
+
+
+    /* =====================================================
+       FETCH AIRING ANIME
+    ===================================================== */
+
+    console.log(
+        "📡 Fetching Fresh Drops from Jikan..."
+    );
+
+  const anime = await fetchAnime(
+      "/top/anime?filter=airing&limit=24"
+  );
+
+
+    console.log(
+        "🔥 FRESH DROPS RESULT:",
+        anime
+    );
+
+
+    /* =====================================================
+       CHECK RESULT
+    ===================================================== */
+
+    if (
+        !anime ||
+        anime.length === 0
+    ) {
+
+        console.error(
+            "❌ FRESH DROPS RETURNED NO ANIME"
+        );
+
+        showError(
+            latestContainer,
+            "Fresh Drops could not be loaded."
+        );
+
+        return;
+    }
+
+
+    /* =====================================================
+       RENDER
+    ===================================================== */
+
+    renderAnime(
+        latestContainer,
+        anime,
+        true
+    );
+
+  latestContainer.style.display = "flex";
+  latestContainer.style.flexDirection = "row";
+  latestContainer.style.flexWrap = "nowrap";
+  latestContainer.style.overflowX = "auto";
+    /* =====================================================
+       DEBUG
+    ===================================================== */
+
+    console.log(
+        "🧪 Fresh Drop DOM children:",
+        latestContainer.children.length
+    );
+
+
+    const firstCard =
+        latestContainer.firstElementChild;
+
+
+    console.log(
+        "🧪 First Fresh Drop:",
+        firstCard
+    );
+
+
+    if (firstCard) {
+
+        console.log(
+            "🧪 CARD RECT:",
+            firstCard.getBoundingClientRect()
+        );
+
+
+        console.log(
+            "🧪 CARD STYLE:",
+            getComputedStyle(firstCard)
+        );
+
+
+        const image =
+            firstCard.querySelector("img");
+
+
+        console.log(
+            "🧪 IMAGE:",
+            image
+        );
+
+
+        if (image) {
+
+            console.log(
+                "🧪 IMAGE RECT:",
+                image.getBoundingClientRect()
+            );
 
         }
 
+    }
 
-        showLoading(
-          latestContainer,
-          6
-        );
-
-
-        const anime =
-          await fetchAnime(
-            "/top/anime?filter=airing&limit=12"
-          );
-
-
-        renderAnime(
-          latestContainer,
-          anime,
-          true
-        );
-
-      }
-
-
-      /* =========================================================
-         START HOMEPAGE API
-
-         All three sections load independently.
-         This prevents one failed API request
-         from stopping the remaining sections.
-      ========================================================= */
-
-        async function loadHomepageAnime() {
-
-          console.log(
-            "🚀 STARTING DANIMEVERSE API"
-          );
-
-          await loadPopularAnime();
-
-          await new Promise(
-            resolve =>
-              setTimeout(
-                resolve,
-                1500
-              )
-          );
-
-          await loadTrendingAnime();
-
-          await new Promise(
-            resolve =>
-              setTimeout(
-                resolve,
-                1500
-              )
-          );
-          setTimeout(() => {
-            injectFavouriteButtons(user.uid);
-          }, 6000);
-          await loadLatestAnime();
-
-          console.log(
-            "🎉 DANIMEVERSE HOMEPAGE COMPLETE"
-          );
-
-        }
-      /* =========================================================
-         RUN API
-      ========================================================= */
-
-      if (
-        document.readyState ===
-        "loading"
-      ) {
-
-        document.addEventListener(
-          "DOMContentLoaded",
-          loadHomepageAnime
-        );
-
-      }
-      else {
-
-        loadHomepageAnime();
-
-      }
-    
-  window.featuredAnime = [
-
-{
-title:"Solo Leveling",
-desc:"The weakest hunter rises to become humanity's strongest.",
-rating:"⭐ 9.4",
-genre:"Action • Fantasy"
-},
-
-{
-title:"Attack on Titan",
-desc:"Humanity fights for survival against terrifying Titans.",
-rating:"⭐ 9.8",
-genre:"Action • Dark Fantasy"
-},
-
-{
-title:"Jujutsu Kaisen",
-desc:"Sorcerers battle deadly curses threatening humanity.",
-rating:"⭐ 9.1",
-genre:"Action • Supernatural"
-},
-
-{
-title:"Naruto",
-desc:"A young ninja dreams of becoming Hokage.",
-rating:"⭐ 8.7",
-genre:"Adventure • Ninja"
 }
+
+
+/* =========================================================
+   START HOMEPAGE API
+========================================================= */
+
+async function loadHomepageAnime() {
+
+    console.log(
+        "🚀 STARTING DANIMEVERSE API"
+    );
+
+
+    /* =====================================================
+       FAN FAVORITES
+    ===================================================== */
+
+    await loadPopularAnime();
+
+
+    await new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                1500
+            )
+    );
+
+
+    /* =====================================================
+       TOP PICKS
+    ===================================================== */
+
+    await loadTrendingAnime();
+
+
+    await new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                1500
+            )
+    );
+
+
+    /* =====================================================
+       FRESH DROPS
+    ===================================================== */
+
+    await loadLatestAnime();
+
+
+    console.log(
+        "🎉 DANIMEVERSE HOMEPAGE COMPLETE"
+    );
+
+}
+
+
+/* =========================================================
+   RUN HOMEPAGE API
+========================================================= */
+
+if (
+    document.readyState === "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        loadHomepageAnime
+    );
+
+} else {
+
+    loadHomepageAnime();
+
+}
+
+
+/* =========================================================
+   HERO FEATURED ANIME
+========================================================= */
+
+window.featuredAnime = [
+
+    {
+        title: "Solo Leveling",
+        desc: "The weakest hunter rises to become humanity's strongest.",
+        rating: "⭐ 9.4",
+        genre: "Action • Fantasy"
+    },
+
+    {
+        title: "Attack on Titan",
+        desc: "Humanity fights for survival against terrifying Titans.",
+        rating: "⭐ 9.8",
+        genre: "Action • Dark Fantasy"
+    },
+
+    {
+        title: "Jujutsu Kaisen",
+        desc: "Sorcerers battle deadly curses threatening humanity.",
+        rating: "⭐ 9.1",
+        genre: "Action • Supernatural"
+    },
+
+    {
+        title: "Naruto",
+        desc: "A young ninja dreams of becoming Hokage.",
+        rating: "⭐ 8.7",
+        genre: "Adventure • Ninja"
+    }
 
 ];

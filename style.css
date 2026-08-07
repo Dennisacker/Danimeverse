@@ -682,3 +682,37 @@ transform:translateY(-120px);
 .wl-logo-text span {
   color: #ec4899;
 }
+/* =========================================================
+   FRESH DROPS — FORCE VISIBLE HORIZONTAL ROW
+========================================================= */
+
+#episodes {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    overflow: visible !important;
+}
+
+#latestAnimeContainer {
+    position: relative;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 300px;
+
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+#latestAnimeContainer > div {
+    display: block !important;
+    flex: 0 0 auto !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
