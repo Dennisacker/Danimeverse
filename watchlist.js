@@ -2600,344 +2600,605 @@ function injectFavouriteButtons(
 
 function injectDashboardStyles() {
 
-  if (
-    document.getElementById(
-      "danimeverse-dashboard-styles"
-    )
-  ) {
+  if (document.getElementById("danimeverse-dashboard-styles")) {
     return;
   }
 
+  const style = document.createElement("style");
 
-  const style =
-    document.createElement(
-      "style"
-    );
-
-
-  style.id =
-    "danimeverse-dashboard-styles";
-
+  style.id = "danimeverse-dashboard-styles";
 
   style.textContent = `
 
+    /* =====================================================
+       PROFILE DASHBOARD
+    ===================================================== */
+
     #danimeverse-user-dashboard {
-      margin-bottom: 45px;
+      width: 100%;
+      margin: 0 0 55px;
     }
 
     .dv-profile-card {
+      position: relative;
+      overflow: hidden;
+
+      padding: 30px;
+
+      border-radius: 22px;
+
       background:
         linear-gradient(
           135deg,
-          rgba(236,72,153,.16),
-          rgba(79,70,229,.12)
+          rgba(236,72,153,.13),
+          rgba(139,92,246,.08) 50%,
+          rgba(20,20,20,.96)
         );
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 28px;
-      padding: 28px;
-      backdrop-filter: blur(20px);
+
+      border: 1px solid rgba(255,255,255,.08);
+
       box-shadow:
-        0 20px 60px rgba(0,0,0,.25);
+        0 20px 60px rgba(0,0,0,.35);
+    }
+
+    .dv-profile-card::before {
+      content: "";
+
+      position: absolute;
+
+      width: 280px;
+      height: 280px;
+
+      top: -150px;
+      right: -100px;
+
+      background: rgba(236,72,153,.13);
+
+      filter: blur(70px);
+
+      border-radius: 50%;
+
+      pointer-events: none;
     }
 
     .dv-profile-main {
-      display:flex;
-      align-items:center;
-      gap:18px;
-      margin-bottom:25px;
+      position: relative;
+
+      display: flex;
+      align-items: center;
+
+      gap: 18px;
+
+      margin-bottom: 28px;
     }
 
     .dv-profile-avatar {
-      width:76px;
-      height:76px;
-      border-radius:50%;
-      object-fit:cover;
-      border:3px solid rgba(236,72,153,.7);
+      width: 78px;
+      height: 78px;
+
+      flex-shrink: 0;
+
+      border-radius: 50%;
+
+      object-fit: cover;
+
+      border: 3px solid rgba(236,72,153,.75);
+
       box-shadow:
-        0 0 30px rgba(236,72,153,.3);
+        0 0 0 5px rgba(236,72,153,.08),
+        0 0 30px rgba(236,72,153,.25);
     }
 
     .dv-profile-name {
-      font-size:25px;
-      font-weight:900;
+      font-size: 25px;
+
+      line-height: 1.1;
+
+      font-weight: 900;
+
+      color: white;
     }
 
     .dv-profile-email {
-      color:#999;
-      font-size:13px;
-      margin-top:3px;
+      margin-top: 5px;
+
+      color: #888;
+
+      font-size: 13px;
     }
 
     .dv-profile-rank {
-      display:inline-flex;
-      gap:6px;
-      margin-top:9px;
-      padding:5px 11px;
-      border-radius:999px;
-      background:rgba(236,72,153,.15);
-      color:#f9a8d4;
-      font-size:12px;
-      font-weight:800;
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 6px;
+
+      margin-top: 10px;
+
+      padding: 5px 11px;
+
+      border-radius: 999px;
+
+      background: rgba(236,72,153,.12);
+
+      border: 1px solid rgba(236,72,153,.18);
+
+      color: #f9a8d4;
+
+      font-size: 11px;
+
+      font-weight: 800;
     }
 
+
+    /* XP */
+
     .dv-xp-section {
-      margin-bottom:25px;
+      position: relative;
+
+      margin-bottom: 25px;
     }
 
     .dv-xp-top,
     .dv-xp-bottom {
-      display:flex;
-      justify-content:space-between;
-      font-size:13px;
-      color:#aaa;
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 15px;
+
+      font-size: 12px;
+
+      color: #888;
+    }
+
+    .dv-xp-top span {
+      color: #aaa;
+
+      font-weight: 700;
     }
 
     .dv-xp-top strong {
-      color:#f9a8d4;
+      color: #f9a8d4;
+
+      font-size: 13px;
     }
 
     .dv-xp-bar {
-      height:9px;
-      margin:9px 0;
-      background:rgba(255,255,255,.08);
-      border-radius:999px;
-      overflow:hidden;
+      height: 8px;
+
+      margin: 10px 0;
+
+      overflow: hidden;
+
+      border-radius: 999px;
+
+      background: rgba(255,255,255,.07);
     }
 
     .dv-xp-progress {
-      height:100%;
-      border-radius:999px;
+      height: 100%;
+
+      border-radius: inherit;
+
       background:
         linear-gradient(
           90deg,
           #ec4899,
           #8b5cf6
         );
-      transition:width .7s ease;
+
+      box-shadow:
+        0 0 15px rgba(236,72,153,.35);
+
+      transition: width .7s ease;
     }
 
+
+    /* STATS */
+
     .dv-user-stats {
-      display:grid;
+      position: relative;
+
+      display: grid;
+
       grid-template-columns:
-        repeat(4,1fr);
-      gap:10px;
+        repeat(4, 1fr);
+
+      gap: 10px;
     }
 
     .dv-stat {
-      background:rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:18px;
-      padding:16px;
-      text-align:center;
+      min-width: 0;
+
+      padding: 14px 10px;
+
+      text-align: center;
+
+      border-radius: 14px;
+
+      background: rgba(0,0,0,.20);
+
+      border: 1px solid rgba(255,255,255,.055);
+
+      transition:
+        background .2s ease,
+        transform .2s ease;
+    }
+
+    .dv-stat:hover {
+      background: rgba(255,255,255,.055);
+
+      transform: translateY(-2px);
     }
 
     .dv-stat-icon {
-      display:block;
-      font-size:20px;
-      margin-bottom:5px;
+      display: block;
+
+      margin-bottom: 5px;
+
+      font-size: 18px;
     }
 
     .dv-stat strong {
-      display:block;
-      font-size:21px;
-      font-weight:900;
+      display: block;
+
+      color: white;
+
+      font-size: 20px;
+
+      font-weight: 900;
     }
 
     .dv-stat small {
-      color:#888;
-      font-size:11px;
+      display: block;
+
+      margin-top: 2px;
+
+      color: #777;
+
+      font-size: 10px;
+
+      font-weight: 600;
     }
 
+
+    /* =====================================================
+       SECTION HEADERS
+    ===================================================== */
+
     .dv-section-heading {
-      display:flex;
-      justify-content:space-between;
-      align-items:end;
-      margin-bottom:20px;
+      display: flex;
+
+      align-items: flex-end;
+
+      justify-content: space-between;
+
+      gap: 20px;
+
+      margin-bottom: 18px;
+
+      padding-bottom: 10px;
+
+      border-bottom:
+        1px solid rgba(255,255,255,.07);
     }
 
     .dv-section-eyebrow {
-      color:#ec4899;
-      font-size:10px;
-      font-weight:900;
-      letter-spacing:.15em;
+      display: block;
+
+      margin-bottom: 4px;
+
+      color: #ec4899;
+
+      font-size: 9px;
+
+      font-weight: 900;
+
+      letter-spacing: .18em;
     }
 
     .dv-section-heading h2 {
-      margin-top:3px;
-      font-size:27px;
-      font-weight:900;
+      margin: 0;
+
+      color: white;
+
+      font-size: 25px;
+
+      line-height: 1.1;
+
+      font-weight: 900;
     }
 
     .dv-section-count {
-      color:#888;
-      font-size:13px;
+      flex-shrink: 0;
+
+      color: #777;
+
+      font-size: 12px;
+    }
+
+
+    /* =====================================================
+       FAVOURITES
+    ===================================================== */
+
+    #danimeverse-favourites-section {
+      width: 100%;
+
+      margin-bottom: 55px;
     }
 
     .dv-favourites-grid {
-      display:grid;
+      display: grid;
+
       grid-template-columns:
-        repeat(6,1fr);
-      gap:8px;
-      margin-bottom:50px;
+        repeat(6, 1fr);
+
+      gap: 8px;
     }
 
     .dv-favourite-card {
-      position:relative;
-      aspect-ratio:2/3;
-      overflow:hidden;
-      border-radius:10px;
-      cursor:pointer;
-      background:#181827;
+      position: relative;
+
+      overflow: hidden;
+
+      aspect-ratio: 2 / 3;
+
+      border-radius: 6px;
+
+      background: #1c1c2e;
+
+      cursor: pointer;
+
       transition:
         transform .25s ease,
         box-shadow .25s ease;
     }
 
     .dv-favourite-card:hover {
-      transform:scale(1.05);
-      z-index:5;
+      z-index: 5;
+
+      transform: scale(1.06);
+
       box-shadow:
-        0 20px 40px rgba(0,0,0,.7);
+        0 24px 48px rgba(0,0,0,.85);
     }
 
     .dv-favourite-card img {
-      width:100%;
-      height:100%;
-      object-fit:cover;
+      display: block;
+
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
     }
 
     .dv-favourite-overlay {
-      position:absolute;
-      inset:auto 0 0 0;
-      padding:35px 9px 9px;
+      position: absolute;
+
+      right: 0;
+      bottom: 0;
+      left: 0;
+
+      padding: 45px 9px 9px;
+
       background:
         linear-gradient(
           to top,
-          rgba(0,0,0,.95),
+          rgba(0,0,0,.97),
+          rgba(0,0,0,.55) 55%,
           transparent
         );
     }
 
     .dv-favourite-title {
-      font-size:12px;
-      font-weight:800;
-      margin-bottom:7px;
-      line-height:1.3;
+      margin-bottom: 7px;
+
+      color: white;
+
+      font-size: 12px;
+
+      line-height: 1.3;
+
+      font-weight: 800;
     }
 
     .dv-favourite-actions {
-      display:flex;
-      gap:5px;
+      display: flex;
+
+      gap: 5px;
     }
 
     .dv-favourite-watch {
-      flex:1;
-      border:0;
-      border-radius:5px;
-      padding:6px;
-      background:white;
-      color:black;
-      font-size:10px;
-      font-weight:800;
-      cursor:pointer;
+      flex: 1;
+
+      padding: 6px;
+
+      border: 0;
+
+      border-radius: 4px;
+
+      background: white;
+
+      color: black;
+
+      font-size: 10px;
+
+      font-weight: 800;
+
+      cursor: pointer;
     }
 
     .dv-favourite-remove {
-      width:30px;
-      border:0;
-      border-radius:5px;
-      background:rgba(255,255,255,.15);
-      color:white;
-      cursor:pointer;
+      width: 30px;
+
+      padding: 0;
+
+      border: 0;
+
+      border-radius: 4px;
+
+      background: rgba(255,255,255,.13);
+
+      color: white;
+
+      cursor: pointer;
     }
 
+    .dv-favourite-remove:hover {
+      background: #e50914;
+    }
+
+
+    /* EMPTY FAVOURITES */
+
     .dv-empty-favourites {
-      grid-column:1/-1;
-      padding:55px 20px;
-      text-align:center;
-      border-radius:20px;
-      border:1px dashed rgba(255,255,255,.1);
-      color:#777;
+      grid-column: 1 / -1;
+
+      padding: 60px 20px;
+
+      text-align: center;
+
+      border:
+        1px dashed rgba(255,255,255,.10);
+
+      border-radius: 16px;
+
+      background: rgba(255,255,255,.015);
     }
 
     .dv-empty-favourites div {
-      font-size:45px;
-      opacity:.35;
+      margin-bottom: 8px;
+
+      font-size: 40px;
+
+      opacity: .35;
     }
 
     .dv-empty-favourites h3 {
-      color:#ddd;
-      margin-top:10px;
-      font-size:18px;
+      margin: 0;
+
+      color: #ddd;
+
+      font-size: 17px;
+
+      font-weight: 800;
     }
 
     .dv-empty-favourites p {
-      margin-top:5px;
-      font-size:13px;
+      max-width: 350px;
+
+      margin: 7px auto 0;
+
+      color: #777;
+
+      font-size: 12px;
+
+      line-height: 1.5;
     }
+
+
+    /* =====================================================
+       FAVOURITE BUTTON
+    ===================================================== */
 
     .favourite-btn.favourite-active {
-      background:#facc15 !important;
-      color:#111 !important;
+      background: #facc15 !important;
+
+      color: #111 !important;
+
+      border-color: #facc15 !important;
+
       box-shadow:
-        0 0 25px rgba(250,204,21,.5);
-      transform:scale(1.08);
+        0 0 22px rgba(250,204,21,.45);
+
+      transform: scale(1.08);
     }
 
-    @media(max-width:900px) {
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 1280px) {
 
       .dv-favourites-grid {
         grid-template-columns:
-          repeat(4,1fr);
+          repeat(5, 1fr);
       }
 
     }
 
-    @media(max-width:600px) {
+    @media (max-width: 1024px) {
+
+      .dv-favourites-grid {
+        grid-template-columns:
+          repeat(4, 1fr);
+      }
+
+    }
+
+    @media (max-width: 768px) {
 
       .dv-profile-card {
-        padding:20px;
+        padding: 22px;
+      }
+
+      .dv-favourites-grid {
+        grid-template-columns:
+          repeat(3, 1fr);
       }
 
       .dv-user-stats {
         grid-template-columns:
-          repeat(2,1fr);
-      }
-
-      .dv-favourites-grid {
-        grid-template-columns:
-          repeat(3,1fr);
-      }
-
-      .dv-profile-avatar {
-        width:60px;
-        height:60px;
-      }
-
-      .dv-profile-name {
-        font-size:20px;
+          repeat(2, 1fr);
       }
 
     }
 
-    @media(max-width:400px) {
+    @media (max-width: 480px) {
+
+      .dv-profile-main {
+        gap: 13px;
+      }
+
+      .dv-profile-avatar {
+        width: 60px;
+        height: 60px;
+      }
+
+      .dv-profile-name {
+        font-size: 20px;
+      }
+
+      .dv-profile-email {
+        font-size: 11px;
+      }
+
+      .dv-profile-card {
+        padding: 18px;
+        border-radius: 18px;
+      }
+
+      .dv-section-heading h2 {
+        font-size: 21px;
+      }
 
       .dv-favourites-grid {
         grid-template-columns:
-          repeat(2,1fr);
+          repeat(2, 1fr);
       }
 
     }
 
   `;
 
-
-  document.head.appendChild(
-    style
-  );
-
+  document.head.appendChild(style);
 }
-
 
 /* =========================================================
    INITIALIZE DASHBOARD
