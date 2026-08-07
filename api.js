@@ -1038,15 +1038,17 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
         card.innerHTML = `
 
-            <div
-                class="
-                    relative
-                    aspect-[2/3]
-                    overflow-hidden
-                    rounded-2xl
-                    bg-slate-900
-                "
-            >
+           <div
+    class="
+        relative
+        aspect-[2/3]
+        w-[150px]
+        sm:w-auto
+        overflow-hidden
+        rounded-2xl
+        bg-slate-900
+    "
+>
 
                 <img
                     src="${image}"
