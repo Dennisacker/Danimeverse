@@ -1,301 +1,1355 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-     <link rel="icon" type="image/png" href="https://i.pinimg.com/736x/fc/8d/c0/fc8dc0a1f0db8842d9c58373acd655a8.jpg">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Danimeverse | My List</title>
-  <link rel="stylesheet" href="tailwind.min.css">
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    body { background: #141414; color: white; font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; }
+  <meta charset="UTF-8">
 
-    /* NAVBAR */
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>My Watchlist | Danimeverse</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+
+    /* =========================================================
+       DANIMEVERSE WATCHLIST
+    ========================================================= */
+
+    :root {
+      --wl-bg: #08080d;
+      --wl-panel: #111118;
+      --wl-border: rgba(255,255,255,0.08);
+      --wl-text: #f5f5f7;
+      --wl-muted: #8d8d9a;
+      --wl-pink: #ec4899;
+      --wl-purple: #8b5cf6;
+      --wl-green: #10b981;
+      --wl-red: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--wl-bg);
+      color: var(--wl-text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+
+    /* =========================================================
+       PAGE
+    ========================================================= */
+
+    .watchlist-page {
+      min-height: 100vh;
+
+      background:
+        radial-gradient(
+          circle at 15% 0%,
+          rgba(139,92,246,0.10),
+          transparent 30%
+        ),
+        radial-gradient(
+          circle at 85% 5%,
+          rgba(236,72,153,0.08),
+          transparent 28%
+        ),
+        var(--wl-bg);
+    }
+
+
+    /* =========================================================
+       NAVBAR
+    ========================================================= */
+
     .wl-nav {
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 100;
+
+      height: 70px;
+
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 18px 48px;
-      background: #141414;
-      backdrop-filter: blur(8px);
+
+      padding: 0 48px;
+
+      background: rgba(8,8,13,0.88);
+
+      border-bottom:
+        1px solid var(--wl-border);
+
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
     }
+
     .wl-nav-logo {
-      font-size: 1.5rem;
-      font-weight: 900;
-      letter-spacing: 0.1em;
-      color: #ec4899;
+      color: var(--wl-pink);
       text-decoration: none;
+
+      font-size: 1.45rem;
+      font-weight: 900;
+
+      letter-spacing: 0.08em;
     }
-    .wl-nav-links { display: flex; gap: 24px; align-items: center; }
+
+    .wl-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
     .wl-nav-links a {
-      color: #ccc;
-      font-size: 14px;
+      color: #a8a8b4;
+
       text-decoration: none;
-      transition: color 0.2s;
-    }
-    .wl-nav-links a:hover { color: white; }
 
-    /* HERO BAND */
-    .wl-hero {
-      padding: 60px 48px 24px;
-      background: #141414;
-    }
-    .wl-hero h1 {
-      font-size: 2.8rem;
-      font-weight: 900;
-      letter-spacing: -0.02em;
-      margin-bottom: 6px;
-    }
-    .wl-hero-sub {
-      color: #aaa;
       font-size: 14px;
+      font-weight: 600;
+
+      transition:
+        color 0.2s ease,
+        transform 0.2s ease;
     }
 
-    /* GRID */
-    .wl-main { padding: 8px 48px 80px; }
+    .wl-nav-links a:hover {
+      color: white;
+      transform: translateY(-1px);
+    }
+
+
+    /* =========================================================
+       HERO
+    ========================================================= */
+
+    .wl-hero {
+      position: relative;
+      overflow: hidden;
+
+      padding: 54px 48px 38px;
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(17,17,24,0.96),
+          rgba(8,8,13,0.95)
+        );
+
+      border-bottom:
+        1px solid var(--wl-border);
+    }
+
+    .wl-hero::before {
+      content: "";
+
+      position: absolute;
+
+      width: 420px;
+      height: 420px;
+
+      top: -250px;
+      right: 5%;
+
+      background: var(--wl-purple);
+
+      filter: blur(140px);
+      opacity: 0.08;
+
+      pointer-events: none;
+    }
+
+    .wl-hero-content {
+      position: relative;
+      z-index: 2;
+
+      max-width: 1450px;
+
+      margin: 0 auto;
+    }
+
+    .wl-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      margin-bottom: 12px;
+
+      color: var(--wl-pink);
+
+      font-size: 11px;
+      font-weight: 800;
+
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .wl-eyebrow::before {
+      content: "";
+
+      width: 24px;
+      height: 2px;
+
+      background: var(--wl-pink);
+
+      border-radius: 999px;
+    }
+
+    .wl-hero h1 {
+      margin: 0;
+
+      font-size: clamp(2.2rem, 4vw, 3.5rem);
+
+      line-height: 1;
+
+      font-weight: 900;
+
+      letter-spacing: -0.04em;
+    }
+
+    .wl-hero-sub {
+      margin-top: 12px;
+
+      color: var(--wl-muted);
+
+      font-size: 14px;
+
+      line-height: 1.6;
+    }
+
+
+    /* =========================================================
+       USER SECTION
+    ========================================================= */
+
+    .wl-user-section {
+      max-width: 1450px;
+
+      margin: -1px auto 0;
+
+      padding: 0 48px;
+    }
+
+    .wl-user-card {
+      position: relative;
+
+      display: grid;
+
+      grid-template-columns:
+        auto 1fr auto;
+
+      align-items: center;
+
+      gap: 22px;
+
+      padding: 22px 24px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255,255,255,0.045),
+          rgba(255,255,255,0.018)
+        );
+
+      border:
+        1px solid var(--wl-border);
+
+      border-radius: 16px;
+
+      box-shadow:
+        0 18px 50px rgba(0,0,0,0.25);
+
+      backdrop-filter: blur(14px);
+    }
+
+    .wl-user-avatar {
+      width: 64px;
+      height: 64px;
+
+      flex-shrink: 0;
+
+      border-radius: 50%;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--wl-pink),
+          var(--wl-purple)
+        );
+
+      color: white;
+
+      font-size: 24px;
+      font-weight: 900;
+
+      box-shadow:
+        0 8px 30px rgba(236,72,153,0.25);
+
+      overflow: hidden;
+    }
+
+    .wl-user-avatar img {
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
+    }
+
+    .wl-user-info h2 {
+      margin: 0 0 5px;
+
+      font-size: 19px;
+
+      font-weight: 800;
+    }
+
+    .wl-user-info p {
+      margin: 0;
+
+      color: var(--wl-muted);
+
+      font-size: 13px;
+    }
+
+
+    /* =========================================================
+       STATS
+    ========================================================= */
+
+    .wl-stats {
+      display: flex;
+      align-items: center;
+
+      gap: 28px;
+    }
+
+    .wl-stat {
+      text-align: center;
+
+      min-width: 70px;
+    }
+
+    .wl-stat-number {
+      display: block;
+
+      color: white;
+
+      font-size: 21px;
+
+      font-weight: 900;
+    }
+
+    .wl-stat-label {
+      display: block;
+
+      margin-top: 3px;
+
+      color: var(--wl-muted);
+
+      font-size: 10px;
+
+      font-weight: 700;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.08em;
+    }
+
+
+    /* =========================================================
+       MAIN
+    ========================================================= */
+
+    .wl-main {
+      max-width: 1450px;
+
+      margin: 0 auto;
+
+      padding: 38px 48px 90px;
+    }
+
+
+    /* =========================================================
+       SECTION HEADER
+    ========================================================= */
+
+    .wl-section-header {
+      display: flex;
+
+      align-items: flex-end;
+
+      justify-content: space-between;
+
+      margin-bottom: 20px;
+    }
+
+    .wl-section-title {
+      margin: 0;
+
+      font-size: 1.45rem;
+
+      font-weight: 900;
+
+      letter-spacing: -0.02em;
+    }
+
+    .wl-section-subtitle {
+      margin-top: 5px;
+
+      color: var(--wl-muted);
+
+      font-size: 12px;
+    }
+
+
+    /* =========================================================
+       GRID
+    ========================================================= */
+
     #watchlist-grid {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
-    }
-    @media (max-width: 1280px) { #watchlist-grid { grid-template-columns: repeat(5, 1fr); } }
-    @media (max-width: 1024px) { #watchlist-grid { grid-template-columns: repeat(4, 1fr); } }
-    @media (max-width: 768px)  { #watchlist-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 480px)  { #watchlist-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
-      .wl-hero, .wl-main, .wl-nav { padding-left: 16px; padding-right: 16px; }
+
+      grid-template-columns:
+        repeat(6, minmax(0, 1fr));
+
+      gap: 14px;
     }
 
-    /* CARD */
+
+    /* =========================================================
+       CARD
+    ========================================================= */
+
     .wl-card {
       position: relative;
-      border-radius: 6px;
+
+      min-width: 0;
+
+      aspect-ratio: 2 / 3;
+
       overflow: hidden;
-      aspect-ratio: 2/3;
-      background: #1c1c2e;
+
+      border-radius: 10px;
+
+      background: var(--wl-panel);
+
       cursor: pointer;
-      transition: transform 0.25s ease, box-shadow 0.25s ease, z-index 0s 0.25s;
+
+      box-shadow:
+        0 8px 20px rgba(0,0,0,0.18);
+
+      transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
     }
+
     .wl-card:hover {
-      transform: scale(1.06);
-      box-shadow: 0 24px 48px rgba(0,0,0,0.85);
+      transform:
+        translateY(-6px)
+        scale(1.025);
+
       z-index: 10;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+      box-shadow:
+        0 22px 45px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(236,72,153,0.16);
     }
+
     .wl-card.removing {
       opacity: 0;
-      transform: scale(0.88);
-      transition: all 0.35s ease;
+
+      transform: scale(0.85);
+
+      transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
     }
+
+
+    /* =========================================================
+       IMAGE
+    ========================================================= */
+
     .wl-card img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+
       display: block;
+
+      object-fit: cover;
+
+      transition:
+        transform 0.45s ease;
     }
+
+    .wl-card:hover img {
+      transform: scale(1.05);
+    }
+
+
+    /* =========================================================
+       CARD OVERLAY
+    ========================================================= */
+
     .wl-card-overlay {
       position: absolute;
-      bottom: 0; left: 0; right: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.75) 55%, transparent 100%);
-      padding: 40px 10px 10px;
-      transform: translateY(35%);
-      transition: transform 0.3s ease;
+
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      padding: 65px 12px 12px;
+
+      background:
+        linear-gradient(
+          to top,
+          rgba(0,0,0,0.98) 0%,
+          rgba(0,0,0,0.82) 45%,
+          transparent 100%
+        );
+
+      transform: translateY(28px);
+
+      opacity: 0.85;
+
+      transition:
+        transform 0.3s ease,
+        opacity 0.3s ease;
     }
-    .wl-card:hover .wl-card-overlay { transform: translateY(0); }
+
+    .wl-card:hover .wl-card-overlay {
+      transform: translateY(0);
+
+      opacity: 1;
+    }
+
     .wl-card-genres {
-      color: #10b981;
-      font-size: 10px;
-      font-weight: 600;
+      margin-bottom: 4px;
+
+      color: var(--wl-green);
+
+      font-size: 9px;
+
+      font-weight: 800;
+
       text-transform: uppercase;
+
       letter-spacing: 0.08em;
-      margin-bottom: 3px;
+
+      white-space: nowrap;
+
+      overflow: hidden;
+
+      text-overflow: ellipsis;
     }
+
     .wl-card-title {
+      margin-bottom: 9px;
+
       color: white;
+
       font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 8px;
+
+      font-weight: 800;
+
       line-height: 1.3;
+
+      display: -webkit-box;
+
+      -webkit-line-clamp: 2;
+
+      -webkit-box-orient: vertical;
+
+      overflow: hidden;
     }
-    .wl-card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+
+    /* =========================================================
+       CARD BUTTONS
+    ========================================================= */
+
+    .wl-card-actions {
+      display: flex;
+
+      gap: 6px;
+
+      flex-wrap: wrap;
+    }
+
     .wl-watch-btn {
       display: inline-flex;
+
       align-items: center;
-      gap: 5px;
+
+      justify-content: center;
+
+      padding: 6px 10px;
+
+      border-radius: 5px;
+
       background: white;
+
       color: black;
-      padding: 5px 11px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 800;
+
+      font-size: 10px;
+
+      font-weight: 900;
+
       text-decoration: none;
-      transition: background 0.15s;
+
+      transition:
+        transform 0.15s ease,
+        background 0.15s ease;
     }
-    .wl-watch-btn:hover { background: rgba(255,255,255,0.85); }
+
+    .wl-watch-btn:hover {
+      background: #eee;
+
+      transform: translateY(-1px);
+    }
+
     .wl-remove-btn {
       display: inline-flex;
+
       align-items: center;
-      gap: 5px;
-      background: rgba(255,255,255,0.12);
+
+      justify-content: center;
+
+      padding: 6px 10px;
+
+      border-radius: 5px;
+
+      border:
+        1px solid rgba(255,255,255,0.18);
+
+      background:
+        rgba(255,255,255,0.08);
+
       color: white;
-      padding: 5px 10px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-      border: 1px solid rgba(255,255,255,0.25);
+
+      font-size: 10px;
+
+      font-weight: 700;
+
       cursor: pointer;
-      transition: background 0.15s;
+
+      transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
     }
-    .wl-remove-btn:hover { background: rgba(229,9,20,0.85); border-color: transparent; }
+
+    .wl-remove-btn:hover {
+      background:
+        rgba(239,68,68,0.85);
+
+      border-color: transparent;
+    }
+
+
+    /* =========================================================
+       REMOVE X
+    ========================================================= */
+
     .wl-remove-icon {
       position: absolute;
-      top: 7px; right: 7px;
-      width: 26px; height: 26px;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.75);
-      border: 1.5px solid rgba(255,255,255,0.45);
-      color: white;
-      font-size: 11px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.2s, background 0.15s;
-    }
-    .wl-card:hover .wl-remove-icon { opacity: 1; }
-    .wl-remove-icon:hover { background: #e50914; border-color: transparent; }
 
-    /* SKELETON LOADING */
+      top: 9px;
+      right: 9px;
+
+      width: 30px;
+      height: 30px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      border-radius: 50%;
+
+      border:
+        1px solid rgba(255,255,255,0.25);
+
+      background:
+        rgba(0,0,0,0.72);
+
+      color: white;
+
+      font-size: 12px;
+
+      cursor: pointer;
+
+      opacity: 0;
+
+      transform: scale(0.85);
+
+      transition:
+        opacity 0.2s ease,
+        transform 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .wl-card:hover .wl-remove-icon {
+      opacity: 1;
+
+      transform: scale(1);
+    }
+
+    .wl-remove-icon:hover {
+      background: var(--wl-red);
+
+      border-color: transparent;
+    }
+
+
+    /* =========================================================
+       LOADING
+    ========================================================= */
+
     .wl-skeleton {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
+
+      grid-template-columns:
+        repeat(6, minmax(0, 1fr));
+
+      gap: 14px;
     }
 
     .wl-skeleton.hidden {
       display: none !important;
     }
-    @media (max-width: 1280px) { .wl-skeleton { grid-template-columns: repeat(5, 1fr); } }
-    @media (max-width: 1024px) { .wl-skeleton { grid-template-columns: repeat(4, 1fr); } }
-    @media (max-width: 768px)  { .wl-skeleton { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 480px)  { .wl-skeleton { grid-template-columns: repeat(2, 1fr); } }
+
     .wl-skel-card {
-      aspect-ratio: 2/3;
-      border-radius: 6px;
-      background: #2a2a3a;
-      animation: wl-pulse 1.5s ease-in-out infinite;
-    }
-    @keyframes wl-pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+      aspect-ratio: 2 / 3;
+
+      border-radius: 10px;
+
+      background:
+        linear-gradient(
+          110deg,
+          #15151d 8%,
+          #20202a 18%,
+          #15151d 33%
+        );
+
+      background-size: 200% 100%;
+
+      animation:
+        wl-shimmer 1.5s linear infinite;
     }
 
-    /* EMPTY STATE */
-    #watchlist-empty {
-      text-align: center;
-      padding: 100px 20px;
+    @keyframes wl-shimmer {
+      to {
+        background-position-x: -200%;
+      }
     }
-    .wl-empty-icon {
-      font-size: 64px;
-      margin-bottom: 20px;
-      opacity: 0.3;
-    }
-    #watchlist-empty h2 {
-      font-size: 1.8rem;
-      font-weight: 800;
-      margin-bottom: 10px;
-      color: #eee;
-    }
-    #watchlist-empty p {
-      color: #888;
-      font-size: 15px;
-      margin-bottom: 32px;
-    }
-    .wl-browse-btn {
-      display: inline-block;
-      background: #ec4899;
-      color: white;
-      font-weight: 700;
-      font-size: 15px;
-      padding: 13px 36px;
-      border-radius: 8px;
-      text-decoration: none;
-      transition: background 0.2s, transform 0.15s;
-    }
-    .wl-browse-btn:hover { background: #db2777; transform: scale(1.03); }
 
-    /* NOT SIGNED IN STATE */
+
+    /* =========================================================
+       EMPTY / SIGN IN
+    ========================================================= */
+
+    #watchlist-empty,
     #watchlist-not-signed-in {
+      max-width: 620px;
+
+      margin: 70px auto;
+
+      padding: 60px 30px;
+
       text-align: center;
-      padding: 100px 20px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,0.035),
+          rgba(255,255,255,0.015)
+        );
+
+      border:
+        1px solid var(--wl-border);
+
+      border-radius: 18px;
     }
+
+    .wl-empty-icon {
+      width: 74px;
+      height: 74px;
+
+      margin: 0 auto 20px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      border-radius: 22px;
+
+      background:
+        rgba(236,72,153,0.08);
+
+      font-size: 35px;
+    }
+
+    #watchlist-empty h2,
     #watchlist-not-signed-in h2 {
-      font-size: 1.8rem;
-      font-weight: 800;
-      margin-bottom: 10px;
+      margin: 0 0 10px;
+
+      color: white;
+
+      font-size: 1.5rem;
+
+      font-weight: 900;
     }
-    #watchlist-not-signed-in p { color: #888; margin-bottom: 32px; }
+
+    #watchlist-empty p,
+    #watchlist-not-signed-in p {
+      max-width: 430px;
+
+      margin: 0 auto 25px;
+
+      color: var(--wl-muted);
+
+      font-size: 13px;
+
+      line-height: 1.7;
+    }
+
+    .wl-browse-btn,
     .wl-signin-btn {
-      display: inline-block;
-      background: white;
-      color: black;
-      font-weight: 800;
-      padding: 13px 36px;
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 12px 24px;
+
       border-radius: 8px;
+
       text-decoration: none;
-      transition: background 0.2s;
+
+      font-size: 13px;
+
+      font-weight: 800;
+
+      transition:
+        transform 0.2s ease,
+        background 0.2s ease;
     }
-    .wl-signin-btn:hover { background: #ddd; }
+
+    .wl-browse-btn {
+      background: var(--wl-pink);
+
+      color: white;
+    }
+
+    .wl-browse-btn:hover {
+      background: #db2777;
+
+      transform: translateY(-2px);
+    }
+
+    .wl-signin-btn {
+      background: white;
+
+      color: black;
+    }
+
+    .wl-signin-btn:hover {
+      background: #e5e5e5;
+
+      transform: translateY(-2px);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @media (max-width: 1280px) {
+
+      #watchlist-grid,
+      .wl-skeleton {
+        grid-template-columns:
+          repeat(5, minmax(0, 1fr));
+      }
+
+    }
+
+    @media (max-width: 1050px) {
+
+      .wl-user-card {
+        grid-template-columns:
+          auto 1fr;
+      }
+
+      .wl-stats {
+        grid-column: 1 / -1;
+
+        justify-content: flex-start;
+
+        padding-top: 8px;
+
+        border-top:
+          1px solid var(--wl-border);
+      }
+
+      #watchlist-grid,
+      .wl-skeleton {
+        grid-template-columns:
+          repeat(4, minmax(0, 1fr));
+      }
+
+    }
+
+    @media (max-width: 768px) {
+
+      .wl-nav {
+        height: 62px;
+
+        padding: 0 20px;
+      }
+
+      .wl-nav-links {
+        gap: 15px;
+      }
+
+      .wl-nav-links a {
+        font-size: 12px;
+      }
+
+      .wl-hero {
+        padding:
+          40px 20px 30px;
+      }
+
+      .wl-user-section {
+        padding: 0 20px;
+      }
+
+      .wl-user-card {
+        padding: 18px;
+
+        grid-template-columns:
+          auto 1fr;
+      }
+
+      .wl-user-avatar {
+        width: 54px;
+        height: 54px;
+      }
+
+      .wl-user-info h2 {
+        font-size: 16px;
+      }
+
+      .wl-stats {
+        gap: 18px;
+      }
+
+      .wl-main {
+        padding:
+          30px 20px 70px;
+      }
+
+      #watchlist-grid,
+      .wl-skeleton {
+        grid-template-columns:
+          repeat(3, minmax(0, 1fr));
+
+        gap: 10px;
+      }
+
+      .wl-card {
+        border-radius: 8px;
+      }
+
+    }
+
+    @media (max-width: 520px) {
+
+      .wl-nav-logo {
+        font-size: 1.15rem;
+      }
+
+      .wl-nav-links {
+        gap: 10px;
+      }
+
+      .wl-nav-links a {
+        font-size: 11px;
+      }
+
+      .wl-hero h1 {
+        font-size: 2.2rem;
+      }
+
+      .wl-hero-sub {
+        font-size: 12px;
+      }
+
+      .wl-user-card {
+        grid-template-columns:
+          auto 1fr;
+
+        gap: 13px;
+      }
+
+      .wl-stats {
+        gap: 10px;
+
+        justify-content: space-between;
+      }
+
+      .wl-stat {
+        min-width: 55px;
+      }
+
+      .wl-stat-number {
+        font-size: 17px;
+      }
+
+      .wl-stat-label {
+        font-size: 8px;
+      }
+
+      #watchlist-grid,
+      .wl-skeleton {
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+
+        gap: 8px;
+      }
+
+      .wl-card-overlay {
+        padding:
+          55px 9px 9px;
+      }
+
+      .wl-card-title {
+        font-size: 12px;
+      }
+
+      .wl-card-actions {
+        gap: 4px;
+      }
+
+      .wl-watch-btn,
+      .wl-remove-btn {
+        padding: 5px 8px;
+
+        font-size: 9px;
+      }
+
+    }
+
   </style>
 </head>
+
+
 <body>
 
-  <main class="wl-main">
+  <div class="watchlist-page">
 
-    <!-- LOADING SKELETONS -->
-    <div id="watchlist-loading" class="wl-skeleton">
-      <div class="wl-skel-card"></div>
-      <div class="wl-skel-card"></div>
-      <div class="wl-skel-card"></div>
-      <div class="wl-skel-card"></div>
-      <div class="wl-skel-card"></div>
-      <div class="wl-skel-card"></div>
-    </div>
 
-    <!-- GRID (filled by watchlist.js) -->
-    <div id="watchlist-grid"></div>
+    <!-- =====================================================
+         NAVBAR
+    ====================================================== -->
 
-    <!-- EMPTY STATE -->
-    <div id="watchlist-empty" class="hidden">
-      <div class="wl-empty-icon">📋</div>
-      <h2>Your list is empty</h2>
-      <p>
-        Add anime to your list by clicking the
-        <strong>+</strong> button on any show.
-      </p>
-      <a href="index.html" class="wl-browse-btn">
-        Browse Anime
+    <nav class="wl-nav">
+
+      <a
+        href="index.html"
+        class="wl-nav-logo"
+      >
+        DANIMEVERSE
       </a>
-    </div>
 
-    <!-- NOT SIGNED IN -->
-    <div id="watchlist-not-signed-in" class="hidden">
-      <div class="wl-empty-icon">🔐</div>
-      <h2>Sign in to see your list</h2>
-      <p>
-        Create an account or sign in to save anime
-        to your personal watchlist.
-      </p>
-      <a href="sign-in.html" class="wl-signin-btn">
-        Sign In
-      </a>
-    </div>
+      <div class="wl-nav-links">
 
-  </main>
+        <a href="index.html">
+          Home
+        </a>
 
-   <script type="module" src="watchlist.js"></script>
-  <div id="footer"></div>
-  <script src="footer.js"></script>
+        <a href="index.html">
+          Browse
+        </a>
+
+        <a href="watchlist.html">
+          Watchlist
+        </a>
+
+      </div>
+
+    </nav>
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="wl-hero">
+
+      <div class="wl-hero-content">
+
+        <div class="wl-eyebrow">
+          Your collection
+        </div>
+
+        <h1>
+          My Watchlist
+        </h1>
+
+        <p class="wl-hero-sub">
+          Keep track of the anime you want to watch.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         USER CARD
+    ====================================================== -->
+
+    <section class="wl-user-section">
+
+      <div class="wl-user-card">
+
+        <div
+          id="watchlist-user-avatar"
+          class="wl-user-avatar"
+        >
+          ?
+        </div>
+
+        <div class="wl-user-info">
+
+          <h2 id="watchlist-username">
+            My Watchlist
+          </h2>
+
+          <p id="watchlist-user-email">
+            Your saved anime collection
+          </p>
+
+        </div>
+
+
+        <div class="wl-stats">
+
+          <div class="wl-stat">
+
+            <span
+              id="watchlist-count"
+              class="wl-stat-number"
+            >
+              0
+            </span>
+
+            <span class="wl-stat-label">
+              Anime
+            </span>
+
+          </div>
+
+          <div class="wl-stat">
+
+            <span
+              id="watchlist-completed"
+              class="wl-stat-number"
+            >
+              0
+            </span>
+
+            <span class="wl-stat-label">
+              Completed
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="wl-main">
+
+
+      <!-- SECTION HEADER -->
+
+      <div class="wl-section-header">
+
+        <div>
+
+          <h2 class="wl-section-title">
+            Your Anime
+          </h2>
+
+          <p class="wl-section-subtitle">
+            Shows you've saved to watch later
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- ===================================================
+           LOADING
+      ==================================================== -->
+
+      <div
+        id="watchlist-loading"
+        class="wl-skeleton"
+      >
+
+        <div class="wl-skel-card"></div>
+        <div class="wl-skel-card"></div>
+        <div class="wl-skel-card"></div>
+        <div class="wl-skel-card"></div>
+        <div class="wl-skel-card"></div>
+        <div class="wl-skel-card"></div>
+
+      </div>
+
+
+      <!-- ===================================================
+           WATCHLIST GRID
+      ==================================================== -->
+
+      <div
+        id="watchlist-grid"
+      ></div>
+
+
+      <!-- ===================================================
+           EMPTY STATE
+      ==================================================== -->
+
+      <div
+        id="watchlist-empty"
+        class="hidden"
+      >
+
+        <div class="wl-empty-icon">
+          📋
+        </div>
+
+        <h2>
+          Your list is empty
+        </h2>
+
+        <p>
+          Add anime to your list by clicking the
+          <strong>+</strong>
+          button on any show.
+        </p>
+
+        <a
+          href="index.html"
+          class="wl-browse-btn"
+        >
+          Browse Anime
+        </a>
+
+      </div>
+
+
+      <!-- ===================================================
+           NOT SIGNED IN
+      ==================================================== -->
+
+      <div
+        id="watchlist-not-signed-in"
+        class="hidden"
+      >
+
+        <div class="wl-empty-icon">
+          🔐
+        </div>
+
+        <h2>
+          Sign in to see your list
+        </h2>
+
+        <p>
+          Create an account or sign in to save anime
+          to your personal watchlist.
+        </p>
+
+        <a
+          href="sign-in.html"
+          class="wl-signin-btn"
+        >
+          Sign In
+        </a>
+
+      </div>
+
+
+    </main>
+
+  </div>
+
+
+  <!-- =======================================================
+       FIREBASE / YOUR WATCHLIST SCRIPT
+       ======================================================= -->
+
+  <!--
+    KEEP YOUR EXISTING WATCHLIST JAVASCRIPT HERE.
+
+    If your project already has:
+
+      <script type="module" src="watchlist.js"></script>
+
+    put it here.
+  -->
+
+  <script
+    type="module"
+    src="watchlist.js"
+  ></script>
+
+
 </body>
 </html>
+```
