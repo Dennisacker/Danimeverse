@@ -1379,57 +1379,18 @@ function createAnimeCard(anime, isFreshDrop = false) {
                 event.preventDefault();
                 event.stopPropagation();
 
-                console.log(
-                    "⭐ FAVOURITE CLICKED:",
-                    title,
-                    animeId
-                );
-
-                let currentFavourites = [];
-
-                try {
-
-                    currentFavourites =
-                        JSON.parse(
-                            localStorage.getItem("favourites")
-                        ) || [];
-
-                } catch (error) {
-
-                    console.error(
-                        "❌ Could not read favourites:",
-                        error
-                    );
-
-                    currentFavourites = [];
-
-                }
-
-
-                /* =============================================
-                   CHECK IF ALREADY FAVOURITED
-                ============================================= */
+                let currentFavourites =
+                    JSON.parse(
+                        localStorage.getItem("favourites")
+                    ) || [];
 
                 const existingIndex =
                     currentFavourites.findIndex(
-                        item => {
-
-                            const itemId =
-                                item.mal_id ||
-                                item.malId ||
-                                item.id ||
-                                item.anilist_id;
-
-                            return String(itemId) ===
-                                   String(animeId);
-
-                        }
+                        item =>
+                            String(
+                                item.mal_id || item.id
+                            ) === String(animeId)
                     );
-
-
-                /* =============================================
-                   REMOVE
-                ============================================= */
 
                 if (existingIndex !== -1) {
 
@@ -1444,19 +1405,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
                     favouriteButton.title =
                         "Add to Favourites";
 
-                    console.log(
-                        "💔 REMOVED FROM FAVOURITES:",
-                        title
-                    );
-
-                }
-
-
-                /* =============================================
-                   ADD
-                ============================================= */
-
-                else {
+                } else {
 
                     currentFavourites.push(anime);
 
@@ -1465,18 +1414,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
                     favouriteButton.title =
                         "Remove from Favourites";
-
-                    console.log(
-                        "💛 ADDED TO FAVOURITES:",
-                        title
-                    );
-
                 }
-
-
-                /* =============================================
-                   SAVE
-                ============================================= */
 
                 localStorage.setItem(
                     "favourites",
@@ -1485,24 +1423,133 @@ function createAnimeCard(anime, isFreshDrop = false) {
                     )
                 );
 
-
-                /* =============================================
-                   VERIFY SAVE
-                ============================================= */
-
-                console.log(
-                    "💾 FAVOURITES SAVED:",
-                    JSON.parse(
-                        localStorage.getItem("favourites")
-                    )
-                );
-
             }
         );
 
-    }
-   
+    }/* =========================================================
+       FAVOURITES
+    ========================================================= */
 
+    const favouriteButton =
+        card.querySelector(".favourite-btn");
+
+    if (favouriteButton) {
+
+        favouriteButton.addEventListener("click", (event) => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            console.log("⭐ FAVOURITE BUTTON CLICKED:", anime);
+
+            let currentFavourites = [];
+
+            try {
+
+                currentFavourites =
+                    JSON.parse(
+                        localStorage.getItem("favourites") || "[]"
+                    );
+
+                if (!Array.isArray(currentFavourites)) {
+                    currentFavourites = [];
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "❌ Could not read favourites:",
+                    error
+                );
+
+                currentFavourites = [];
+
+            }
+
+
+            const existingIndex =
+                currentFavourites.findIndex(item => {
+
+                    const itemId =
+                        item.mal_id ||
+                        item.malId ||
+                        item.idMal ||
+                        item.id;
+
+                    return String(itemId) === String(animeId);
+
+                });
+
+
+            /* ===============================================
+               REMOVE
+            =============================================== */
+
+            if (existingIndex !== -1) {
+
+                currentFavourites.splice(
+                    existingIndex,
+                    1
+                );
+
+                favouriteButton.textContent = "⭐";
+
+                favouriteButton.title =
+                    "Add to Favourites";
+
+                console.log(
+                    "💔 Removed from favourites:",
+                    title
+                );
+
+            }
+
+            /* ===============================================
+               ADD
+            =============================================== */
+
+            else {
+
+                currentFavourites.push(anime);
+
+                favouriteButton.textContent = "💛";
+
+                favouriteButton.title =
+                    "Remove from Favourites";
+
+                console.log(
+                    "💛 Added to favourites:",
+                    title
+                );
+
+            }
+
+
+            /* ===============================================
+               SAVE
+            =============================================== */
+
+            localStorage.setItem(
+                "favourites",
+                JSON.stringify(
+                    currentFavourites
+                )
+            );
+
+
+            console.log(
+                "💾 FAVOURITES SAVED:",
+                currentFavourites
+            );
+
+            console.log(
+                "💾 RAW STORAGE:",
+                localStorage.getItem("favourites")
+            );
+
+        });
+
+    }
     /* =========================================================
        CARD CLICK
     ========================================================= */
