@@ -1,40 +1,10 @@
 console.log("🔥 DANIMEVERSE BUTTON TEST LOADED");
+console.log("🔥 DANIMEVERSE BUTTON TEST LOADED");
+
 import {
   initializeApp,
   getApps
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-  getAuth,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  deleteDoc,
-  collection,
-  getDocs,
-  getDoc,
-  increment
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import {
-  getAuth,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  deleteDoc,
-  collection,
-  getDocs,
-  getDoc,
-  increment
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
   getAuth,
@@ -535,570 +505,191 @@ async function openWatchlistAnime(
   }
 
 
-  /* =======================================================
-     OLD WATCHLIST ITEM
-     NO MAL ID / NO ANILIST ID
-
-     SEARCH ANILIST BY TITLE
-  ======================================================= */
-
-  try {
-
-    showToast(
-      "Finding anime..."
-    );
-
-
-    const query = `
-
-      query ($search: String) {
-
-        Media(
-          search: $search,
-          type: ANIME
-        ) {
-
-          id
-
-          idMal
-
-          title {
-
-            romaji
-
-            english
-
-            native
-
-          }
-
-        }
-
-      }
-
-    `;
-
-
-    const response =
-      await fetch(
-        "https://graphql.anilist.co",
-        {
-
-          method:
-            "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json",
-
-            "Accept":
-              "application/json"
-
-          },
-
-          body:
-            JSON.stringify({
-
-              query:
-
-                query,
-
-              variables: {
-
-                search:
-                  title
-
-              }
-
-            })
-
-        }
-      );
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        `AniList HTTP ${response.status}`
-      );
-
-    }
-
-
-    const result =
-      await response.json();
-
-
-    const media =
-      result.data?.Media;
-
-
-    if (!media) {
-
-      throw new Error(
-        "Anime not found"
-      );
-
-    }
-
-
-    const animeTitle =
-
-      media.title?.english ||
-
-      media.title?.romaji ||
-
-      media.title?.native ||
-
-      title;
-
-
-    /* =====================================================
-       UPDATE OLD FIREBASE DOCUMENT
-       SO NEXT TIME IT OPENS INSTANTLY
-    ===================================================== */
-
-    if (auth.currentUser) {
-
-      await setDoc(
-
-        doc(
-          db,
-          "watchlists",
-          auth.currentUser.uid,
-          "items",
-          slugify(title)
-        ),
-
-        {
-
-          anilistId:
-            media.id,
-
-          malId:
-            media.idMal || null
-
-        },
-
-        {
-          merge:
-            true
-        }
-
-      );
-
-    }
-
-
-    const params =
-      new URLSearchParams({
-
-        anilistId:
-          String(media.id),
-
-        anime:
-          animeTitle,
-
-        ep:
-          "1",
-
-        ...(media.idMal
-          ? {
-              malId:
-                String(
-                  media.idMal
-                )
-            }
-          : {})
-
-      });
-
-
-    window.location.href =
-      `watch.html?${params.toString()}`;
-
-
-  } catch (error) {
-
-    console.error(
-      "❌ Failed to find anime on AniList:",
-      error
-    );
-
-
-    showToast(
-      `Could not open ${title}. Please try again.`,
-      false
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   INJECT WATCHLIST BUTTONS ON HOMEPAGE
-========================================================= */
-console.log("🔥 injectButtons() called");
-
-        document.querySelectorAll(".glass-card")
-    .forEach(
-      card => {console.log("Card found:", card);
-
-        if (
-          card.querySelector(
-            ".wl-btn"
-          )
-        ) {
-
-          return;
-
-        }
-
-
-        const imgEl =
-          card.querySelector(
-            "img"
-          );
-
-
-        const h3 =
-          card.querySelector(
-            "h3"
-          );
-
-
-        const pEl =
-          card.querySelector(
-            "p"
-          );
-
-
-        const genreEl =
-          card.querySelector(
-            "[data-genres]"
-          );
-
-
-        if (!h3) {
-
-          return;
-
-        }
-
-
-        /* =====================================================
-           GET ORIGINAL ANIME DATA
-        ===================================================== */
-
-        const title =
-          h3.textContent.trim();
-
-
-        const image =
-          imgEl?.src || "";
-
-
-        const desc =
-          pEl?.textContent.trim() || "";
-
-
-        const genres =
-          genreEl?.dataset.genres || "";
-
-
-        /* =====================================================
-           FIND MAL ID FROM API DATA
-        ===================================================== */
-
-        let originalAnime =
-          null;
-
-
-        if (
-          window.danimeverseAnimeData
-        ) {
-
-          originalAnime =
-            window.danimeverseAnimeData
-              .find(
-                item =>
-                  item.mal_id &&
-                  (
-                    item.title_english ===
-                      title ||
-
-                    item.title ===
-                      title
-                  )
-              );
-
-        }
-
-
-        const anime = {
-
-          title:
-            title,
-
-          img:
-            image,
-
-          desc:
-            desc,
-
-          genres:
-            genres,
-
-          malId:
-            originalAnime?.mal_id ||
-            null,
-
-          anilistId:
-            originalAnime?.anilist_id ||
-            null
-
-        };
-
-
-        const slug =
-          slugify(
+/* =======================================================
+   OLD WATCHLIST ITEMS
+   NO MAL ID / NO ANILIST ID
+   -------------------------------------------------------
+   Kept only as a safe fallback for very old Firebase
+   watchlist documents.
+======================================================= */
+
+async function resolveOldWatchlistAnime(anime) {
+
+    const title =
+        anime?.title || "Unknown Anime";
+
+    try {
+
+        console.log(
+            "🔎 Resolving old watchlist item:",
             title
-          );
+        );
+
+        showToast(
+            "Finding anime..."
+        );
+
+        const query = `
+            query ($search: String) {
+
+                Media(
+                    search: $search,
+                    type: ANIME
+                ) {
+
+                    id
+                    idMal
+
+                    title {
+                        romaji
+                        english
+                        native
+                    }
+
+                }
+
+            }
+        `;
+
+        const response =
+            await fetch(
+                "https://graphql.anilist.co",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Accept":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            query: query,
+
+                            variables: {
+                                search: title
+                            }
+                        })
+                }
+            );
 
 
-        const inList =
-          slugs.has(
-            slug
-          );
+        if (!response.ok) {
 
-
-        const btn =
-          document.createElement(
-            "button"
-          );
-
-        btn.className =
-          `
-          wl-btn
-          absolute
-          left-3
-          bottom-24
-          z-50
-          w-10
-          h-10
-          rounded-full
-          bg-black/60
-          backdrop-blur
-          border
-          border-white/20
-          flex
-          items-center
-          justify-center
-          text-white
-          hover:bg-pink-600
-          hover:scale-110
-          transition-all
-          duration-300
-          `
-          +
-          (
-            inList
-              ? " in-list"
-              : ""
-          );
-
-
-        btn.dataset.slug =
-          slug;
-
-
-        btn.title =
-          inList
-            ? "Remove from My List"
-            : "Add to My List";
-
-
-        function updateButton(
-          isInList
-        ) {
-
-          btn.innerHTML =
-            isInList
-
-              ? `
-
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="3"
-                >
-
-                  <polyline
-                    points="20 6 9 17 4 12"
-                  ></polyline>
-
-                </svg>
-
-              `
-
-              : `
-
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="3"
-                >
-
-                  <line
-                    x1="12"
-                    y1="5"
-                    x2="12"
-                    y2="19"
-                  ></line>
-
-                  <line
-                    x1="5"
-                    y1="12"
-                    x2="19"
-                    y2="12"
-                  ></line>
-
-                </svg>
-
-              `;
+            throw new Error(
+                `AniList HTTP ${response.status}`
+            );
 
         }
 
 
-        updateButton(
-          inList
-        );
+        const result =
+            await response.json();
 
 
-            btn.addEventListener(
-              "click",
-              async e => {
+        const media =
+            result.data?.Media;
 
-                e.preventDefault();
-                e.stopPropagation();
 
-                if (e.stopImmediatePropagation) {
-                  e.stopImmediatePropagation();
+        if (!media) {
+
+            throw new Error(
+                "Anime not found on AniList"
+            );
+
+        }
+
+
+        const animeTitle =
+            media.title?.english ||
+            media.title?.romaji ||
+            media.title?.native ||
+            title;
+
+
+        /* =================================================
+           UPDATE OLD FIREBASE DOCUMENT
+           SO FUTURE OPENS ARE INSTANT
+        ================================================= */
+
+        if (auth.currentUser) {
+
+            await setDoc(
+
+                doc(
+                    db,
+                    "watchlists",
+                    auth.currentUser.uid,
+                    "items",
+                    slugify(title)
+                ),
+
+                {
+                    anilistId:
+                        media.id,
+
+                    malId:
+                        media.idMal || null
+                },
+
+                {
+                    merge: true
                 }
 
-                if (btn.disabled) {
-                  return;
-                }
+            );
+
+        }
 
 
-            btn.disabled =
-              true;
+        /* =================================================
+           OPEN WATCH PAGE
+        ================================================= */
+
+        const params =
+            new URLSearchParams({
+
+                anilistId:
+                    String(media.id),
+
+                anime:
+                    animeTitle,
+
+                ep:
+                    "1",
+
+                ...(media.idMal
+                    ? {
+                        malId:
+                            String(
+                                media.idMal
+                            )
+                    }
+                    : {})
+
+            });
 
 
-            try {
-
-              if (
-                btn.classList.contains(
-                  "in-list"
-                )
-              ) {
-
-                await removeItem(
-                  uid,
-                  btn.dataset.slug
-                );
+        window.location.href =
+            `watch.html?${params.toString()}`;
 
 
-                btn.classList.remove(
-                  "in-list"
-                );
+    } catch (error) {
 
-
-                btn.title =
-                  "Add to My List";
-
-
-                updateButton(
-                  false
-                );
-
-
-                showToast(
-                  "Removed from My List",
-                  false
-                );
-
-
-              } else {
-
-                const newSlug =
-                  await addItem(
-                    uid,
-                    anime
-                  );
-
-
-                btn.dataset.slug =
-                  newSlug;
-
-
-                btn.classList.add(
-                  "in-list"
-                );
-
-
-                btn.title =
-                  "Remove from My List";
-
-
-                updateButton(
-                  true
-                );
-
-
-                showToast(
-                  "Added to My List ✓"
-                );
-
-              }
-
-            } catch (
-              error
-            ) {
-
-              console.error(
-                "Watchlist button error:",
-                error
-              );
-
-
-              showToast(
-                "Something went wrong. Please try again.",
-                false
-              );
-
-            } finally {
-
-              btn.disabled =
-                false;
-
-            }
-
-          }
-
+        console.error(
+            "❌ Failed to find old anime on AniList:",
+            error
         );
 
 
-        card.appendChild(
-          btn
+        showToast(
+            `Could not open ${title}. Please try again.`,
+            false
         );
 
-      }
-    );
+    }
 
 }
 
@@ -2442,390 +2033,421 @@ async function refreshUserDashboard(
 
 function injectButtons(uid, slugs) {
 
-    const cards =
-        document.querySelectorAll(".glass-card");
+  const cards =
+    document.querySelectorAll(".glass-card");
+
+  console.log(
+    "📋 injectButtons() — cards found:",
+    cards.length
+  );
+
+  cards.forEach(card => {
+
+    /* Prevent duplicate buttons */
+    if (card.querySelector(".wl-btn")) {
+      return;
+    }
+
+    const imgEl =
+      card.querySelector("img");
+
+    const h3 =
+      card.querySelector("h3");
+
+    const pEl =
+      card.querySelector("p");
+
+    const genreEl =
+      card.querySelector("[data-genres]");
+
+    if (!h3) {
+      return;
+    }
+
+    const title =
+      h3.textContent.trim();
+
+    const image =
+      imgEl?.src || "";
+
+    const desc =
+      pEl?.textContent.trim() || "";
+
+    const genres =
+      genreEl?.dataset.genres || "Anime";
+
+
+    /* =====================================================
+       FIND ORIGINAL ANIME DATA
+    ===================================================== */
+
+    let originalAnime = null;
+
+    if (
+      Array.isArray(
+        window.danimeverseAnimeData
+      )
+    ) {
+
+      originalAnime =
+        window.danimeverseAnimeData.find(
+          item => {
+
+            const animeTitle =
+              item.title_english ||
+              item.title ||
+              "";
+
+            return (
+              animeTitle
+                .trim()
+                .toLowerCase() ===
+              title
+                .trim()
+                .toLowerCase()
+            );
+
+          }
+        );
+
+    }
+
+
+    /* =====================================================
+       CREATE ANIME OBJECT
+    ===================================================== */
+
+    const anime = {
+
+      title: title,
+
+      img: image,
+
+      desc: desc,
+
+      genres: genres,
+
+      malId:
+        originalAnime?.mal_id ||
+        originalAnime?.malId ||
+        null,
+
+      anilistId:
+        originalAnime?.anilist_id ||
+        originalAnime?.anilistId ||
+        null
+
+    };
+
 
     console.log(
-        "📋 injectButtons() — cards found:",
-        cards.length
+      "📋 Watchlist anime:",
+      anime
     );
 
-    cards.forEach(card => {
 
-        /* Don't inject twice */
-        if (card.querySelector(".wl-btn")) {
-            return;
+    /* =====================================================
+       SLUG
+    ===================================================== */
+
+    const slug =
+      slugify(title);
+
+    const inList =
+      slugs.has(slug);
+
+
+    /* =====================================================
+       CREATE BUTTON
+    ===================================================== */
+
+    const btn =
+      document.createElement("button");
+
+    btn.type =
+      "button";
+
+    btn.className =
+      `
+      wl-btn
+      absolute
+      left-3
+      bottom-24
+      z-50
+      w-10
+      h-10
+      rounded-full
+      bg-black/60
+      backdrop-blur
+      border
+      border-white/20
+      flex
+      items-center
+      justify-center
+      text-white
+      hover:bg-pink-600
+      hover:scale-110
+      transition-all
+      duration-300
+      ` +
+      (
+        inList
+          ? " in-list"
+          : ""
+      );
+
+    btn.dataset.slug =
+      slug;
+
+
+    /* =====================================================
+       ICON
+    ===================================================== */
+
+    function updateButton(isInList) {
+
+      btn.innerHTML =
+        isInList
+
+          ? `
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              width="18"
+              height="18"
+            >
+              <polyline
+                points="20 6 9 17 4 12"
+              ></polyline>
+            </svg>
+          `
+
+          : `
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+              width="18"
+              height="18"
+            >
+              <line
+                x1="12"
+                y1="5"
+                x2="12"
+                y2="19"
+              ></line>
+
+              <line
+                x1="5"
+                y1="12"
+                x2="19"
+                y2="12"
+              ></line>
+            </svg>
+          `;
+
+    }
+
+
+    updateButton(inList);
+
+
+    btn.title =
+      inList
+        ? "Remove from My List"
+        : "Add to My List";
+
+
+    /* =====================================================
+       CLICK
+    ===================================================== */
+
+    btn.addEventListener(
+      "click",
+      async e => {
+
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        if (btn.disabled) {
+          return;
         }
 
-        const imgEl =
-            card.querySelector("img");
+        btn.disabled = true;
 
-        const h3 =
-            card.querySelector("h3");
+        try {
 
-        const pEl =
-            card.querySelector("p");
+          /* ==============================
+             REMOVE
+          ============================== */
 
-        const genreEl =
-            card.querySelector("[data-genres]");
-
-        if (!h3) {
-            console.log(
-                "⚠️ Card has no h3:",
-                card
-            );
-            return;
-        }
-
-        /* =====================================================
-           GET CARD DATA
-        ===================================================== */
-
-        const title =
-            h3.textContent.trim();
-
-        const image =
-            imgEl?.src || "";
-
-        const desc =
-            pEl?.textContent.trim() || "";
-
-        const genres =
-            genreEl?.dataset.genres || "Anime";
-
-
-        /* =====================================================
-           FIND ORIGINAL ANIME DATA
-        ===================================================== */
-
-        let originalAnime = null;
-
-        if (
-            Array.isArray(
-                window.danimeverseAnimeData
+          if (
+            btn.classList.contains(
+              "in-list"
             )
-        ) {
+          ) {
 
-            originalAnime =
-                window.danimeverseAnimeData.find(
-                    item => {
-
-                        const animeTitle =
-                            item.title_english ||
-                            item.title ||
-                            item.title?.english ||
-                            "";
-
-                        return (
-                            animeTitle
-                                .trim()
-                                .toLowerCase() ===
-                            title
-                                .trim()
-                                .toLowerCase()
-                        );
-
-                    }
-                );
-
-        }
-
-
-        /* =====================================================
-           CREATE ANIME OBJECT
-        ===================================================== */
-
-        const anime = {
-
-            title: title,
-
-            img: image,
-
-            desc: desc,
-
-            genres: genres,
-
-            malId:
-                originalAnime?.mal_id ||
-                originalAnime?.malId ||
-                null,
-
-            anilistId:
-                originalAnime?.anilist_id ||
-                originalAnime?.anilistId ||
-                null
-
-        };
-
-
-        console.log(
-            "📋 Watchlist anime:",
-            anime
-        );
-
-
-        /* =====================================================
-           SLUG
-        ===================================================== */
-
-        const slug =
-            slugify(title);
-
-        const inList =
-            slugs.has(slug);
-
-
-        /* =====================================================
-           CREATE BUTTON
-        ===================================================== */
-
-        const btn =
-            document.createElement("button");
-
-        btn.type =
-            "button";
-
-        btn.className =
-            `
-            wl-btn
-            absolute
-            left-3
-            bottom-24
-            z-50
-            w-10
-            h-10
-            rounded-full
-            bg-black/60
-            backdrop-blur
-            border
-            border-white/20
-            flex
-            items-center
-            justify-center
-            text-white
-            hover:bg-pink-600
-            hover:scale-110
-            transition-all
-            duration-300
-            ` +
-            (
-                inList
-                    ? " in-list"
-                    : ""
+            await removeItem(
+              uid,
+              btn.dataset.slug
             );
 
-        btn.dataset.slug =
-            slug;
+            slugs.delete(
+              btn.dataset.slug
+            );
 
+            btn.classList.remove(
+              "in-list"
+            );
 
-        /* =====================================================
-           BUTTON ICON
-        ===================================================== */
+            btn.title =
+              "Add to My List";
 
-        function updateButton(isInList) {
+            updateButton(false);
 
-            btn.innerHTML =
-                isInList
+            showToast(
+              "Removed from My List",
+              false
+            );
 
-                    ? `
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="3"
-                            width="18"
-                            height="18"
-                        >
-                            <polyline
-                                points="20 6 9 17 4 12"
-                            ></polyline>
-                        </svg>
-                    `
+          }
 
-                    : `
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="3"
-                            width="18"
-                            height="18"
-                        >
-                            <line
-                                x1="12"
-                                y1="5"
-                                x2="12"
-                                y2="19"
-                            ></line>
+          /* ==============================
+             ADD
+          ============================== */
 
-                            <line
-                                x1="5"
-                                y1="12"
-                                x2="19"
-                                y2="12"
-                            ></line>
-                        </svg>
-                    `;
+          else {
+
+            const newSlug =
+              await addItem(
+                uid,
+                anime
+              );
+
+            btn.dataset.slug =
+              newSlug;
+
+            slugs.add(
+              newSlug
+            );
+
+            btn.classList.add(
+              "in-list"
+            );
+
+            btn.title =
+              "Remove from My List";
+
+            updateButton(true);
+
+            showToast(
+              "Added to My List ✓"
+            );
+
+          }
 
         }
 
+        catch (error) {
 
-        updateButton(inList);
+          console.error(
+            "❌ Watchlist button error:",
+            error
+          );
 
+          showToast(
+            "Something went wrong. Please try again.",
+            false
+          );
 
-        btn.title =
-            inList
-                ? "Remove from My List"
-                : "Add to My List";
+        }
 
+        finally {
 
-        /* =====================================================
-           CLICK
-        ===================================================== */
+          btn.disabled =
+            false;
 
-        btn.addEventListener(
-            "click",
-            async e => {
+        }
 
-                e.preventDefault();
-
-                e.stopPropagation();
-
-                e.stopImmediatePropagation();
-
-
-                if (btn.disabled) {
-                    return;
-                }
+      }
+    );
 
 
-                btn.disabled =
-                    true;
+    /* =====================================================
+       ADD BUTTON TO CARD
+    ===================================================== */
 
+    card.appendChild(btn);
 
-                try {
+    console.log(
+      "✅ Watchlist button injected:",
+      title
+    );
 
-                    /* ==============================
-                       REMOVE
-                    ============================== */
+  });
 
-                    if (
-                        btn.classList.contains(
-                            "in-list"
-                        )
-                    ) {
+}
+/* =========================================================
+   WATCH FOR ASYNC ANIME CARDS
+========================================================= */
 
-                        await removeItem(
-                            uid,
-                            btn.dataset.slug
-                        );
+function startWatchlistButtonObserver(
+  uid,
+  slugs
+) {
 
+  console.log(
+    "👀 Starting watchlist card observer..."
+  );
 
-                        slugs.delete(
-                            btn.dataset.slug
-                        );
+  injectButtons(
+    uid,
+    slugs
+  );
 
+  const observer =
+    new MutationObserver(() => {
 
-                        btn.classList.remove(
-                            "in-list"
-                        );
-
-
-                        btn.title =
-                            "Add to My List";
-
-
-                        updateButton(false);
-
-
-                        showToast(
-                            "Removed from My List",
-                            false
-                        );
-
-                    }
-
-
-                    /* ==============================
-                       ADD
-                    ============================== */
-
-                    else {
-
-                        const newSlug =
-                            await addItem(
-                                uid,
-                                anime
-                            );
-
-
-                        btn.dataset.slug =
-                            newSlug;
-
-
-                        slugs.add(
-                            newSlug
-                        );
-
-
-                        btn.classList.add(
-                            "in-list"
-                        );
-
-
-                        btn.title =
-                            "Remove from My List";
-
-
-                        updateButton(true);
-
-
-                        showToast(
-                            "Added to My List ✓"
-                        );
-
-                    }
-
-                }
-
-                catch (error) {
-
-                    console.error(
-                        "❌ Watchlist button error:",
-                        error
-                    );
-
-                    showToast(
-                        "Something went wrong. Please try again.",
-                        false
-                    );
-
-                }
-
-                finally {
-
-                    btn.disabled =
-                        false;
-
-                }
-
-            }
+      const cards =
+        document.querySelectorAll(
+          ".glass-card"
         );
 
+      if (cards.length > 0) {
 
-        /* =====================================================
-           PUT BUTTON ON CARD
-        ===================================================== */
-
-        card.appendChild(btn);
-
-
-        console.log(
-            "✅ Watchlist button injected:",
-            title
+        injectButtons(
+          uid,
+          slugs
         );
+
+      }
 
     });
+
+  observer.observe(
+    document.body,
+    {
+      childList: true,
+      subtree: true
+    }
+  );
+
+  setTimeout(
+    () => {
+
+      observer.disconnect();
+
+      console.log(
+        "👀 Watchlist observer stopped."
+      );
+
+    },
+    15000
+  );
 
 }
 /* =========================================================
@@ -3580,7 +3202,6 @@ onAuthStateChanged(
       user
     );
 
-
     if (!user) {
 
       console.log(
@@ -3591,14 +3212,12 @@ onAuthStateChanged(
 
     }
 
-
     try {
 
       const slugs =
         await getWatchlistSlugs(
           user.uid
         );
-
 
       console.log(
         "📚 Watchlist loaded:",
@@ -3616,38 +3235,19 @@ onAuthStateChanged(
       );
 
 
-      /*
-        Homepage cards are sometimes
-        rendered asynchronously.
+      /* =========================================
+         START WATCHLIST BUTTON OBSERVER
+      ========================================= */
 
-        Run this again after they appear.
-      */
-
-      setTimeout(
-        () => {
-
-          injectFavouriteButtons(
-            user.uid
-          );
-
-        },
-        1500
+      startWatchlistButtonObserver(
+        user.uid,
+        slugs
       );
 
 
-      setTimeout(
-        () => {
+    }
 
-          injectFavouriteButtons(
-            user.uid
-          );
-
-        },
-        3500
-      );
-
-
-    } catch (error) {
+    catch (error) {
 
       console.error(
         "❌ Danimeverse dashboard initialization failed:",
