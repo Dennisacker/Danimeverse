@@ -1,117 +1,441 @@
 console.log("🔥 HERO JS LOADED");
+
+let currentHeroAnime = null;
+
+
 document.addEventListener("DOMContentLoaded", () => {
 
     let currentHero = 0;
     let activeBg = "A";
 
 
-    const bgA = document.getElementById("heroBgA");
-    const bgB = document.getElementById("heroBgB");
-    const welcomeBg = document.getElementById("welcomeBg");
-    const title = document.getElementById("animeTitle");
-    const desc = document.getElementById("animeDesc");
-    const rating = document.getElementById("rating");
-    const genre = document.getElementById("genre");
-    const animeContent = document.getElementById("animeContent");
-    const dots = document.getElementById("heroDots");
+    const bgA =
+        document.getElementById("heroBgA");
+
+    const bgB =
+        document.getElementById("heroBgB");
+
+    const welcomeBg =
+        document.getElementById("welcomeBg");
+
+    const title =
+        document.getElementById("animeTitle");
+
+    const desc =
+        document.getElementById("animeDesc");
+
+    const rating =
+        document.getElementById("rating");
+
+    const genre =
+        document.getElementById("genre");
+
+    const animeContent =
+        document.getElementById("animeContent");
+
+    const dots =
+        document.getElementById("heroDots");
 
 
-    if(!bgA || !bgB){
-        console.log("Hero elements missing");
+    const heroWatchBtn =
+        document.getElementById("heroWatchBtn");
+
+    const heroWatchlistBtn =
+        document.getElementById("heroWatchlistBtn");
+
+    const heroWatchlistText =
+        document.getElementById("heroWatchlistText");
+
+
+    if (!bgA || !bgB) {
+
+        console.log(
+            "❌ Hero elements missing"
+        );
+
         return;
+
     }
 
 
+    /* =========================================================
+       HERO WATCHLIST BUTTON
+    ========================================================= */
 
-    // create dots
+    function updateHeroWatchlistButton() {
 
-    featuredAnime.forEach((anime,index)=>{
+        if (
+            !currentHeroAnime ||
+            !heroWatchlistBtn ||
+            !heroWatchlistText
+        ) {
 
-        const dot=document.createElement("button");
-
-        dot.className =
-        "w-3 h-3 rounded-full bg-white/50 transition";
-
-        dot.onclick=()=>{
-
-            currentHero=index;
-            changeHero();
-
-        };
-
-        dots.appendChild(dot);
-
-    });
-
-
-    async function changeHero(){
-
-        const anime = featuredAnime[currentHero];
-
-        console.log("Current anime:", anime.title);
-
-
-        const next =
-        activeBg === "A" ? bgB : bgA;
-
-
-        const current =
-        activeBg === "A" ? bgA : bgB;
-
-
-
-        const backdrop = await getAnimeBackdrop(anime.title);
-
-        console.log("Backdrop URL:", backdrop);
-
-
-
-        if(backdrop){
-
-            next.style.backgroundImage =
-            `url('${backdrop}')`;
+            return;
 
         }
 
 
-        next.style.opacity = "1";
+        const watchlist =
+            JSON.parse(
+                localStorage.getItem("watchlist")
+            ) || [];
 
-        current.style.opacity = "0";
+
+        const animeId =
+            currentHeroAnime.mal_id ||
+            currentHeroAnime.malId ||
+            currentHeroAnime.idMal ||
+            currentHeroAnime.id ||
+            "";
 
 
+        const isInWatchlist =
+            watchlist.some(
+                item => {
 
-        // restart text animation
+                    const itemId =
+                        item.mal_id ||
+                        item.malId ||
+                        item.idMal ||
+                        item.id ||
+                        "";
 
-        animeContent.classList.remove("hero-text");
+                    return (
+                        String(itemId) ===
+                        String(animeId)
+                    );
+
+                }
+            );
+
+
+        if (isInWatchlist) {
+
+            heroWatchlistText.textContent =
+                "✓ In Watchlist";
+
+        } else {
+
+            heroWatchlistText.textContent =
+                "Add to Watchlist";
+
+        }
+
+    }
+
+
+    /* =========================================================
+       HERO WATCH NOW
+    ========================================================= */
+
+    if (heroWatchBtn) {
+
+        heroWatchBtn.addEventListener(
+            "click",
+            function(event) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+
+                if (!currentHeroAnime) {
+
+                    console.error(
+                        "❌ No featured anime selected."
+                    );
+
+                    return;
+
+                }
+
+
+                console.log(
+                    "🎬 Hero Watch Now:",
+                    currentHeroAnime.title
+                );
+
+
+                openAnime(
+                    currentHeroAnime
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       HERO ADD TO WATCHLIST
+    ========================================================= */
+
+    if (heroWatchlistBtn) {
+
+        heroWatchlistBtn.addEventListener(
+            "click",
+            function(event) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+
+                if (!currentHeroAnime) {
+
+                    console.error(
+                        "❌ No hero anime selected."
+                    );
+
+                    return;
+
+                }
+
+
+                let watchlist =
+                    JSON.parse(
+                        localStorage.getItem("watchlist")
+                    ) || [];
+
+
+                const animeId =
+                    currentHeroAnime.mal_id ||
+                    currentHeroAnime.malId ||
+                    currentHeroAnime.idMal ||
+                    currentHeroAnime.id ||
+                    "";
+
+
+                /* =================================================
+                   CHECK IF ALREADY IN WATCHLIST
+                ================================================= */
+
+                const existingIndex =
+                    watchlist.findIndex(
+                        item => {
+
+                            const itemId =
+                                item.mal_id ||
+                                item.malId ||
+                                item.idMal ||
+                                item.id ||
+                                "";
+
+                            return (
+                                String(itemId) ===
+                                String(animeId)
+                            );
+
+                        }
+                    );
+
+
+                /* =================================================
+                   ADD ANIME
+                ================================================= */
+
+                if (existingIndex === -1) {
+
+                    watchlist.push(
+                        currentHeroAnime
+                    );
+
+
+                    localStorage.setItem(
+                        "watchlist",
+                        JSON.stringify(
+                            watchlist
+                        )
+                    );
+
+
+                    console.log(
+                        "✅ Added to Watchlist:",
+                        currentHeroAnime.title
+                    );
+
+                } else {
+
+                    console.log(
+                        "ℹ️ Anime already in Watchlist:",
+                        currentHeroAnime.title
+                    );
+
+                }
+
+
+                /* =================================================
+                   OPEN WATCHLIST PAGE
+                ================================================= */
+
+                window.location.href =
+                    "watchlist.html";
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       CREATE HERO DOTS
+    ========================================================= */
+
+    featuredAnime.forEach(
+        (anime, index) => {
+
+            const dot =
+                document.createElement(
+                    "button"
+                );
+
+
+            dot.className =
+                "w-3 h-3 rounded-full bg-white/50 transition";
+
+
+            dot.onclick = () => {
+
+                currentHero = index;
+
+                changeHero();
+
+            };
+
+
+            dots.appendChild(dot);
+
+        }
+    );
+
+
+    /* =========================================================
+       CHANGE HERO
+    ========================================================= */
+
+    async function changeHero() {
+
+        const anime =
+            featuredAnime[currentHero];
+
+
+        /* =====================================================
+           SAVE CURRENT HERO
+        ===================================================== */
+
+        currentHeroAnime =
+            anime;
+
+
+        console.log(
+            "Current anime:",
+            anime.title
+        );
+
+
+        /* =====================================================
+           UPDATE WATCHLIST BUTTON
+        ===================================================== */
+
+        updateHeroWatchlistButton();
+
+
+        const next =
+            activeBg === "A"
+                ? bgB
+                : bgA;
+
+
+        const current =
+            activeBg === "A"
+                ? bgA
+                : bgB;
+
+
+        const backdrop =
+            await getAnimeBackdrop(
+                anime.title
+            );
+
+
+        console.log(
+            "Backdrop URL:",
+            backdrop
+        );
+
+
+        if (backdrop) {
+
+            next.style.backgroundImage =
+                `url('${backdrop}')`;
+
+        }
+
+
+        next.style.opacity =
+            "1";
+
+        current.style.opacity =
+            "0";
+
+
+        /* =====================================================
+           RESTART TEXT ANIMATION
+        ===================================================== */
+
+        animeContent.classList.remove(
+            "hero-text"
+        );
+
 
         void animeContent.offsetWidth;
 
-        animeContent.classList.add("hero-text");
+
+        animeContent.classList.add(
+            "hero-text"
+        );
 
 
-        title.textContent = anime.title;
+        title.textContent =
+            anime.title;
 
-        desc.textContent = anime.desc;
 
-        rating.textContent = anime.rating;
+        desc.textContent =
+            anime.desc;
 
-        genre.textContent = anime.genre;
+
+        rating.textContent =
+            anime.rating;
+
+
+        genre.textContent =
+            anime.genre;
+
+
         console.log({
+
             title: anime.title,
+
             desc: anime.desc,
+
             rating: anime.rating,
+
             genre: anime.genre
+
         });
 
 
         activeBg =
-        activeBg === "A" ? "B" : "A";
+            activeBg === "A"
+                ? "B"
+                : "A";
 
 
         currentHero++;
 
 
-        if(currentHero >= featuredAnime.length){
+        if (
+            currentHero >=
+            featuredAnime.length
+        ) {
 
             currentHero = 0;
 
@@ -119,22 +443,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-    // first load
 
-    setTimeout(() => {
-         welcomeBg.style.opacity = "0";
-        document.getElementById("welcomeContent")
-            .classList.add("hidden");
+    /* =========================================================
+       FIRST LOAD
+    ========================================================= */
 
-        animeContent.classList.remove("hidden");
-        animeContent.classList.add("hero-text");
+    setTimeout(
+        () => {
 
-        changeHero();
+            document
+                .getElementById(
+                    "welcomeContent"
+                )
+                .classList.add(
+                    "hidden"
+                );
 
-        setInterval(() => {
+
+            animeContent.classList.remove(
+                "hidden"
+            );
+
+
+            animeContent.classList.add(
+                "hero-text"
+            );
+
+
             changeHero();
-        }, 6000);
 
-    }, 5000);
 
-    }); // <-- THIS IS MISSING
+            setInterval(
+                () => {
+
+                    changeHero();
+
+                },
+                6000
+            );
+
+        },
+        5000
+    );
+
+});

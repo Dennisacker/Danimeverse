@@ -149,13 +149,52 @@ body {
 
       </a>
 
-      <!-- DESKTOP NAV -->
-      <nav class="hidden lg:flex items-center gap-8 text-sm text-white ml-10">
-        <a href="#trending" class="nav-link">Trending</a>
-        <a href="#popular" class="nav-link">Popular</a>
-        <a href="#episodes" class="nav-link">Episodes</a>
-        <a href="#genres" class="nav-link">Genres</a>
-        <a href="watchlist.html" id="myListLink" class="nav-link" style="display:none">My List</a>
+      <nav class="hidden lg:flex items-center gap-6 text-sm text-white ml-10">
+
+          <a href="#trending" class="nav-link">
+              Trending
+          </a>
+
+          <a href="#popular" class="nav-link">
+              Popular
+          </a>
+
+          <a href="#episodes" class="nav-link">
+              Episodes
+          </a>
+
+          <a href="#genres" class="nav-link">
+              Genres
+          </a>
+
+          <!-- MY LIST -->
+          <a
+              href="watchlist.html"
+              id="myListLink"
+              class="
+                  nav-link
+                  inline-flex
+                  items-center
+                  gap-2
+                  px-4
+                  py-2
+                  rounded-xl
+                  bg-pink-600/10
+                  border
+                  border-pink-500/20
+                  text-pink-300
+                  hover:bg-pink-600
+                  hover:text-white
+                  hover:border-pink-500
+                  transition-all
+                  duration-300
+              "
+              style="display:none"
+          >
+              <span class="text-lg">＋</span>
+              <span>My List</span>
+          </a>
+
       </nav>
 
       <!-- MOBILE MENU BUTTON -->
@@ -212,47 +251,38 @@ body {
 
   </div>
 
-  <!-- MOBILE MENU -->
-  <div id="mobileMenu"
-    class="hidden flex-col gap-2 mt-4 lg:hidden
-           bg-[#0b1023] border border-white/20
-           rounded-2xl p-3 shadow-2xl text-white">
-
-    <a href="#trending"
-      class="rounded-3xl px-4 py-3 text-sm text-slate-100 transition hover:bg-white/10">
-      Trending
-    </a>
-
-    <a href="#popular"
-      class="rounded-3xl px-4 py-3 text-sm text-slate-100 transition hover:bg-white/10">
-      Popular
-    </a>
-
-    <a href="#episodes"
-      class="rounded-3xl px-4 py-3 text-sm text-slate-100 transition hover:bg-white/10">
-      Episodes
-    </a>
-
-    <a href="#genres"
-      class="rounded-3xl px-4 py-3 text-sm text-slate-100 transition hover:bg-white/10">
-      Genres
-    </a>
-
-    <!-- MY LIST -->
-    <a
-      href="watchlist.html"
-      id="mobileMyListLink"
-      class="hidden rounded-3xl px-4 py-3 text-sm text-slate-100 transition hover:bg-white/10"
-    >
-      📋 My List
-    </a>
-
-  </div>
+      <!-- MY LIST -->
+      <a
+          href="watchlist.html"
+          id="mobileMyListLink"
+          class="
+              hidden
+              items-center
+              gap-3
+              rounded-xl
+              px-4
+              py-3
+              text-sm
+              font-semibold
+              text-white
+              bg-pink-600/10
+              border
+              border-pink-500/20
+              transition-all
+              duration-300
+              hover:bg-pink-600
+              hover:border-pink-500
+          "
+      >
+          <span class="text-xl leading-none">＋</span>
+          <span>My List</span>
+      </a>
     </header>
 
-          <section id="hero"
-          class="relative h-[55vh] min-h-[500px] overflow-hidden">
-
+            <section
+                id="hero"
+                class="relative overflow-hidden"
+            >
 
     <!-- BACKGROUND LAYERS -->
             <div
@@ -341,11 +371,79 @@ body {
     <p id="animeDesc"
     class="text-gray-300 text-lg mt-6 max-w-xl">
     </p>
+                <div class="flex items-center gap-4 mt-7">
+
+                    <!-- WATCH NOW -->
+                    <button
+                        id="heroWatchBtn"
+                        type="button"
+                        class="
+                            inline-flex
+                            items-center
+                            justify-center
+                            gap-3
+                            min-w-[150px]
+                            px-6
+                            py-3
+                            rounded-xl
+                            bg-pink-600
+                            hover:bg-pink-500
+                            text-white
+                            font-bold
+                            shadow-[0_0_30px_rgba(236,72,153,0.35)]
+                            hover:shadow-[0_0_40px_rgba(236,72,153,0.55)]
+                            hover:-translate-y-1
+                            transition-all
+                            duration-300
+                        "
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            class="w-5 h-5"
+                        >
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+
+                        Watch Now
+                    </button>
 
 
-    </div>
+                  <!-- ADD TO WATCHLIST -->
+                  <button
+                      id="heroWatchlistBtn"
+                      type="button"
+                      class="
+                          inline-flex
+                          items-center
+                          justify-center
+                          gap-2
+                          min-w-[175px]
+                          px-5
+                          py-3
+                          rounded-xl
+                          bg-white/10
+                          hover:bg-white/20
+                          border
+                          border-white/20
+                          backdrop-blur-md
+                          text-white
+                          font-semibold
+                          transition-all
+                          duration-300
+                          hover:-translate-y-1
+                      "
+                  >
+                      <span class="text-2xl leading-none font-light">
+                          +
+                      </span>
 
-
+                      <span id="heroWatchlistText">
+                          Add to Watchlist
+                      </span>
+                  </button>
+                </div>
     </div>
 
     </div>

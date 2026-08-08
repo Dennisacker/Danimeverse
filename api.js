@@ -1886,6 +1886,7 @@ window.featuredAnime = [
 
     {
         title: "Solo Leveling",
+        malId: 52299,
         desc: "The weakest hunter rises to become humanity's strongest.",
         rating: "⭐ 9.4",
         genre: "Action • Fantasy"
@@ -1893,6 +1894,7 @@ window.featuredAnime = [
 
     {
         title: "Attack on Titan",
+        malId: 16498,
         desc: "Humanity fights for survival against terrifying Titans.",
         rating: "⭐ 9.8",
         genre: "Action • Dark Fantasy"
@@ -1900,6 +1902,7 @@ window.featuredAnime = [
 
     {
         title: "Jujutsu Kaisen",
+        malId: 40748,
         desc: "Sorcerers battle deadly curses threatening humanity.",
         rating: "⭐ 9.1",
         genre: "Action • Supernatural"
@@ -1907,6 +1910,7 @@ window.featuredAnime = [
 
     {
         title: "Naruto",
+        malId: 20,
         desc: "A young ninja dreams of becoming Hokage.",
         rating: "⭐ 8.7",
         genre: "Adventure • Ninja"
