@@ -2086,23 +2086,18 @@ async function uploadEpisode() {
   }
 
 }
-              /* =========================================================
-              UPLOAD BUTTON
-              ========================================================= */
+/* =========================================================
+   UPLOAD BUTTON
+========================================================= */
 
-              if (uploadBtn) {
+if (uploadBtn) {
 
-                uploadBtn.addEventListener(
-                  "click",
-                  async function () {
+  uploadBtn.addEventListener(
+    "click",
+    uploadEpisode
+  );
 
-                    console.log("📤 UPLOAD BUTTON CLICKED");
-
-                  }
-                );
-
-              }
-
+}
 /* =========================================================
    CLEAR BUTTON
 ========================================================= */
