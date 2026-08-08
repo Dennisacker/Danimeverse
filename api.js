@@ -1027,31 +1027,29 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
       else {
 
-      card.className = `
-          group
-          relative
-          cursor-pointer
-          transition-all
-          duration-500
-          hover:-translate-y-2
-         w-[160px]
-sm:w-[185px]
-md:w-full
-      `;
+          card.className = `
+              group
+              relative
+              cursor-pointer
+              transition-all
+              duration-500
+              hover:-translate-y-2
+              w-full
+              max-w-[155px]
+              mx-auto
+          `;
         card.innerHTML = `
 
-           <div
+   <div
     class="
         relative
         aspect-[2/3]
-        w-[150px]
-        sm:w-auto
         overflow-hidden
-        rounded-2xl
+        rounded-xl
         bg-slate-900
+        w-full
     "
 >
-
                 <img
                     src="${image}"
                     alt="${title}"
@@ -1227,11 +1225,11 @@ md:w-full
                     "
                 >
 
-                    <h3 class="text-xl font-bold line-clamp-2">
+                   <h3 class="text-sm sm:text-xl font-bold line-clamp-2">
                         ${title}
                     </h3>
 
-                    <p class="text-pink-400 text-sm mt-1">
+                  <p class="text-pink-400 text-xs sm:text-sm mt-1">
                         ${episodes}
                     </p>
 

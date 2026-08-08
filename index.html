@@ -251,32 +251,133 @@ body {
 
   </div>
 
-      <!-- MY LIST -->
-      <a
-          href="watchlist.html"
-          id="mobileMyListLink"
-          class="
-              hidden
-              items-center
-              gap-3
-              rounded-xl
-              px-4
-              py-3
-              text-sm
-              font-semibold
-              text-white
-              bg-pink-600/10
-              border
-              border-pink-500/20
-              transition-all
-              duration-300
-              hover:bg-pink-600
-              hover:border-pink-500
-          "
+      <div id="mobileMenu"
+           class="hidden lg:hidden mt-4 space-y-2">
+
+          <a href="#trending"
+             class="block rounded-xl px-4 py-3 text-sm text-slate-100 hover:bg-white/10">
+              Trending
+          </a>
+
+          <a href="#popular"
+             class="block rounded-xl px-4 py-3 text-sm text-slate-100 hover:bg-white/10">
+              Popular
+          </a>
+
+          <a href="#episodes"
+             class="block rounded-xl px-4 py-3 text-sm text-slate-100 hover:bg-white/10">
+              Episodes
+          </a>
+
+          <a href="#genres"
+             class="block rounded-xl px-4 py-3 text-sm text-slate-100 hover:bg-white/10">
+              Genres
+          </a>
+
+          <a
+              href="watchlist.html"
+              id="mobileMyListLink"
+              class="
+                  flex
+                  items-center
+                  gap-3
+                  rounded-xl
+                  px-4
+                  py-3
+                  text-sm
+                  font-semibold
+                  text-white
+                  bg-pink-600/10
+                  border
+                  border-pink-500/20
+                  transition-all
+                  duration-300
+                  hover:bg-pink-600
+                  hover:border-pink-500
+              "
+          >
+              <span class="text-xl leading-none">＋</span>
+              <span>My List</span>
+          </a>
+
+      </div>
+      <div
+        id="mobileMenu"
+        class="
+            hidden
+            lg:hidden
+            absolute
+            top-full
+            left-0
+            right-0
+            z-50
+            px-5
+            pb-5
+        "
       >
-          <span class="text-xl leading-none">＋</span>
-          <span>My List</span>
-      </a>
+
+        <div
+            class="
+                rounded-2xl
+                border
+                border-white/10
+                bg-[#0a0a0f]/95
+                backdrop-blur-xl
+                shadow-2xl
+                p-3
+                space-y-2
+            "
+        >
+
+            <a href="#trending"
+               class="block rounded-xl px-4 py-3 text-sm text-white hover:bg-white/10">
+                Trending
+            </a>
+
+            <a href="#popular"
+               class="block rounded-xl px-4 py-3 text-sm text-white hover:bg-white/10">
+                Popular
+            </a>
+
+            <a href="#episodes"
+               class="block rounded-xl px-4 py-3 text-sm text-white hover:bg-white/10">
+                Episodes
+            </a>
+
+            <a href="#genres"
+               class="block rounded-xl px-4 py-3 text-sm text-white hover:bg-white/10">
+                Genres
+            </a>
+
+            <a
+                href="watchlist.html"
+                id="mobileMyListLink"
+                class="
+                    flex
+                    items-center
+                    gap-3
+                    rounded-xl
+                    px-4
+                    py-3
+                    text-sm
+                    font-semibold
+                    text-white
+                    bg-pink-600/10
+                    border
+                    border-pink-500/20
+                    transition-all
+                    duration-300
+                    hover:bg-pink-600
+                    hover:border-pink-500
+                "
+            >
+                <span class="text-xl leading-none">＋</span>
+                <span>My List</span>
+            </a>
+
+        </div>
+
+      </div>
     </header>
 
             <section
@@ -491,10 +592,17 @@ body {
         </div>
 
         <div
-          id="popularAnimeContainer"
-          class="mt-8 grid grid-cols-2 justify-items-center gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:justify-items-stretch"
+            id="popularAnimeContainer"
+            class="
+                mt-8
+                grid
+                grid-cols-2
+                sm:grid-cols-2
+                lg:grid-cols-3
+                gap-3
+                sm:gap-5
+            "
         ></div>
-
       </section>
 
 
@@ -519,8 +627,16 @@ body {
 
         <!-- TOP PICKS RIGHT NOW -->
         <div
-          id="trendingAnimeContainer"
-          class="mt-8 grid grid-cols-2 justify-items-center gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:justify-items-stretch"
+            id="trendingAnimeContainer"
+            class="
+                mt-8
+                grid
+                grid-cols-2
+                sm:grid-cols-2
+                lg:grid-cols-3
+                gap-3
+                sm:gap-5
+            "
         ></div>
       </section>
 
@@ -907,7 +1023,34 @@ body {
       </a>
 
     </div>
-  
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const navToggle = document.getElementById("navToggle");
+        const mobileMenu = document.getElementById("mobileMenu");
+
+        if (!navToggle) {
+            console.error("❌ navToggle not found");
+            return;
+        }
+
+        if (!mobileMenu) {
+            console.error("❌ mobileMenu not found");
+            return;
+        }
+
+        navToggle.addEventListener("click", () => {
+
+            console.log("🔥 MOBILE MENU CLICKED!");
+
+            mobileMenu.classList.toggle("hidden");
+
+            navToggle.classList.toggle("menu-open");
+
+        });
+
+    });
+    </script>
      <script src="navbar.js" defer></script>
      <script src="footer.js" defer></script>
      <script src="modal.js" defer></script>

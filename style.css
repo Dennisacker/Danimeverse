@@ -727,3 +727,44 @@ transform:translateY(-120px);
       min-height: 650px !important;
   }
 }
+/* =========================================================
+   MOBILE ANIME CARDS — 2 PER ROW
+========================================================= */
+
+@media (max-width: 639px) {
+
+    #popularAnimeContainer,
+    #trendingAnimeContainer {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 14px !important;
+    }
+
+    #popularAnimeContainer > *,
+    #trendingAnimeContainer > * {
+        width: 100% !important;
+        max-width: 190px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+}
+#navToggle .bar {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: white;
+  border-radius: 999px;
+  transition: all 0.3s ease;
+}
+
+#navToggle.menu-open .bar:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+#navToggle.menu-open .bar:nth-child(2) {
+  opacity: 0;
+}
+
+#navToggle.menu-open .bar:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
