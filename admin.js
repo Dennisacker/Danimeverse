@@ -2344,15 +2344,13 @@ if (loadStreamingBtn) {
                 const url =
                   button.dataset.url;
 
-                if (videoUrl1) {
-
-                  videoUrl1.value =
-                    url;
-
-                }
+                console.log(
+                  "🔗 SELECTED STREAMING REFERENCE:",
+                  url
+                );
 
                 showToast(
-                  "Streaming link added to Server 1.",
+                  "Episode selected. Now enter your playable video URL in Server 1.",
                   "success"
                 );
 
@@ -2528,13 +2526,6 @@ function renderUrlHistory() {
             /* =====================================================
                USE SAVED URL
             ===================================================== */
-
-            if (videoUrl1) {
-
-              videoUrl1.value =
-                item.dataset.url;
-
-            }
 
             showToast(
               "Saved video URL added to Server 1."
