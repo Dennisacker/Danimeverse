@@ -1775,7 +1775,311 @@ async function loadUploadedEpisodes() {
   }
 
 }
+/* =========================================================
+   UPLOAD EPISODE
+========================================================= */
 
+async function uploadEpisode() {
+
+  /* =====================================================
+     CHECK ADMIN
+  ===================================================== */
+
+  if (!isAdminAuthenticated) {
+
+    showToast(
+      "You must be logged in as admin.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  /* =====================================================
+     CHECK ANIME
+  ===================================================== */
+
+  if (!selectedAnime) {
+
+    showToast(
+      "Please search and select an anime first.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  /* =====================================================
+     GET FORM VALUES
+  ===================================================== */
+
+  const episodeNumber =
+    Number(
+      epNumber?.value
+    );
+
+  const episodeTitle =
+    epTitle?.value.trim() ||
+    `Episode ${episodeNumber}`;
+
+
+  /* =====================================================
+     GET VIDEO URLS
+  ===================================================== */
+
+  const urls = [
+
+    videoUrl1?.value.trim() || "",
+
+    videoUrl2?.value.trim() || "",
+
+    videoUrl3?.value.trim() || "",
+
+    videoUrl4?.value.trim() || ""
+
+  ];
+
+
+  /* =====================================================
+     VALIDATE EPISODE NUMBER
+  ===================================================== */
+
+  if (
+    !episodeNumber ||
+    episodeNumber < 1
+  ) {
+
+    showToast(
+      "Enter a valid episode number.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  /* =====================================================
+     REMOVE EMPTY SERVERS
+  ===================================================== */
+
+  const videos =
+    urls
+      .filter(
+        url => url
+      )
+      .map(
+        (url, index) => ({
+
+          server:
+            `Server ${index + 1}`,
+
+          url:
+            url
+
+        })
+      );
+
+
+  /* =====================================================
+     REQUIRE AT LEAST ONE SERVER
+  ===================================================== */
+
+  if (!videos.length) {
+
+    showToast(
+      "Please enter at least one video URL.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  /* =====================================================
+     DISABLE BUTTON
+  ===================================================== */
+
+  if (uploadBtn) {
+
+    uploadBtn.disabled =
+      true;
+
+    uploadBtn.textContent =
+      "⏳ Saving Episode...";
+
+  }
+
+
+  try {
+
+    console.log(
+      "📤 UPLOADING EPISODE:",
+      {
+        anime:
+          selectedAnime,
+
+        episode:
+          episodeNumber,
+
+        title:
+          episodeTitle,
+
+        videos:
+          videos
+      }
+    );
+
+
+    /* ===================================================
+       SAVE ANIME DOCUMENT
+    =================================================== */
+
+    await saveAnimeDocument();
+
+
+    /* ===================================================
+       EPISODE DOCUMENT
+    =================================================== */
+
+    const episodeRef =
+      doc(
+        db,
+
+        "animes",
+
+        String(
+          selectedAnime.malId
+        ),
+
+        "episodes",
+
+        String(
+          episodeNumber
+        )
+      );
+
+
+    /* ===================================================
+       SAVE EPISODE
+    =================================================== */
+
+    await setDoc(
+      episodeRef,
+      {
+
+        episode:
+          episodeNumber,
+
+        title:
+          episodeTitle,
+
+        videos:
+          videos,
+
+        updatedAt:
+          new Date()
+
+      },
+
+      {
+        merge:
+          true
+      }
+
+    );
+
+
+    /* ===================================================
+       SAVE URL HISTORY
+    =================================================== */
+
+    urls
+      .filter(
+        url => url
+      )
+      .forEach(
+        url => {
+
+          saveUrlToHistory(
+            url
+          );
+
+        }
+      );
+
+
+    /* ===================================================
+       SUCCESS
+    =================================================== */
+
+    console.log(
+      "✅ EPISODE SAVED SUCCESSFULLY"
+    );
+
+
+    if (successBanner) {
+
+      successBanner.style.display =
+        "block";
+
+    }
+
+
+    showToast(
+      `Episode ${episodeNumber} saved successfully!`,
+      "success"
+    );
+
+
+    /* ===================================================
+       CLEAR FORM
+    =================================================== */
+
+    clearForm();
+
+
+    /* ===================================================
+       RELOAD EPISODES
+    =================================================== */
+
+    await loadUploadedEpisodes();
+
+
+  } catch (error) {
+
+    console.error(
+      "❌ UPLOAD EPISODE ERROR:",
+      error
+    );
+
+
+    showToast(
+      "Failed to save episode. Check the console.",
+      "error"
+    );
+
+
+  } finally {
+
+    /* ===================================================
+       RESTORE BUTTON
+    =================================================== */
+
+    if (uploadBtn) {
+
+      uploadBtn.disabled =
+        false;
+
+      uploadBtn.textContent =
+        "▶ Upload Episode";
+
+    }
+
+  }
+
+}
               /* =========================================================
               UPLOAD BUTTON
               ========================================================= */
