@@ -1,3 +1,4 @@
+console.log("🔥 DANIMEVERSE BUTTON TEST LOADED");
 import {
   initializeApp,
   getApps
@@ -708,10 +709,6 @@ async function openWatchlistAnime(
    INJECT WATCHLIST BUTTONS ON HOMEPAGE
 ========================================================= */
 console.log("🔥 injectButtons() called");
-function injectButtons(
-  uid,
-  slugs
-) {
 
         document.querySelectorAll(".glass-card")
     .forEach(
@@ -2408,305 +2405,468 @@ async function refreshUserDashboard(
 
 
 /* =========================================================
-   FAVOURITE BUTTONS ON ANIME CARDS
+   INJECT WATCHLIST BUTTONS ON ANIME CARDS
 ========================================================= */
 
-function injectFavouriteButtons(uid) {
+function injectButtons(uid, slugs) {
 
-  document.querySelectorAll(".glass-card").forEach(card => {
+    const cards =
+        document.querySelectorAll(".glass-card");
 
-    // Don't create it twice
-    if (card.querySelector(".favourite-btn")) {
-      return;
-    }
+    console.log(
+        "📋 injectButtons() — cards found:",
+        cards.length
+    );
 
-    const imgEl = card.querySelector("img");
-    const h3 = card.querySelector("h3");
-    const pEl = card.querySelector("p");
+    cards.forEach(card => {
 
-    if (!h3) {
-      return;
-    }
+        /* Don't inject twice */
+        if (card.querySelector(".wl-btn")) {
+            return;
+        }
 
-    const title = h3.textContent.trim();
+        const imgEl =
+            card.querySelector("img");
 
-    const image = imgEl?.src || "";
+        const h3 =
+            card.querySelector("h3");
 
-    const desc =
-      pEl?.textContent.trim() || "";
+        const pEl =
+            card.querySelector("p");
 
-    /*
-      Find original anime data
-    */
-    let originalAnime = null;
+        const genreEl =
+            card.querySelector("[data-genres]");
 
-    if (window.danimeverseAnimeData) {
+        if (!h3) {
+            console.log(
+                "⚠️ Card has no h3:",
+                card
+            );
+            return;
+        }
 
-      originalAnime =
-        window.danimeverseAnimeData.find(item => {
+        /* =====================================================
+           GET CARD DATA
+        ===================================================== */
 
-          const animeTitle =
-            item.title_english ||
-            item.title ||
-            "";
+        const title =
+            h3.textContent.trim();
 
-          return (
-            animeTitle.trim().toLowerCase() ===
-            title.trim().toLowerCase()
-          );
+        const image =
+            imgEl?.src || "";
 
-        });
+        const desc =
+            pEl?.textContent.trim() || "";
 
-    }
-
-    /*
-      Create favourite data
-    */
-    const anime = {
-
-      title: title,
-
-      img: image,
-
-      desc: desc,
-
-      genres:
-        originalAnime?.genres
-          ?.slice(0, 3)
-          ?.map(g => g.name)
-          ?.join(", ") ||
-        "Anime",
-
-      malId:
-        originalAnime?.mal_id ||
-        null,
-
-      anilistId:
-        originalAnime?.anilist_id ||
-        originalAnime?.anilistId ||
-        null
-
-    };
+        const genres =
+            genreEl?.dataset.genres || "Anime";
 
 
-    /*
-      Create favourite button
-    */
-    const button =
-      document.createElement("button");
+        /* =====================================================
+           FIND ORIGINAL ANIME DATA
+        ===================================================== */
 
-    button.type = "button";
+        let originalAnime = null;
 
-    button.className = `
-      favourite-btn
-      absolute
-      right-3
-      bottom-24
-      z-50
-      w-11
-      h-11
-      rounded-full
-      bg-black/60
-      backdrop-blur
-      border
-      border-white/20
-      flex
-      items-center
-      justify-center
-      text-white
-      hover:bg-yellow-500
-      hover:text-black
-      hover:scale-110
-      transition-all
-      duration-300
-    `;
+        if (
+            Array.isArray(
+                window.danimeverseAnimeData
+            )
+        ) {
 
-    button.innerHTML = "⭐";
+            originalAnime =
+                window.danimeverseAnimeData.find(
+                    item => {
 
-    button.title =
-      "Add to Favourites";
+                        const animeTitle =
+                            item.title_english ||
+                            item.title ||
+                            item.title?.english ||
+                            "";
+
+                        return (
+                            animeTitle
+                                .trim()
+                                .toLowerCase() ===
+                            title
+                                .trim()
+                                .toLowerCase()
+                        );
+
+                    }
+                );
+
+        }
 
 
-    /*
-      IMPORTANT:
-      Stop the card/link from opening watch.html
-    */
-            button.addEventListener(
-              "click",
-              async (e) => {
+        /* =====================================================
+           CREATE ANIME OBJECT
+        ===================================================== */
+
+        const anime = {
+
+            title: title,
+
+            img: image,
+
+            desc: desc,
+
+            genres: genres,
+
+            malId:
+                originalAnime?.mal_id ||
+                originalAnime?.malId ||
+                null,
+
+            anilistId:
+                originalAnime?.anilist_id ||
+                originalAnime?.anilistId ||
+                null
+
+        };
+
+
+        console.log(
+            "📋 Watchlist anime:",
+            anime
+        );
+
+
+        /* =====================================================
+           SLUG
+        ===================================================== */
+
+        const slug =
+            slugify(title);
+
+        const inList =
+            slugs.has(slug);
+
+
+        /* =====================================================
+           CREATE BUTTON
+        ===================================================== */
+
+        const btn =
+            document.createElement("button");
+
+        btn.type =
+            "button";
+
+        btn.className =
+            `
+            wl-btn
+            absolute
+            left-3
+            bottom-24
+            z-50
+            w-10
+            h-10
+            rounded-full
+            bg-black/60
+            backdrop-blur
+            border
+            border-white/20
+            flex
+            items-center
+            justify-center
+            text-white
+            hover:bg-pink-600
+            hover:scale-110
+            transition-all
+            duration-300
+            ` +
+            (
+                inList
+                    ? " in-list"
+                    : ""
+            );
+
+        btn.dataset.slug =
+            slug;
+
+
+        /* =====================================================
+           BUTTON ICON
+        ===================================================== */
+
+        function updateButton(isInList) {
+
+            btn.innerHTML =
+                isInList
+
+                    ? `
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="3"
+                            width="18"
+                            height="18"
+                        >
+                            <polyline
+                                points="20 6 9 17 4 12"
+                            ></polyline>
+                        </svg>
+                    `
+
+                    : `
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="3"
+                            width="18"
+                            height="18"
+                        >
+                            <line
+                                x1="12"
+                                y1="5"
+                                x2="12"
+                                y2="19"
+                            ></line>
+
+                            <line
+                                x1="5"
+                                y1="12"
+                                x2="19"
+                                y2="12"
+                            ></line>
+                        </svg>
+                    `;
+
+        }
+
+
+        updateButton(inList);
+
+
+        btn.title =
+            inList
+                ? "Remove from My List"
+                : "Add to My List";
+
+
+        /* =====================================================
+           CLICK
+        ===================================================== */
+
+        btn.addEventListener(
+            "click",
+            async e => {
 
                 e.preventDefault();
 
                 e.stopPropagation();
 
-                if (e.stopImmediatePropagation) {
-                  e.stopImmediatePropagation();
+                e.stopImmediatePropagation();
+
+
+                if (btn.disabled) {
+                    return;
                 }
 
-                if (button.disabled) {
-                  return;
+
+                btn.disabled =
+                    true;
+
+
+                try {
+
+                    /* ==============================
+                       REMOVE
+                    ============================== */
+
+                    if (
+                        btn.classList.contains(
+                            "in-list"
+                        )
+                    ) {
+
+                        await removeItem(
+                            uid,
+                            btn.dataset.slug
+                        );
+
+
+                        slugs.delete(
+                            btn.dataset.slug
+                        );
+
+
+                        btn.classList.remove(
+                            "in-list"
+                        );
+
+
+                        btn.title =
+                            "Add to My List";
+
+
+                        updateButton(false);
+
+
+                        showToast(
+                            "Removed from My List",
+                            false
+                        );
+
+                    }
+
+
+                    /* ==============================
+                       ADD
+                    ============================== */
+
+                    else {
+
+                        const newSlug =
+                            await addItem(
+                                uid,
+                                anime
+                            );
+
+
+                        btn.dataset.slug =
+                            newSlug;
+
+
+                        slugs.add(
+                            newSlug
+                        );
+
+
+                        btn.classList.add(
+                            "in-list"
+                        );
+
+
+                        btn.title =
+                            "Remove from My List";
+
+
+                        updateButton(true);
+
+
+                        showToast(
+                            "Added to My List ✓"
+                        );
+
+                    }
+
                 }
 
-        button.disabled = true;
+                catch (error) {
 
+                    console.error(
+                        "❌ Watchlist button error:",
+                        error
+                    );
 
-        try {
+                    showToast(
+                        "Something went wrong. Please try again.",
+                        false
+                    );
 
-          const slug =
-            slugify(anime.title);
+                }
 
-          const favouriteRef =
-            doc(
-              db,
-              "favourites",
-              uid,
-              "items",
-              slug
-            );
+                finally {
 
-          const existing =
-            await getDoc(
-              favouriteRef
-            );
+                    btn.disabled =
+                        false;
 
+                }
 
-          /*
-            REMOVE
-          */
-          if (existing.exists()) {
-
-            await deleteDoc(
-              favouriteRef
-            );
-
-            button.classList.remove(
-              "favourite-active"
-            );
-
-            button.innerHTML = "⭐";
-
-            button.title =
-              "Add to Favourites";
-
-            showToast(
-              "Removed from favourites",
-              false
-            );
-
-          }
-
-          /*
-            ADD
-          */
-          else {
-
-            await addFavourite(
-              uid,
-              anime
-            );
-
-            button.classList.add(
-              "favourite-active"
-            );
-
-            button.innerHTML = "★";
-
-            button.title =
-              "Remove from Favourites";
-
-            showToast(
-              "Added to favourites ⭐"
-            );
-
-          }
-
-
-          /*
-            Refresh the profile/favourite
-            section on watchlist.html
-          */
-          if (
-            document.getElementById(
-              "danimeverse-user-dashboard"
-            )
-          ) {
-
-            await refreshUserDashboard(
-              uid
-            );
-
-          }
-
-        }
-
-        catch (error) {
-
-          console.error(
-            "❌ Favourite error:",
-            error
-          );
-
-          showToast(
-            "Could not update favourites.",
-            false
-          );
-
-        }
-
-        finally {
-
-          button.disabled = false;
-
-        }
-
-      }
-    );
-
-
-    /*
-      Add button to card
-    */
-    card.appendChild(button);
-
-
-    /*
-      Check if already favourited
-    */
-    getDoc(
-      doc(
-        db,
-        "favourites",
-        uid,
-        "items",
-        slugify(anime.title)
-      )
-    )
-    .then(snapshot => {
-
-      if (snapshot.exists()) {
-
-        button.classList.add(
-          "favourite-active"
+            }
         );
 
-        button.innerHTML = "★";
 
-        button.title =
-          "Remove from Favourites";
+        /* =====================================================
+           PUT BUTTON ON CARD
+        ===================================================== */
 
-      }
+        card.appendChild(btn);
 
-    })
-    .catch(error => {
 
-      console.error(
-        "❌ Could not check favourite:",
-        error
-      );
+        console.log(
+            "✅ Watchlist button injected:",
+            title
+        );
 
     });
 
-  });
+}
+/* =========================================================
+   WATCH FOR ASYNC ANIME CARDS
+========================================================= */
+
+function startWatchlistButtonObserver(
+    uid,
+    slugs
+) {
+
+    console.log(
+        "👀 Starting watchlist card observer..."
+    );
+
+
+    /* Try immediately */
+    injectButtons(
+        uid,
+        slugs
+    );
+
+
+    /* Watch the page for newly-created anime cards */
+
+    const observer =
+        new MutationObserver(
+            () => {
+
+                const cards =
+                    document.querySelectorAll(
+                        ".glass-card"
+                    );
+
+
+                if (
+                    cards.length > 0
+                ) {
+
+                    injectButtons(
+                        uid,
+                        slugs
+                    );
+
+                }
+
+            }
+        );
+
+
+    observer.observe(
+        document.body,
+        {
+            childList: true,
+            subtree: true
+        }
+    );
+
+
+    /* Safety: stop observing after 15 seconds */
+
+    setTimeout(
+        () => {
+
+            observer.disconnect();
+
+            console.log(
+                "👀 Watchlist observer stopped."
+            );
+
+        },
+        15000
+    );
 
 }
 /* =========================================================
@@ -3410,12 +3570,6 @@ onAuthStateChanged(
 
       console.log(
         "📚 Watchlist loaded:",
-        slugs
-      );
-
-
-      injectButtons(
-        user.uid,
         slugs
       );
 

@@ -1362,71 +1362,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
         );
 
     }
-
-    /* =========================================================
-       FAVOURITES
-    ========================================================= */
-
-    const favouriteButton =
-        card.querySelector(".favourite-btn");
-
-    if (favouriteButton) {
-
-        favouriteButton.addEventListener(
-            "click",
-            function(event) {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                let currentFavourites =
-                    JSON.parse(
-                        localStorage.getItem("favourites")
-                    ) || [];
-
-                const existingIndex =
-                    currentFavourites.findIndex(
-                        item =>
-                            String(
-                                item.mal_id || item.id
-                            ) === String(animeId)
-                    );
-
-                if (existingIndex !== -1) {
-
-                    currentFavourites.splice(
-                        existingIndex,
-                        1
-                    );
-
-                    favouriteButton.textContent =
-                        "⭐";
-
-                    favouriteButton.title =
-                        "Add to Favourites";
-
-                } else {
-
-                    currentFavourites.push(anime);
-
-                    favouriteButton.textContent =
-                        "💛";
-
-                    favouriteButton.title =
-                        "Remove from Favourites";
-                }
-
-                localStorage.setItem(
-                    "favourites",
-                    JSON.stringify(
-                        currentFavourites
-                    )
-                );
-
-            }
-        );
-
-    }/* =========================================================
+/* =========================================================
        FAVOURITES
     ========================================================= */
 
