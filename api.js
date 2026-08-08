@@ -1363,7 +1363,6 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
     }
 
-
     /* =========================================================
        FAVOURITES
     ========================================================= */
@@ -1380,18 +1379,57 @@ function createAnimeCard(anime, isFreshDrop = false) {
                 event.preventDefault();
                 event.stopPropagation();
 
-                let currentFavourites =
-                    JSON.parse(
-                        localStorage.getItem("favourites")
-                    ) || [];
+                console.log(
+                    "⭐ FAVOURITE CLICKED:",
+                    title,
+                    animeId
+                );
+
+                let currentFavourites = [];
+
+                try {
+
+                    currentFavourites =
+                        JSON.parse(
+                            localStorage.getItem("favourites")
+                        ) || [];
+
+                } catch (error) {
+
+                    console.error(
+                        "❌ Could not read favourites:",
+                        error
+                    );
+
+                    currentFavourites = [];
+
+                }
+
+
+                /* =============================================
+                   CHECK IF ALREADY FAVOURITED
+                ============================================= */
 
                 const existingIndex =
                     currentFavourites.findIndex(
-                        item =>
-                            String(
-                                item.mal_id || item.id
-                            ) === String(animeId)
+                        item => {
+
+                            const itemId =
+                                item.mal_id ||
+                                item.malId ||
+                                item.id ||
+                                item.anilist_id;
+
+                            return String(itemId) ===
+                                   String(animeId);
+
+                        }
                     );
+
+
+                /* =============================================
+                   REMOVE
+                ============================================= */
 
                 if (existingIndex !== -1) {
 
@@ -1406,7 +1444,19 @@ function createAnimeCard(anime, isFreshDrop = false) {
                     favouriteButton.title =
                         "Add to Favourites";
 
-                } else {
+                    console.log(
+                        "💔 REMOVED FROM FAVOURITES:",
+                        title
+                    );
+
+                }
+
+
+                /* =============================================
+                   ADD
+                ============================================= */
+
+                else {
 
                     currentFavourites.push(anime);
 
@@ -1415,7 +1465,18 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
                     favouriteButton.title =
                         "Remove from Favourites";
+
+                    console.log(
+                        "💛 ADDED TO FAVOURITES:",
+                        title
+                    );
+
                 }
+
+
+                /* =============================================
+                   SAVE
+                ============================================= */
 
                 localStorage.setItem(
                     "favourites",
@@ -1424,11 +1485,23 @@ function createAnimeCard(anime, isFreshDrop = false) {
                     )
                 );
 
+
+                /* =============================================
+                   VERIFY SAVE
+                ============================================= */
+
+                console.log(
+                    "💾 FAVOURITES SAVED:",
+                    JSON.parse(
+                        localStorage.getItem("favourites")
+                    )
+                );
+
             }
         );
 
     }
-
+   
 
     /* =========================================================
        CARD CLICK
