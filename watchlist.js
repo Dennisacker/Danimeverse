@@ -297,7 +297,7 @@ async function openWatchlistAnime(
     anime.title ||
     "Unknown Anime";
 
-
+}
   /* =======================================================
      IF WE ALREADY HAVE ANILIST ID
   ======================================================= */
