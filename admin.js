@@ -459,7 +459,34 @@ if (logoutBtn) {
 
 const ANILIST_API =
   "https://graphql.anilist.co";
+const STREAMING_EPISODES_QUERY = `
+query ($idMal: Int) {
 
+  Media(
+    idMal: $idMal
+    type: ANIME
+  ) {
+
+    id
+    idMal
+
+    title {
+      romaji
+      english
+      native
+    }
+
+    streamingEpisodes {
+      title
+      thumbnail
+      url
+      site
+    }
+
+  }
+
+}
+`;
 
 const QUERY = `
 query ($search: String) {
@@ -602,7 +629,15 @@ const uploadBtn =
   document.getElementById(
     "uploadBtn"
   );
+const loadStreamingBtn =
+  document.getElementById(
+    "loadStreamingBtn"
+  );
 
+const streamingEpisodesList =
+  document.getElementById(
+    "streamingEpisodesList"
+  );
 
 const clearBtn =
   document.getElementById(
@@ -810,7 +845,108 @@ async function searchAniList(
 
 }
 
+async function loadStreamingEpisodes() {
 
+  if (!selectedAnime) {
+
+    showToast(
+      "Please select an anime first.",
+      "error"
+    );
+
+    return [];
+
+  }
+
+  try {
+
+    console.log(
+      "🎬 LOADING STREAMING EPISODES:",
+      selectedAnime.malId
+    );
+
+    const response =
+      await fetch(
+        ANILIST_API,
+        {
+
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify({
+
+              query:
+                STREAMING_EPISODES_QUERY,
+
+              variables: {
+
+                idMal:
+                  Number(
+                    selectedAnime.malId
+                  )
+
+              }
+
+            })
+
+        }
+      );
+
+    if (!response.ok) {
+
+      throw new Error(
+        `AniList HTTP ${response.status}`
+      );
+
+    }
+
+    const json =
+      await response.json();
+
+    if (json.errors) {
+
+      throw new Error(
+        json.errors[0]?.message ||
+        "Failed to load streaming episodes"
+      );
+
+    }
+
+    const media =
+      json.data?.Media;
+
+    const episodes =
+      media?.streamingEpisodes || [];
+
+    console.log(
+      "🎬 STREAMING EPISODES:",
+      episodes
+    );
+
+    return episodes;
+
+  } catch (error) {
+
+    console.error(
+      "❌ STREAMING EPISODES ERROR:",
+      error
+    );
+
+    showToast(
+      "Failed to load streaming episodes.",
+      "error"
+    );
+
+    return [];
+
+  }
+
+}
 /* =========================================================
    RENDER SEARCH RESULTS
 ========================================================= */
@@ -2095,6 +2231,149 @@ if (uploadBtn) {
   uploadBtn.addEventListener(
     "click",
     uploadEpisode
+  );
+
+}
+if (loadStreamingBtn) {
+
+  loadStreamingBtn.addEventListener(
+    "click",
+    async function () {
+
+      loadStreamingBtn.disabled =
+        true;
+
+      loadStreamingBtn.textContent =
+        "⏳ Loading...";
+
+      const episodes =
+        await loadStreamingEpisodes();
+
+      if (!streamingEpisodesList) {
+        return;
+      }
+
+      if (!episodes.length) {
+
+        streamingEpisodesList.innerHTML = `
+          <div style="
+            padding:15px;
+            color:#94a3b8;
+          ">
+            No streaming episodes
+            were found for this anime.
+          </div>
+        `;
+
+        loadStreamingBtn.disabled =
+          false;
+
+        loadStreamingBtn.textContent =
+          "🎬 Load Streaming Episodes";
+
+        return;
+
+      }
+
+      streamingEpisodesList.innerHTML =
+        episodes.map(
+          (episode, index) => `
+
+            <div
+              class="streaming-episode"
+              style="
+                display:flex;
+                align-items:center;
+                gap:12px;
+                padding:12px;
+                margin-bottom:8px;
+                background:#111827;
+                border-radius:8px;
+              "
+            >
+
+              <span>
+                EP ${index + 1}
+              </span>
+
+              <span style="
+                flex:1;
+              ">
+                ${escapeHtml(
+                  episode.title ||
+                  `Episode ${index + 1}`
+                )}
+              </span>
+
+              <span style="
+                color:#94a3b8;
+                font-size:12px;
+              ">
+                ${escapeHtml(
+                  episode.site ||
+                  "Streaming"
+                )}
+              </span>
+
+              <button
+                type="button"
+                class="use-streaming-btn"
+                data-url="${escapeHtml(
+                  episode.url || ""
+                )}"
+              >
+                USE
+              </button>
+
+            </div>
+
+          `
+        ).join("");
+
+      streamingEpisodesList
+        .querySelectorAll(
+          ".use-streaming-btn"
+        )
+        .forEach(
+          button => {
+
+            button.addEventListener(
+              "click",
+              () => {
+
+                const url =
+                  button.dataset.url;
+
+                if (videoUrl1) {
+
+                  videoUrl1.value =
+                    url;
+
+                }
+
+                showToast(
+                  "Streaming link added to Server 1.",
+                  "success"
+                );
+
+                console.log(
+                  "🔗 SELECTED STREAMING URL:",
+                  url
+                );
+
+              }
+            );
+
+          }
+        );
+
+      loadStreamingBtn.disabled =
+        false;
+
+      loadStreamingBtn.textContent =
+        "🎬 Load Streaming Episodes";
+
+    }
   );
 
 }
