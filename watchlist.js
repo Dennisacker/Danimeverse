@@ -1,5 +1,4 @@
 console.log("🔥 DANIMEVERSE BUTTON TEST LOADED");
-
 import {
   initializeApp,
   getApps
@@ -63,14 +62,15 @@ function slugify(title) {
    ESCAPE HTML
 ========================================================= */
 
-function escapeHTML(value) {
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
+  function escapeHTML(value) {
+      return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+  }
+
 /* =========================================================
    TOAST
 ========================================================= */
@@ -332,7 +332,7 @@ async function openWatchlistAnime(
     return;
 
   }
-}
+
 
   /* =======================================================
      IF WE ONLY HAVE MAL ID
@@ -3116,15 +3116,9 @@ function injectDashboardStyles() {
 
 
   await renderFavourites(
-    user.uid
+      user.uid
   );
-
-
-  injectFavouriteButtons(
-    user.uid
-  );
-
-}
+  
 /* =========================================================
    INITIALIZE WATCHLIST
 ========================================================= */
@@ -3187,10 +3181,10 @@ onAuthStateChanged(
 
       console.error(
         "❌ Danimeverse dashboard initialization failed:",
-        error
-      );
+             error
+                );
 
-    }
+            }
 
-  }
-);
+        }
+    );
