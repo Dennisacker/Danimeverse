@@ -10,7 +10,6 @@ import {
   auth
 } from "./firebase-config.js";
 
-
 import {
   doc,
   setDoc,
@@ -18,13 +17,11 @@ import {
   getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-
 import {
   onAuthStateChanged,
   signOut,
   signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
 
 
 /* =========================================================
@@ -104,9 +101,7 @@ function showLoginError(
 ) {
 
   if (!loginError) {
-
     return;
-
   }
 
 
@@ -583,11 +578,25 @@ const epTitle =
   );
 
 
-const epVideo =
+const videoUrl1 =
   document.getElementById(
-    "epVideo"
+    "videoUrl1"
   );
 
+const videoUrl2 =
+  document.getElementById(
+    "videoUrl2"
+  );
+
+const videoUrl3 =
+  document.getElementById(
+    "videoUrl3"
+  );
+
+const videoUrl4 =
+  document.getElementById(
+    "videoUrl4"
+  );
 
 const uploadBtn =
   document.getElementById(
@@ -1306,13 +1315,21 @@ function clearForm() {
   }
 
 
-  if (epVideo) {
-
-    epVideo.value =
-      "";
-
+  if (videoUrl1) {
+    videoUrl1.value = "";
   }
 
+  if (videoUrl2) {
+    videoUrl2.value = "";
+  }
+
+  if (videoUrl3) {
+    videoUrl3.value = "";
+  }
+
+  if (videoUrl4) {
+    videoUrl4.value = "";
+  }
 
   if (successBanner) {
 
@@ -1391,238 +1408,6 @@ async function saveAnimeDocument() {
 
 
 /* =========================================================
-   UPLOAD EPISODE
-========================================================= */
-
-async function uploadEpisode() {
-
-  if (!isAdminAuthenticated) {
-
-    showToast(
-      "You must be logged in as admin.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if (!selectedAnime) {
-
-    showToast(
-      "Please select an anime first.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  const episodeNumber =
-    Number(
-      epNumber.value
-    );
-
-
-  const title =
-    epTitle.value.trim();
-
-
-  const videoUrl =
-    epVideo.value.trim();
-
-
-  if (
-    !episodeNumber ||
-    episodeNumber < 1
-  ) {
-
-    showToast(
-      "Enter a valid episode number.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if (!videoUrl) {
-
-    showToast(
-      "Paste the Febbox URL.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if (
-    !videoUrl.startsWith(
-      "http"
-    )
-  ) {
-
-    showToast(
-      "Enter a valid video URL.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  try {
-
-    uploadBtn.disabled =
-      true;
-
-
-    uploadBtn.textContent =
-      "⏳ Saving...";
-
-
-    /* SAVE ANIME */
-
-    await saveAnimeDocument();
-
-
-    /* EPISODE DOCUMENT */
-
-    const episodeRef =
-      doc(
-        db,
-        "animes",
-        String(
-          selectedAnime.malId
-        ),
-        "episodes",
-        `ep_${episodeNumber}`
-      );
-
-
-    await setDoc(
-      episodeRef,
-      {
-
-        episode:
-          episodeNumber,
-
-        title:
-
-          title ||
-
-          `Episode ${episodeNumber}`,
-
-        febboxUrl:
-          videoUrl,
-
-        updatedAt:
-          new Date(),
-
-        animeTitle:
-          selectedAnime.title
-
-      },
-      {
-        merge:
-          true
-      }
-    );
-
-
-    console.log(
-      "✅ EPISODE SAVED:",
-      episodeNumber
-    );
-
-
-    showToast(
-      `Episode ${episodeNumber} uploaded successfully!`,
-      "success"
-    );
-
-
-    if (successBanner) {
-
-      successBanner.style.display =
-        "flex";
-
-    }
-
-
-    /* SAVE URL HISTORY */
-
-    saveUrlToHistory(
-      videoUrl
-    );
-
-
-    /* REFRESH EPISODES */
-
-    await loadUploadedEpisodes();
-
-
-    /* CLEAR FORM */
-
-    epNumber.value =
-      "";
-
-    epTitle.value =
-      "";
-
-    epVideo.value =
-      "";
-
-
-  } catch (error) {
-
-    console.error(
-      "❌ UPLOAD ERROR:",
-      error
-    );
-
-
-    showToast(
-      error.message ||
-      "Failed to upload episode.",
-      "error"
-    );
-
-  } finally {
-
-    uploadBtn.disabled =
-      false;
-
-
-    uploadBtn.textContent =
-      "▶ Upload Episode";
-
-  }
-
-}
-
-
-/* =========================================================
-   UPLOAD BUTTON
-========================================================= */
-
-if (uploadBtn) {
-
-  uploadBtn.addEventListener(
-    "click",
-    uploadEpisode
-  );
-
-}
-
-
-/* =========================================================
    LOAD UPLOADED EPISODES
 ========================================================= */
 
@@ -1632,42 +1417,32 @@ async function loadUploadedEpisodes() {
     !selectedAnime ||
     !uploadedEpList
   ) {
-
     return;
-
   }
-
 
   if (!isAdminAuthenticated) {
-
     return;
-
   }
 
-
   uploadedEpList.innerHTML = `
-
     <div class="empty">
-
       Loading episodes...
-
     </div>
-
   `;
 
-
   try {
+
+    /* =====================================================
+       GET EPISODES
+    ===================================================== */
 
     const episodesRef =
       collection(
         db,
         "animes",
-        String(
-          selectedAnime.malId
-        ),
+        String(selectedAnime.malId),
         "episodes"
       );
-
 
     const snapshot =
       await getDocs(
@@ -1678,11 +1453,25 @@ async function loadUploadedEpisodes() {
     const episodes = [];
 
 
+    /* =====================================================
+       READ EPISODE DOCUMENTS
+    ===================================================== */
+
     snapshot.forEach(
       episodeDoc => {
 
         const data =
           episodeDoc.data();
+
+
+        /* ================================================
+           NEW VIDEOS[] STRUCTURE
+        ================================================ */
+
+        const videos =
+          Array.isArray(data.videos)
+            ? data.videos
+            : [];
 
 
         episodes.push({
@@ -1691,29 +1480,24 @@ async function loadUploadedEpisodes() {
             episodeDoc.id,
 
           episode:
-            Number(
-              data.episode
-            ),
+          Number(data.episode) || 0,
 
           title:
-
             data.title ||
-
             "Untitled Episode",
 
-          video:
-
-            data.febboxUrl ||
-
-            data.video ||
-
-            ""
+          videos:
+            videos
 
         });
 
       }
     );
 
+
+    /* =====================================================
+       SORT EPISODES
+    ===================================================== */
 
     episodes.sort(
       (a, b) =>
@@ -1722,25 +1506,32 @@ async function loadUploadedEpisodes() {
     );
 
 
+    /* =====================================================
+       UPDATE EPISODE COUNT
+    ===================================================== */
+
     if (uploadedCount) {
 
       uploadedCount.textContent =
-
-        `${episodes.length} episode${episodes.length === 1 ? "" : "s"}`;
+        `${episodes.length} episode${
+          episodes.length === 1
+            ? ""
+            : "s"
+        }`;
 
     }
 
 
+    /* =====================================================
+       NO EPISODES
+    ===================================================== */
+
     if (!episodes.length) {
 
       uploadedEpList.innerHTML = `
-
         <div class="empty">
-
           No episodes uploaded yet.
-
         </div>
-
       `;
 
       return;
@@ -1748,59 +1539,73 @@ async function loadUploadedEpisodes() {
     }
 
 
+    /* =====================================================
+       RENDER EPISODES
+    ===================================================== */
+
     uploadedEpList.innerHTML =
 
       episodes
-
         .map(
-          episode => `
+          episode => {
 
-            <div
-              class="ep-item"
-              data-episode="${episode.episode}"
-            >
-
-              <span class="ep-num">
-
-                EP ${episode.episode}
-
-              </span>
+            const serverCount =
+              episode.videos.length;
 
 
-              <span class="ep-title">
+            return `
 
-                ${escapeHtml(
-                  episode.title
-                )}
-
-              </span>
-
-
-              <span
-                class="${
-                  episode.video
-                    ? "ep-link"
-                    : "ep-link missing"
-                }"
+              <div
+                class="ep-item"
+                data-episode="${episode.episode}"
               >
 
-                ${
-                  episode.video
-                    ? "✓ Link"
-                    : "✕ Missing"
-                }
+                <span class="ep-num">
+                  EP ${episode.episode}
+                </span>
 
-              </span>
 
-            </div>
+                <span class="ep-title">
 
-          `
+                  ${escapeHtml(
+                    episode.title
+                  )}
+
+                </span>
+
+
+                <span
+                  class="${
+                    serverCount
+                      ? "ep-link"
+                      : "ep-link missing"
+                  }"
+                >
+
+                  ${
+                    serverCount
+                      ? `✓ ${serverCount} Server${
+                          serverCount === 1
+                            ? ""
+                            : "s"
+                        }`
+                      : "✕ No Servers"
+                  }
+
+                </span>
+
+              </div>
+
+            `;
+
+          }
         )
-
         .join("");
 
 
-    /* CLICK EPISODE TO EDIT */
+    /* =====================================================
+       CLICK EPISODE TO EDIT
+    ===================================================== */
 
     uploadedEpList
       .querySelectorAll(
@@ -1828,29 +1633,125 @@ async function loadUploadedEpisodes() {
 
 
               if (!episode) {
-
                 return;
+              }
+
+
+              /* =========================================
+                 LOAD EPISODE NUMBER
+              ========================================= */
+
+              if (epNumber) {
+
+                epNumber.value =
+                  episode.episode;
 
               }
 
 
-              epNumber.value =
-                episode.episode;
+              /* =========================================
+                 LOAD EPISODE TITLE
+              ========================================= */
+
+              if (epTitle) {
+
+                epTitle.value =
+                  episode.title;
+
+              }
 
 
-              epTitle.value =
-                episode.title;
+              /* =========================================
+                 CLEAR ALL SERVER INPUTS
+              ========================================= */
+
+              if (videoUrl1) {
+                videoUrl1.value = "";
+              }
+
+              if (videoUrl2) {
+                videoUrl2.value = "";
+              }
+
+              if (videoUrl3) {
+                videoUrl3.value = "";
+              }
+
+              if (videoUrl4) {
+                videoUrl4.value = "";
+              }
 
 
-              epVideo.value =
-                episode.video;
+              /* =========================================
+                 LOAD SERVERS
+              ========================================= */
+
+              episode.videos.forEach(
+                (video, index) => {
+
+                  const url =
+                    video?.url || "";
+
+
+                  if (
+                    index === 0 &&
+                    videoUrl1
+                  ) {
+
+                    videoUrl1.value =
+                      url;
+
+                  }
+
+
+                  if (
+                    index === 1 &&
+                    videoUrl2
+                  ) {
+
+                    videoUrl2.value =
+                      url;
+
+                  }
+
+
+                  if (
+                    index === 2 &&
+                    videoUrl3
+                  ) {
+
+                    videoUrl3.value =
+                      url;
+
+                  }
+
+
+                  if (
+                    index === 3 &&
+                    videoUrl4
+                  ) {
+
+                    videoUrl4.value =
+                      url;
+
+                  }
+
+                }
+              );
 
 
               showToast(
                 `Episode ${episodeNumber} loaded for editing.`
               );
 
+
+              console.log(
+                "✏️ EDITING EPISODE:",
+                episode
+              );
+
             }
+
           );
 
         }
@@ -1866,19 +1767,27 @@ async function loadUploadedEpisodes() {
 
 
     uploadedEpList.innerHTML = `
-
       <div class="empty">
-
         Failed to load episodes.
-
       </div>
-
     `;
 
   }
 
 }
 
+/* =========================================================
+   UPLOAD BUTTON
+========================================================= */
+
+if (uploadBtn) {
+
+  uploadBtn.addEventListener(
+    "click",
+    uploadEpisode
+  );
+
+}
 
 /* =========================================================
    CLEAR BUTTON
@@ -1904,7 +1813,7 @@ function getUrlHistory() {
 
     return JSON.parse(
       localStorage.getItem(
-        "danimeverseFebboxHistory"
+        "danimeverseVideoHistory"
       ) ||
       "[]"
     );
@@ -1942,7 +1851,7 @@ function saveUrlToHistory(
 
 
   localStorage.setItem(
-    "danimeverseFebboxHistory",
+    "danimeverseVideoHistory",
     JSON.stringify(
       history
     )
@@ -2028,18 +1937,20 @@ function renderUrlHistory() {
           "click",
           () => {
 
-            if (epVideo) {
+            /* =====================================================
+               USE SAVED URL
+            ===================================================== */
 
-              epVideo.value =
+            if (videoUrl1) {
+
+              videoUrl1.value =
                 item.dataset.url;
 
             }
 
-
             showToast(
-              "Febbox URL added to form."
+              "Saved video URL added to Server 1."
             );
-
           }
         );
 
@@ -2056,7 +1967,7 @@ if (clearHistoryBtn) {
     () => {
 
       localStorage.removeItem(
-        "danimeverseFebboxHistory"
+        "danimeverseVideoHistory"
       );
 
 
