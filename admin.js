@@ -2334,43 +2334,43 @@ if (loadStreamingBtn) {
         .querySelectorAll(
           ".use-streaming-btn"
         )
-        .forEach(
-          button => {
+            streamingEpisodesList
+              .querySelectorAll(".use-streaming-btn")
+              .forEach(button => {
 
-            button.addEventListener(
-              "click",
-              () => {
+                button.addEventListener(
+                  "click",
+                  () => {
 
-                const url =
-                  button.dataset.url;
+                    const url =
+                      button.dataset.url;
 
-                console.log(
-                  "🔗 SELECTED STREAMING REFERENCE:",
-                  url
+                    console.log(
+                      "🔗 SELECTED STREAMING URL:",
+                      url
+                    );
+
+                    if (videoUrl1) {
+                      videoUrl1.value = url;
+                    }
+
+                    showToast(
+                      "Streaming reference added to Server 1.",
+                      "success"
+                    );
+
+                  }
                 );
 
-                showToast(
-                  "Episode selected. Now enter your playable video URL in Server 1.",
-                  "success"
-                );
+              }); // <-- forEach ENDS HERE
 
-                console.log(
-                  "🔗 SELECTED STREAMING URL:",
-                  url
-                );
 
-              }
-            );
+            // RESET LOAD BUTTON
+            loadStreamingBtn.disabled =
+              false;
 
-          }
-        );
-
-      loadStreamingBtn.disabled =
-        false;
-
-      loadStreamingBtn.textContent =
-        "🎬 Load Streaming Episodes";
-
+            loadStreamingBtn.textContent =
+              "🎬 Load Streaming Episodes";
     }
   );
 
@@ -2523,16 +2523,28 @@ function renderUrlHistory() {
           "click",
           () => {
 
-            /* =====================================================
-               USE SAVED URL
-            ===================================================== */
+            const url =
+              item.dataset.url;
+
+            if (videoUrl1) {
+
+              videoUrl1.value =
+                url;
+
+            }
 
             showToast(
-              "Saved video URL added to Server 1."
+              "Saved video URL added to Server 1.",
+              "success"
             );
+
+            console.log(
+              "🔗 SAVED URL SELECTED:",
+              url
+            );
+
           }
         );
-
       }
     );
 

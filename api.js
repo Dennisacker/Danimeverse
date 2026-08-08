@@ -713,10 +713,10 @@ function createAnimeCard(anime, isFreshDrop = false) {
           relative
           shrink-0
           flex-none
-          w-[190px]
-          min-w-[190px]
-          h-[285px]
-          min-h-[285px]
+          w-[180px]
+          min-w-[180px]
+          h-[270px]
+          min-h-[270px]
           snap-start
           cursor-pointer
           overflow-hidden
