@@ -759,19 +759,18 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
             <!-- DARK OVERLAY -->
 
-            <div
-                class="
-                    absolute
-                    inset-0
-                    z-10
-                    bg-gradient-to-t
-                    from-black
-                    via-black/30
-                    to-transparent
-                    pointer-events-none
-                "
-            ></div>
-
+     <div
+    class="
+        absolute
+        inset-0
+        z-10
+        bg-gradient-to-t
+        from-black/95
+        via-black/20
+        to-transparent
+        pointer-events-none
+    "
+></div>
 
             <!-- AIRING -->
 
@@ -959,24 +958,25 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
             <!-- BOTTOM INFORMATION -->
 
-            <div
-                class="
-                    absolute
-                    bottom-0
-                    left-0
-                    right-0
-                    z-30
-                    p-3
-                    bg-gradient-to-t
-                    from-black
-                    via-black/80
-                    to-transparent
-                    translate-y-full
-                    group-hover:translate-y-0
-                    transition-transform
-                    duration-500
-                "
-            >
+           <div
+    class="
+        absolute
+        bottom-0
+        left-0
+        right-0
+        p-4
+        z-30
+        bg-gradient-to-t
+        from-black
+        via-black/95
+        to-black/40
+        backdrop-blur-[2px]
+        translate-y-full
+        group-hover:translate-y-0
+        transition-transform
+        duration-500
+    "
+>
 
                 <h3
                     class="
@@ -1064,17 +1064,18 @@ function createAnimeCard(anime, isFreshDrop = false) {
                     loading="lazy"
                 >
 
-                <div
-                    class="
-                        absolute
-                        inset-0
-                        bg-gradient-to-t
-                        from-black
-                        via-black/55
-                        to-transparent
-                        pointer-events-none
-                    "
-                ></div>
+              <div
+    class="
+        absolute
+        inset-0
+        z-10
+        bg-gradient-to-t
+        from-black/95
+        via-black/20
+        to-transparent
+        pointer-events-none
+    "
+></div>
 
 
                 <span
@@ -1210,20 +1211,25 @@ function createAnimeCard(anime, isFreshDrop = false) {
                 </button>
 
 
-                <div
-                    class="
-                        absolute
-                        bottom-0
-                        left-0
-                        right-0
-                        p-4
-                        z-30
-                        translate-y-full
-                        group-hover:translate-y-0
-                        transition-transform
-                        duration-500
-                    "
-                >
+               <div
+    class="
+        absolute
+        bottom-0
+        left-0
+        right-0
+        p-4
+        z-30
+        bg-gradient-to-t
+        from-black
+        via-black/95
+        to-black/40
+        backdrop-blur-[2px]
+        translate-y-full
+        group-hover:translate-y-0
+        transition-transform
+        duration-500
+    "
+>
 
                    <h3 class="text-sm sm:text-xl font-bold line-clamp-2">
                         ${title}

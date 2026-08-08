@@ -826,3 +826,21 @@ transform:translateY(-120px);
     }
 
 }
+/* =========================================================
+   FIX ANIME CARD IMAGE DARKNESS
+========================================================= */
+
+.anime-card img {
+    opacity: 1 !important;
+    filter: brightness(1) !important;
+}
+
+.anime-card .relative::before,
+.anime-card .relative::after {
+    opacity: 0 !important;
+}
+
+.anime-card::before,
+.anime-card::after {
+    opacity: 0 !important;
+}
