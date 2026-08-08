@@ -1,5 +1,4 @@
 console.log("🔥 DANIMEVERSE BUTTON TEST LOADED");
-console.log("🔥 DANIMEVERSE BUTTON TEST LOADED");
 
 import {
   initializeApp,
@@ -297,7 +296,7 @@ async function openWatchlistAnime(
     anime.title ||
     "Unknown Anime";
 
-}
+
   /* =======================================================
      IF WE ALREADY HAVE ANILIST ID
   ======================================================= */
@@ -334,7 +333,7 @@ async function openWatchlistAnime(
     return;
 
   }
-
+}
 
   /* =======================================================
      IF WE ONLY HAVE MAL ID
