@@ -508,9 +508,6 @@ async function openWatchlistAnime(
 /* =======================================================
    OLD WATCHLIST ITEMS
    NO MAL ID / NO ANILIST ID
-   -------------------------------------------------------
-   Kept only as a safe fallback for very old Firebase
-   watchlist documents.
 ======================================================= */
 
 async function resolveOldWatchlistAnime(anime) {
@@ -2389,65 +2386,6 @@ function injectButtons(uid, slugs) {
     );
 
   });
-
-}
-/* =========================================================
-   WATCH FOR ASYNC ANIME CARDS
-========================================================= */
-
-function startWatchlistButtonObserver(
-  uid,
-  slugs
-) {
-
-  console.log(
-    "👀 Starting watchlist card observer..."
-  );
-
-  injectButtons(
-    uid,
-    slugs
-  );
-
-  const observer =
-    new MutationObserver(() => {
-
-      const cards =
-        document.querySelectorAll(
-          ".glass-card"
-        );
-
-      if (cards.length > 0) {
-
-        injectButtons(
-          uid,
-          slugs
-        );
-
-      }
-
-    });
-
-  observer.observe(
-    document.body,
-    {
-      childList: true,
-      subtree: true
-    }
-  );
-
-  setTimeout(
-    () => {
-
-      observer.disconnect();
-
-      console.log(
-        "👀 Watchlist observer stopped."
-      );
-
-    },
-    15000
-  );
 
 }
 /* =========================================================
