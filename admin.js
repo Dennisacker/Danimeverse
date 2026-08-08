@@ -1776,18 +1776,22 @@ async function loadUploadedEpisodes() {
 
 }
 
-/* =========================================================
-   UPLOAD BUTTON
-========================================================= */
+              /* =========================================================
+              UPLOAD BUTTON
+              ========================================================= */
 
-if (uploadBtn) {
+              if (uploadBtn) {
 
-  uploadBtn.addEventListener(
-    "click",
-    uploadEpisode
-  );
+                uploadBtn.addEventListener(
+                  "click",
+                  async function () {
 
-}
+                    console.log("📤 UPLOAD BUTTON CLICKED");
+
+                  }
+                );
+
+              }
 
 /* =========================================================
    CLEAR BUTTON
