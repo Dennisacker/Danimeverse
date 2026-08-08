@@ -1864,24 +1864,30 @@ async function uploadEpisode() {
      REMOVE EMPTY SERVERS
   ===================================================== */
 
-  const videos =
-    urls
-      .filter(
-        url => url
-      )
-      .map(
-        (url, index) => ({
+  const videos = urls
+  .map(
+    (url, index) => {
 
-          server:
-            `Server ${index + 1}`,
+      if (!url) {
+        return null;
+      }
 
-          url:
-            url
+      return {
 
-        })
-      );
+        server:
+          `Server ${index + 1}`,
 
+        url:
+          url
 
+      };
+
+    }
+  )
+  .filter(
+    video =>
+      video !== null
+  );
   /* =====================================================
      REQUIRE AT LEAST ONE SERVER
   ===================================================== */
