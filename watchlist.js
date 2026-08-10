@@ -503,6 +503,7 @@ async function openWatchlistAnime(
   }
 
   return resolveOldWatchlistAnime(anime);
+}
 /* =======================================================
    OLD WATCHLIST ITEMS
    NO MAL ID / NO ANILIST ID
