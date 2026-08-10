@@ -3065,126 +3065,123 @@ function injectDashboardStyles() {
   document.head.appendChild(style);
 }
 
-/* =========================================================
-   INITIALIZE DASHBOARD
-========================================================= */
+    /* =========================================================
+       INITIALIZE DASHBOARD
+    ========================================================= */
 
-  async function initializeDanimeverseDashboard(user) {
+    async function initializeDanimeverseDashboard(user) {
 
-  if (!user) return;
+        if (!user) return;
 
-  // ONLY run the dashboard on the watchlist page
-  const watchlistGrid =
-    document.getElementById("watchlist-grid");
+        // ONLY run the dashboard on the watchlist page
+        const watchlistGrid =
+            document.getElementById("watchlist-grid");
 
-  if (!watchlistGrid) {
-    console.log("🏠 Homepage detected — dashboard disabled.");
-    return;
-  }
+        if (!watchlistGrid) {
+            console.log(
+                "🏠 Homepage detected — dashboard disabled."
+            );
+            return;
+        }
 
-  injectDashboardStyles();
+        injectDashboardStyles();
 
-  await updateUserActivity(user.uid);
+        await updateUserActivity(user.uid);
 
-  const watchlistSnapshot =
-    await getDocs(
-      collection(
-        db,
-        "watchlists",
-        user.uid,
-        "items"
-      )
-    );
+        const watchlistSnapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "watchlists",
+                    user.uid,
+                    "items"
+                )
+            );
 
+        const favouriteSnapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "favourites",
+                    user.uid,
+                    "items"
+                )
+            );
 
-  const favouriteSnapshot =
-    await getDocs(
-      collection(
-        db,
-        "favourites",
-        user.uid,
-        "items"
-      )
-    );
-
-
-  await renderUserDashboard(
-    user,
-    watchlistSnapshot.size,
-    favouriteSnapshot.size
-  );
-
-
-  await renderFavourites(
-      user.uid
-  );
-  
-/* =========================================================
-   INITIALIZE WATCHLIST
-========================================================= */
-
-onAuthStateChanged(
-  auth,
-  async user => {
-
-    console.log(
-      "🔥 Auth state changed:",
-      user
-    );
-
-    if (!user) {
-
-      console.log(
-        "❌ No user signed in."
-      );
-
-      return;
-
-    }
-
-    try {
-
-      const slugs =
-        await getWatchlistSlugs(
-          user.uid
+        await renderUserDashboard(
+            user,
+            watchlistSnapshot.size,
+            favouriteSnapshot.size
         );
 
-      console.log(
-        "📚 Watchlist loaded:",
-        slugs
-      );
-
-
-      await renderWatchlistPage(
-        user.uid
-      );
-
-
-      await initializeDanimeverseDashboard(
-        user
-      );
-
-
-      /* =========================================
-         START WATCHLIST BUTTON OBSERVER
-      ========================================= */
-
-      startWatchlistButtonObserver(
-        user.uid,
-        slugs
-      );
-
-
+        await renderFavourites(
+            user.uid
+        );
     }
 
-    catch (error) {
 
-      console.error(
-        "❌ Danimeverse dashboard initialization failed:",
-             error
+    /* =========================================================
+       INITIALIZE WATCHLIST
+    ========================================================= */
+
+    onAuthStateChanged(
+        auth,
+        async user => {
+
+            console.log(
+                "🔥 Auth state changed:",
+                user
+            );
+
+            if (!user) {
+
+                console.log(
+                    "❌ No user signed in."
+                );
+
+                return;
+            }
+
+            try {
+
+                const slugs =
+                    await getWatchlistSlugs(
+                        user.uid
+                    );
+
+                console.log(
+                    "📚 Watchlist loaded:",
+                    slugs
+                );
+
+                await renderWatchlistPage(
+                    user.uid
+                );
+
+                await initializeDanimeverseDashboard(
+                    user
+                );
+
+                /* =========================================
+                   START WATCHLIST BUTTON OBSERVER
+                ========================================= */
+
+                startWatchlistButtonObserver(
+                    user.uid,
+                    slugs
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "❌ Danimeverse dashboard initialization failed:",
+                    error
                 );
 
             }
 
         }
     );
+}
