@@ -1879,9 +1879,15 @@ function renderEpisodeList(
   function renderVideoPlayer(data) {
 
     const videos = Array.isArray(data?.videos)
-      ? data.videos.filter(video => video?.url)
-      : [];
-
+    ? data.videos.filter(
+        video =>
+          video &&
+          (
+            video.url ||
+            video.playbackId
+          )
+      )
+    : [];
     /* -------------------------------------------------------
        FALLBACK FOR OLD EPISODE FORMAT
     ------------------------------------------------------- */
@@ -1933,15 +1939,25 @@ function renderEpisodeList(
     function renderCurrentServer() {
 
       const source =
-        videos[currentServer];
+          videos[currentServer];
 
-      if (!source?.url) {
-        return;
+      if (
+          !source?.url &&
+          !source?.playbackId
+      ) {
+          return;
       }
 
+      const playbackId =
+          source.playbackId ||
+          "";
 
       const url =
-        source.url.trim();
+          source.url
+            ? source.url.trim()
+            : playbackId
+              ? `https://stream.mux.com/${playbackId}.m3u8`
+              : "";
 
 
       /* =====================================================
@@ -1949,8 +1965,10 @@ function renderEpisodeList(
       ===================================================== */
 
       const sourceType =
-        detectVideoSource(url);
-
+      source.type === "mux" ||
+      source.playbackId
+        ? "mux"
+        : detectVideoSource(url);
 
       console.log(
         "🎬 VIDEO SOURCE:",
@@ -1975,8 +1993,9 @@ function renderEpisodeList(
 
       if (sourceType === "mux") {
 
-        const playbackId =
-          extractMuxPlaybackId(url);
+        const muxPlaybackId =
+        source.playbackId ||
+        extractMuxPlaybackId(url);
 
 
         if (!playbackId) {
@@ -1999,9 +2018,9 @@ function renderEpisodeList(
 
             <mux-player
 
-              playback-id="${escapeAttribute(
-                playbackId
-              )}"
+             playback-id="${escapeAttribute(
+    muxPlaybackId
+)}"
 
               controls
 
@@ -2127,7 +2146,10 @@ const serverButtons = [0, 1, 2, 3]
     const video = videos[index];
 
     const available =
-      !!video?.url;
+    !!(
+        video?.url ||
+        video?.playbackId
+    );
 
     return `
 
