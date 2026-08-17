@@ -1224,40 +1224,33 @@ async function loadNewEpisodes(
           }
 
 
-          episodes.push({
+      episodes.push({
 
-            episode:
-              episodeNumber,
+        episode:
+          episodeNumber,
 
-            title:
-              data.title ||
+        title:
+          data.title ||
+          `Episode ${episodeNumber}`,
 
-              `Episode ${episodeNumber}`,
+        videos:
+          Array.isArray(data.videos)
+            ? data.videos
+                .filter(
+                  video =>
+                    video &&
+                    typeof video.url === "string" &&
+                    video.url.trim() !== ""
+                )
+            : [],
 
-            videoUrl:
+        source:
+          "new",
 
-              data.playerUrl ||
+        firestoreId:
+          id
 
-              data.febboxUrl ||
-
-              data.video ||
-
-              data.videoUrl ||
-
-              "",
-
-            source:
-              "new",
-
-            firestoreId:
-              id
-
-          });
-
-        }
-      );
-
-
+      });
       /*
         Once we find episodes
         for the primary ID,
@@ -1366,17 +1359,47 @@ async function loadLegacyEpisodes(
 
             `Episode ${episodeNumber}`,
 
-          videoUrl:
+          videos: [
 
-            data.playerUrl ||
+            ...(
+              Array.isArray(data.videos)
+                ? data.videos
+                : []
+            ),
 
-            data.febboxUrl ||
+            ...(
+              data.playerUrl
+                ? [{
+                    server: "Server 1",
+                    url: data.playerUrl
+                  }]
+                : []
+            ),
 
-            data.video ||
+            ...(
+              data.videoUrl
+                ? [{
+                    server: "Server 1",
+                    url: data.videoUrl
+                  }]
+                : []
+            ),
 
-            data.videoUrl ||
+            ...(
+              data.video
+                ? [{
+                    server: "Server 1",
+                    url: data.video
+                  }]
+                : []
+            )
 
-            "",
+          ].filter(
+            video =>
+              video &&
+              typeof video.url === "string" &&
+              video.url.trim() !== ""
+          ),
 
           source:
             "legacy"
@@ -1521,10 +1544,14 @@ function renderEpisodes(
     episodes
       .map(
         episode => {
-
           const hasVideo =
-            !!episode.videoUrl;
-
+          Array.isArray(episode.videos) &&
+          episode.videos.some(
+            video =>
+              video &&
+              typeof video.url === "string" &&
+              video.url.trim() !== ""
+          );
 
           /*
             IMPORTANT:
