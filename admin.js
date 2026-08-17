@@ -13,8 +13,10 @@ import {
 import {
   doc,
   setDoc,
+  deleteDoc,
   collection,
-  getDocs
+  getDocs,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -22,7 +24,6 @@ import {
   signOut,
   signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
 
 /* =========================================================
    ADMIN AUTHENTICATION
@@ -1585,7 +1586,6 @@ async function loadUploadedEpisodes() {
         episodesRef
       );
 
-
     const episodes = [];
 
 
@@ -1599,16 +1599,31 @@ async function loadUploadedEpisodes() {
         const data =
           episodeDoc.data();
 
-
-        /* ================================================
-           NEW VIDEOS[] STRUCTURE
-        ================================================ */
-
         const videos =
           Array.isArray(data.videos)
-            ? data.videos
+            ? data.videos.filter(
+                video =>
+                  video &&
+                  typeof video.url === "string" &&
+                  video.url.trim() !== ""
+              )
             : [];
 
+        const episodeNumber =
+          Number(
+            data.episode
+          ) ||
+          Number(
+            data.episodeNumber
+          ) ||
+          Number(
+            episodeDoc.id
+          ) ||
+          0;
+
+        if (!episodeNumber) {
+          return;
+        }
 
         episodes.push({
 
@@ -1616,11 +1631,11 @@ async function loadUploadedEpisodes() {
             episodeDoc.id,
 
           episode:
-          Number(data.episode) || 0,
+            episodeNumber,
 
           title:
             data.title ||
-            "Untitled Episode",
+            `Episode ${episodeNumber}`,
 
           videos:
             videos
@@ -1643,7 +1658,7 @@ async function loadUploadedEpisodes() {
 
 
     /* =====================================================
-       UPDATE EPISODE COUNT
+       UPDATE COUNT
     ===================================================== */
 
     if (uploadedCount) {
@@ -1659,7 +1674,7 @@ async function loadUploadedEpisodes() {
 
 
     /* =====================================================
-       NO EPISODES
+       EMPTY
     ===================================================== */
 
     if (!episodes.length) {
@@ -1688,7 +1703,6 @@ async function loadUploadedEpisodes() {
             const serverCount =
               episode.videos.length;
 
-
             return `
 
               <div
@@ -1700,15 +1714,11 @@ async function loadUploadedEpisodes() {
                   EP ${episode.episode}
                 </span>
 
-
                 <span class="ep-title">
-
                   ${escapeHtml(
                     episode.title
                   )}
-
                 </span>
-
 
                 <span
                   class="${
@@ -1717,7 +1727,6 @@ async function loadUploadedEpisodes() {
                       : "ep-link missing"
                   }"
                 >
-
                   ${
                     serverCount
                       ? `✓ ${serverCount} Server${
@@ -1727,8 +1736,16 @@ async function loadUploadedEpisodes() {
                         }`
                       : "✕ No Servers"
                   }
-
                 </span>
+
+                <button
+                  type="button"
+                  class="delete-episode-btn"
+                  data-episode="${episode.episode}"
+                  title="Delete episode"
+                >
+                  🗑
+                </button>
 
               </div>
 
@@ -1744,9 +1761,7 @@ async function loadUploadedEpisodes() {
     ===================================================== */
 
     uploadedEpList
-      .querySelectorAll(
-        ".ep-item"
-      )
+      .querySelectorAll(".ep-item")
       .forEach(
         item => {
 
@@ -1759,7 +1774,6 @@ async function loadUploadedEpisodes() {
                   item.dataset.episode
                 );
 
-
               const episode =
                 episodes.find(
                   ep =>
@@ -1767,39 +1781,28 @@ async function loadUploadedEpisodes() {
                     episodeNumber
                 );
 
-
               if (!episode) {
                 return;
               }
 
 
-              /* =========================================
-                 LOAD EPISODE NUMBER
-              ========================================= */
+              /* LOAD EPISODE NUMBER */
 
               if (epNumber) {
-
                 epNumber.value =
                   episode.episode;
-
               }
 
 
-              /* =========================================
-                 LOAD EPISODE TITLE
-              ========================================= */
+              /* LOAD EPISODE TITLE */
 
               if (epTitle) {
-
                 epTitle.value =
                   episode.title;
-
               }
 
 
-              /* =========================================
-                 CLEAR ALL SERVER INPUTS
-              ========================================= */
+              /* CLEAR SERVER INPUTS */
 
               if (videoUrl1) {
                 videoUrl1.value = "";
@@ -1818,9 +1821,7 @@ async function loadUploadedEpisodes() {
               }
 
 
-              /* =========================================
-                 LOAD SERVERS
-              ========================================= */
+              /* LOAD SERVERS */
 
               episode.videos.forEach(
                 (video, index) => {
@@ -1828,48 +1829,36 @@ async function loadUploadedEpisodes() {
                   const url =
                     video?.url || "";
 
-
                   if (
                     index === 0 &&
                     videoUrl1
                   ) {
-
                     videoUrl1.value =
                       url;
-
                   }
-
 
                   if (
                     index === 1 &&
                     videoUrl2
                   ) {
-
                     videoUrl2.value =
                       url;
-
                   }
-
 
                   if (
                     index === 2 &&
                     videoUrl3
                   ) {
-
                     videoUrl3.value =
                       url;
-
                   }
-
 
                   if (
                     index === 3 &&
                     videoUrl4
                   ) {
-
                     videoUrl4.value =
                       url;
-
                   }
 
                 }
@@ -1880,19 +1869,103 @@ async function loadUploadedEpisodes() {
                 `Episode ${episodeNumber} loaded for editing.`
               );
 
-
               console.log(
                 "✏️ EDITING EPISODE:",
                 episode
               );
 
             }
-
           );
 
         }
       );
 
+
+    /* =====================================================
+       DELETE EPISODE
+    ===================================================== */
+
+    uploadedEpList
+      .querySelectorAll(
+        ".delete-episode-btn"
+      )
+      .forEach(
+        button => {
+
+          button.addEventListener(
+            "click",
+            async event => {
+
+              event.stopPropagation();
+
+              const episodeNumber =
+                Number(
+                  button.dataset.episode
+                );
+
+              if (!episodeNumber) {
+                return;
+              }
+
+
+              const confirmed =
+                confirm(
+                  `Delete Episode ${episodeNumber}? This cannot be undone.`
+                );
+
+              if (!confirmed) {
+                return;
+              }
+
+
+              try {
+
+                const episodeRef =
+                  doc(
+                    db,
+                    "animes",
+                    String(
+                      selectedAnime.malId
+                    ),
+                    "episodes",
+                    String(
+                      episodeNumber
+                    )
+                  );
+
+
+                await deleteDoc(
+                  episodeRef
+                );
+
+
+                showToast(
+                  `Episode ${episodeNumber} deleted successfully.`,
+                  "success"
+                );
+
+
+                await loadUploadedEpisodes();
+
+              } catch (error) {
+
+                console.error(
+                  "❌ DELETE EPISODE ERROR:",
+                  error
+                );
+
+                showToast(
+                  "Failed to delete episode.",
+                  "error"
+                );
+
+              }
+
+            }
+          );
+
+        }
+      );
 
   } catch (error) {
 
@@ -1900,7 +1973,6 @@ async function loadUploadedEpisodes() {
       "❌ LOAD EPISODES ERROR:",
       error
     );
-
 
     uploadedEpList.innerHTML = `
       <div class="empty">
@@ -2329,12 +2401,8 @@ if (loadStreamingBtn) {
 
           `
         ).join("");
-
-      streamingEpisodesList
-        .querySelectorAll(
-          ".use-streaming-btn"
-        )
-            streamingEpisodesList
+      
+        streamingEpisodesList
               .querySelectorAll(".use-streaming-btn")
               .forEach(button => {
 
