@@ -204,17 +204,78 @@ content="width=device-width, initial-scale=1.0"
       }
 
     }
-    .site-logo img {
-        width: 40px !important;
-        height: 40px !important;
-        max-width: 40px !important;
-        max-height: 40px !important;
-        object-fit: cover;
-        border-radius: 50%;
+    .watch-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      padding: 4px 0;
     }
-    .site-logo-text {
-        font-size: 22px !important;
-        font-weight: 900 !important;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: white;
+    }
+
+    .brand img {
+      width: 46px;
+      height: 46px;
+      object-fit: cover;
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,.35);
+    }
+
+    .brand > span {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -.5px;
+    }
+
+    .brand > span span {
+      color: #ec4899;
+    }
+
+    .back-home {
+      color: rgba(255,255,255,.6);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 9px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
+      transition: .2s ease;
+    }
+
+    .back-home:hover {
+      color: white;
+      border-color: rgba(236,72,153,.35);
+      background: rgba(236,72,153,.08);
+    }
+
+    @media (max-width: 640px) {
+
+      .watch-header {
+        gap: 12px;
+      }
+
+      .brand > span {
+        font-size: 20px;
+      }
+
+      .brand img {
+        width: 40px;
+        height: 40px;
+      }
+
+      .back-home {
+        font-size: 12px;
+        padding: 8px 10px;
+      }
+
     }
   </style>
 
@@ -224,47 +285,45 @@ content="width=device-width, initial-scale=1.0"
 
   <div class="w-full max-w-5xl mx-auto px-4 py-6">
     <!-- =====================================================
-         DANIMEVERSE LOGO
+         WATCH PAGE HEADER
     ====================================================== -->
 
-    <a
-      href="index.html"
-      class="site-logo mb-6"
-    >
-      <img
+    <header class="watch-header">
+
+      <a
+        href="index.html"
+        class="brand"
+      >
+
+        <img
           src="https://i.pinimg.com/736x/fc/8d/c0/fc8dc0a1f0db8842d9c58373acd655a8.jpg"
           alt="Danimeverse"
           onerror="this.style.display='none';"
-      >
+        >
 
-      <div class="site-logo-text">
+        <span>
           DANIME<span>VERSE</span>
-      </div>
-    </a>
-    <!-- =====================================================
-         BACK TO HOME
-    ====================================================== -->
+        </span>
 
-  <a
-  id="backLink"
-  href="index.html"
-  class="inline-flex items-center gap-2 text-slate-400 text-sm mb-5 hover:text-pink-400 transition no-underline"
+      </a>
 
-  >
 
-  ```
-  ← Back to Home
-  ```
+      <a
+        id="backLink"
+        href="index.html"
+        class="back-home"
+      >
+        ← Back to Home
+      </a>
 
-    </a>
-
+    </header>
     <!-- =====================================================
          1. VIDEO PLAYER — MAIN FOCUS
     ====================================================== -->
 
     <div class="glass rounded-2xl overflow-hidden mb-5">
 
-  ```
+  
   <!-- EPISODE INFORMATION -->
 
   <div class="p-5 md:p-6 pb-4">
@@ -337,7 +396,7 @@ content="width=device-width, initial-scale=1.0"
     </p>
 
   </div>
-  ```
+  
 
     </div>
 
@@ -347,7 +406,7 @@ content="width=device-width, initial-scale=1.0"
 
     <div class="flex gap-3 mb-5">
 
-  ```
+  
   <button
     id="prevBtn"
     class="nav-btn"
@@ -363,7 +422,7 @@ content="width=device-width, initial-scale=1.0"
   >
     Next Episode ▶
   </button>
-  ```
+  
 
     </div>
 
@@ -377,7 +436,7 @@ content="width=device-width, initial-scale=1.0"
       class="glass rounded-2xl p-4 md:p-5 mb-6"
     >
 
-  ```
+  
   <div class="flex items-center justify-between mb-4">
 
     <h3 class="text-sm font-bold text-white/40 uppercase tracking-wider">
@@ -395,7 +454,7 @@ content="width=device-width, initial-scale=1.0"
     id="epList"
     class="flex flex-col gap-2 max-h-96 overflow-y-auto"
   ></div>
-  ```
+  
 
     </div>
 
@@ -405,7 +464,7 @@ content="width=device-width, initial-scale=1.0"
 
     <div class="glass rounded-2xl p-5 md:p-7 mb-6">
 
-  ```
+  
   <!-- LOADING SKELETON -->
 
   <div id="skeleton">
@@ -661,7 +720,7 @@ content="width=device-width, initial-scale=1.0"
     </p>
 
   </div>
-  ```
+  
 
     </div>
 
