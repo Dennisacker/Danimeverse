@@ -1998,10 +1998,6 @@ async function loadUploadedEpisodes() {
 
 async function uploadEpisode() {
 
-  /* =====================================================
-     CHECK ADMIN
-  ===================================================== */
-
   if (!isAdminAuthenticated) {
 
     showToast(
@@ -2012,10 +2008,6 @@ async function uploadEpisode() {
     return;
   }
 
-
-  /* =====================================================
-     CHECK ANIME
-  ===================================================== */
 
   if (!selectedAnime) {
 
@@ -2028,23 +2020,16 @@ async function uploadEpisode() {
   }
 
 
-  /* =====================================================
-     GET FORM VALUES
-  ===================================================== */
-
   const episodeNumber =
     Number(
       epNumber?.value
     );
 
+
   const episodeTitle =
     epTitle?.value.trim() ||
     `Episode ${episodeNumber}`;
 
-
-  /* =====================================================
-     GET VIDEO URLS
-  ===================================================== */
 
   const urls = [
 
@@ -2058,10 +2043,6 @@ async function uploadEpisode() {
 
   ];
 
-
-  /* =====================================================
-     VALIDATE EPISODE NUMBER
-  ===================================================== */
 
   if (
     !episodeNumber ||
@@ -2077,39 +2058,11 @@ async function uploadEpisode() {
   }
 
 
-  /* =====================================================
-     REMOVE EMPTY SERVERS
-  ===================================================== */
+  const sourceUrls =
+    urls.filter(Boolean);
 
-  const videos = urls
-  .map(
-    (url, index) => {
 
-      if (!url) {
-        return null;
-      }
-
-      return {
-
-        server:
-          `Server ${index + 1}`,
-
-        url:
-          url
-
-      };
-
-    }
-  )
-  .filter(
-    video =>
-      video !== null
-  );
-  /* =====================================================
-     REQUIRE AT LEAST ONE SERVER
-  ===================================================== */
-
-  if (!videos.length) {
+  if (!sourceUrls.length) {
 
     showToast(
       "Please enter at least one video URL.",
@@ -2120,17 +2073,13 @@ async function uploadEpisode() {
   }
 
 
-  /* =====================================================
-     DISABLE BUTTON
-  ===================================================== */
-
   if (uploadBtn) {
 
     uploadBtn.disabled =
       true;
 
     uploadBtn.textContent =
-      "⏳ Saving Episode...";
+      "⏳ Sending to Mux...";
 
   }
 
@@ -2138,33 +2087,163 @@ async function uploadEpisode() {
   try {
 
     console.log(
-      "📤 UPLOADING EPISODE:",
+      "🎬 Sending episode to Mux:",
       {
-        anime:
-          selectedAnime,
-
-        episode:
-          episodeNumber,
-
-        title:
-          episodeTitle,
-
-        videos:
-          videos
+        anime: selectedAnime,
+        episode: episodeNumber,
+        urls: sourceUrls
       }
     );
 
 
-    /* ===================================================
-       SAVE ANIME DOCUMENT
-    =================================================== */
+    /*
+    =====================================================
+    SAVE ANIME DOCUMENT
+    =====================================================
+    */
 
     await saveAnimeDocument();
 
 
-    /* ===================================================
-       EPISODE DOCUMENT
-    =================================================== */
+    /*
+    =====================================================
+    SEND SOURCE URLS TO MUX
+    =====================================================
+    */
+
+    const muxVideos = [];
+
+
+    for (
+      let i = 0;
+      i < sourceUrls.length;
+      i++
+    ) {
+
+      const sourceUrl =
+        sourceUrls[i];
+
+
+      console.log(
+        `📤 Sending Server ${i + 1} to Mux...`,
+        sourceUrl
+      );
+
+
+      showToast(
+        `Sending Server ${i + 1} to Mux...`
+      );
+
+
+      /*
+      ===================================================
+      IMPORTANT
+
+      Replace this URL with your actual Replit
+      public URL.
+
+      Example:
+
+      https://your-project.replit.app/api/mux
+      ===================================================
+      */
+
+      const response =
+        await fetch(
+          "https://db83e1e8-b99d-458f-ac8a-8add6a6a76fc-00-38ot6ndnsag8a.worf.replit.dev/api/mux",
+          {
+
+            method:
+              "POST",
+
+            headers: {
+
+              "Content-Type":
+                "application/json"
+
+            },
+
+            body:
+              JSON.stringify({
+
+                videoUrl:
+                  sourceUrl,
+
+                animeId:
+                  String(
+                    selectedAnime.malId
+                  ),
+
+                episodeNumber:
+                  episodeNumber
+
+              })
+
+          }
+        );
+
+
+      const result =
+        await response.json();
+
+
+      console.log(
+        "📡 Mux response:",
+        result
+      );
+
+
+      if (
+        !response.ok ||
+        !result.success
+      ) {
+
+        throw new Error(
+          result.error ||
+          `Mux failed for Server ${i + 1}`
+        );
+
+      }
+
+
+      muxVideos.push({
+
+        server:
+          `Mux Server ${i + 1}`,
+
+        type:
+          "mux",
+
+        sourceUrl:
+          sourceUrl,
+
+        assetId:
+          result.assetId ||
+          null,
+
+        playbackId:
+          result.playbackId ||
+          null,
+
+        url:
+          result.playbackId
+            ? `https://stream.mux.com/${result.playbackId}.m3u8`
+            : "",
+
+        status:
+          result.status ||
+          "preparing"
+
+      });
+
+    }
+
+
+    /*
+    =====================================================
+    SAVE EPISODE TO FIRESTORE
+    =====================================================
+    */
 
     const episodeRef =
       doc(
@@ -2184,10 +2263,6 @@ async function uploadEpisode() {
       );
 
 
-    /* ===================================================
-       SAVE EPISODE
-    =================================================== */
-
     await setDoc(
       episodeRef,
       {
@@ -2199,46 +2274,45 @@ async function uploadEpisode() {
           episodeTitle,
 
         videos:
-          videos,
+          muxVideos,
 
         updatedAt:
           new Date()
 
       },
-
       {
         merge:
           true
       }
-
     );
 
 
-    /* ===================================================
-       SAVE URL HISTORY
-    =================================================== */
+    /*
+    =====================================================
+    SAVE URL HISTORY
+    =====================================================
+    */
 
-    urls
-      .filter(
-        url => url
-      )
-      .forEach(
-        url => {
+    sourceUrls.forEach(
+      url => {
 
-          saveUrlToHistory(
-            url
-          );
+        saveUrlToHistory(
+          url
+        );
 
-        }
-      );
+      }
+    );
 
 
-    /* ===================================================
-       SUCCESS
-    =================================================== */
+    /*
+    =====================================================
+    SUCCESS
+    =====================================================
+    */
 
     console.log(
-      "✅ EPISODE SAVED SUCCESSFULLY"
+      "✅ EPISODE SENT TO MUX:",
+      muxVideos
     );
 
 
@@ -2251,21 +2325,25 @@ async function uploadEpisode() {
 
 
     showToast(
-      `Episode ${episodeNumber} saved successfully!`,
+      `Episode ${episodeNumber} sent to Mux successfully!`,
       "success"
     );
 
 
-    /* ===================================================
-       CLEAR FORM
-    =================================================== */
+    /*
+    =====================================================
+    CLEAR FORM
+    =====================================================
+    */
 
     clearForm();
 
 
-    /* ===================================================
-       RELOAD EPISODES
-    =================================================== */
+    /*
+    =====================================================
+    RELOAD EPISODES
+    =====================================================
+    */
 
     await loadUploadedEpisodes();
 
@@ -2273,22 +2351,19 @@ async function uploadEpisode() {
   } catch (error) {
 
     console.error(
-      "❌ UPLOAD EPISODE ERROR:",
+      "❌ MUX EPISODE ERROR:",
       error
     );
 
 
     showToast(
-      "Failed to save episode. Check the console.",
+      error.message ||
+      "Failed to send episode to Mux.",
       "error"
     );
 
 
   } finally {
-
-    /* ===================================================
-       RESTORE BUTTON
-    =================================================== */
 
     if (uploadBtn) {
 
@@ -2301,6 +2376,20 @@ async function uploadEpisode() {
     }
 
   }
+
+}
+
+
+/* =========================================================
+   UPLOAD BUTTON
+========================================================= */
+
+if (uploadBtn) {
+
+  uploadBtn.addEventListener(
+    "click",
+    uploadEpisode
+  );
 
 }
 /* =========================================================

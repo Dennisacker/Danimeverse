@@ -41,7 +41,309 @@ const COMPRESSIBLE = new Set([
 ]);
 
   const server = http.createServer(async (req, res) => {
+    // =========================================================
+    // MUX VIDEO INGEST API
+    // POST /api/mux
+    // =========================================================
 
+    if (
+      req.url === "/api/mux" &&
+      req.method === "POST"
+    ) {
+
+      let body = "";
+
+      req.on(
+        "data",
+        chunk => {
+
+          body += chunk.toString();
+
+        }
+      );
+
+
+      req.on(
+        "end",
+        async () => {
+
+          try {
+
+            const data =
+              JSON.parse(body || "{}");
+
+
+            const videoUrl =
+              data.videoUrl;
+
+
+            const animeId =
+              data.animeId ||
+              null;
+
+
+            const episodeNumber =
+              data.episodeNumber ||
+              null;
+
+
+            /*
+            =====================================================
+            VALIDATE
+            =====================================================
+            */
+
+            if (!videoUrl) {
+
+              res.writeHead(
+                400,
+                {
+                  "Content-Type":
+                    "application/json"
+                }
+              );
+
+              return res.end(
+                JSON.stringify({
+                  success: false,
+                  error:
+                    "videoUrl is required"
+                })
+              );
+
+            }
+
+
+            /*
+            =====================================================
+            CHECK MUX SECRETS
+            =====================================================
+            */
+
+            if (
+              !process.env.MUX_TOKEN_ID ||
+              !process.env.MUX_TOKEN_SECRET
+            ) {
+
+              console.error(
+                "❌ Mux environment variables are missing."
+              );
+
+              res.writeHead(
+                500,
+                {
+                  "Content-Type":
+                    "application/json"
+                }
+              );
+
+              return res.end(
+                JSON.stringify({
+                  success: false,
+                  error:
+                    "Mux is not configured."
+                })
+              );
+
+            }
+
+
+            /*
+            =====================================================
+            MUX AUTH
+            =====================================================
+            */
+
+            const auth =
+              Buffer
+                .from(
+                  `${process.env.MUX_TOKEN_ID}:${process.env.MUX_TOKEN_SECRET}`
+                )
+                .toString("base64");
+
+
+            /*
+            =====================================================
+            CREATE MUX ASSET
+            =====================================================
+            */
+
+            const muxResponse =
+              await fetch(
+                "https://api.mux.com/video/v1/assets",
+                {
+
+                  method: "POST",
+
+                  headers: {
+
+                    "Content-Type":
+                      "application/json",
+
+                    "Authorization":
+                      `Basic ${auth}`
+
+                  },
+
+                  body:
+                    JSON.stringify({
+
+                      inputs: [
+                        {
+                          url: videoUrl
+                        }
+                      ],
+
+                      playback_policies: [
+                        "public"
+                      ],
+
+                      passthrough:
+                        JSON.stringify({
+                          animeId,
+                          episodeNumber
+                        })
+
+                    })
+
+                }
+              );
+
+
+            const muxData =
+              await muxResponse.json();
+
+
+            /*
+            =====================================================
+            MUX ERROR
+            =====================================================
+            */
+
+            if (
+              !muxResponse.ok
+            ) {
+
+              console.error(
+                "❌ Mux error:",
+                muxData
+              );
+
+              res.writeHead(
+                muxResponse.status,
+                {
+                  "Content-Type":
+                    "application/json"
+                }
+              );
+
+              return res.end(
+                JSON.stringify({
+                  success: false,
+                  error:
+                    muxData?.error ||
+                    muxData?.message ||
+                    "Mux asset creation failed."
+                })
+              );
+
+            }
+
+
+            /*
+            =====================================================
+            SUCCESS
+            =====================================================
+            */
+
+            const asset =
+              muxData.data;
+
+
+            const playbackId =
+              asset?.playback_ids?.[0]?.id ||
+              null;
+
+
+            console.log(
+              "✅ Mux asset created:",
+              {
+                assetId:
+                  asset?.id,
+
+                status:
+                  asset?.status,
+
+                playbackId
+              }
+            );
+
+
+            res.writeHead(
+              200,
+              {
+                "Content-Type":
+                  "application/json"
+              }
+            );
+
+
+            return res.end(
+              JSON.stringify({
+
+                success: true,
+
+                assetId:
+                  asset?.id ||
+                  null,
+
+                status:
+                  asset?.status ||
+                  "preparing",
+
+                playbackId
+
+              })
+            );
+
+
+          } catch (error) {
+
+            console.error(
+              "❌ Mux route error:",
+              error
+            );
+
+
+            res.writeHead(
+              500,
+              {
+                "Content-Type":
+                  "application/json"
+              }
+            );
+
+
+            return res.end(
+              JSON.stringify({
+
+                success: false,
+
+                error:
+                  "Could not create Mux asset."
+
+              })
+            );
+
+          }
+
+        }
+      );
+
+
+      return;
+
+    }
   // TMDB BACKDROP API
   if (req.url.startsWith("/api/backdrop")) {
 
