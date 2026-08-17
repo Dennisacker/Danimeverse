@@ -1729,120 +1729,586 @@ function renderEpisodeList(
 
 
   /* =========================================================
-     VIDEO PLAYER
+     UNIVERSAL VIDEO PLAYER
+     Supports:
+     - Mux playback URLs / .m3u8
+     - HLS (.m3u8)
+     - Direct MP4/WebM/Ogg
+     - Normal embed/iframe URLs
   ========================================================= */
 
   function renderVideoPlayer(data) {
 
-    const provider =
-      data.provider ||
-      data.streamingProvider ||
-      "";
+    const videos = Array.isArray(data?.videos)
+      ? data.videos.filter(video => video?.url)
+      : [];
 
-    /* =======================================================
-       MUX
-    ======================================================= */
+    /* -------------------------------------------------------
+       FALLBACK FOR OLD EPISODE FORMAT
+    ------------------------------------------------------- */
 
-    if (provider === "mux") {
+    if (!videos.length) {
 
-      const playbackId =
-        data.playbackId ||
-        data.muxPlaybackId ||
+      const oldUrl =
+        data?.playerUrl ||
+        data?.video ||
+        data?.videoUrl ||
+        data?.febboxUrl ||
         "";
 
-      if (!playbackId) {
-
-        showEpisodeError(
-          "Video Not Available",
-          "Mux was selected, but no Playback ID was found."
-        );
-
-        return;
+      if (oldUrl) {
+        videos.push({
+          server: "Server 1",
+          url: oldUrl
+        });
       }
-
-      watchArea.style.display = "block";
-      errorState.style.display = "none";
-
-      watchArea.innerHTML = `
-
-        <div
-          class="relative w-full overflow-hidden rounded-xl bg-black"
-          style="aspect-ratio:16/9;"
-        >
-
-          <mux-player
-            playback-id="${escapeAttribute(playbackId)}"
-            controls
-            playsinline
-            style="width:100%;height:100%;"
-          ></mux-player>
-
-        </div>
-
-      `;
-
-      return;
     }
 
 
-    /* =======================================================
-       IFRAME-BASED HOSTS
-    ======================================================= */
+    /* -------------------------------------------------------
+       NO VIDEO SOURCES
+    ------------------------------------------------------- */
 
-    const videoUrl =
-
-      data.playerUrl ||
-
-      data.video ||
-
-      data.videoUrl ||
-
-      data.febboxUrl ||
-
-      "";
-
-    if (!videoUrl) {
+    if (!videos.length) {
 
       showEpisodeError(
         "Video Not Available",
-        "This episode exists, but no streaming source was found."
+        "This episode has no supported streaming source."
       );
 
       return;
     }
 
 
-    watchArea.style.display =
-      "block";
-
-    errorState.style.display =
-      "none";
+    watchArea.style.display = "block";
+    errorState.style.display = "none";
 
 
-    watchArea.innerHTML = `
+    /* -------------------------------------------------------
+       SERVER SELECTOR
+    ------------------------------------------------------- */
 
-      <div
-        class="relative w-full overflow-hidden rounded-xl"
-        style="padding-top:56.25%;"
-      >
+    let currentServer = 0;
 
-        <iframe
 
-          src="${escapeAttribute(videoUrl)}"
+    function renderCurrentServer() {
 
-          class="absolute inset-0 w-full h-full"
+      const source =
+        videos[currentServer];
 
-          allowfullscreen
+      if (!source?.url) {
+        return;
+      }
 
-          allow="autoplay; fullscreen"
 
-          frameborder="0"
+      const url =
+        source.url.trim();
 
-        ></iframe>
 
-      </div>
+      /* =====================================================
+         DETECT SOURCE TYPE
+      ===================================================== */
 
-    `;
+      const sourceType =
+        detectVideoSource(url);
+
+
+      console.log(
+        "🎬 VIDEO SOURCE:",
+        {
+          server: source.server,
+          url,
+          type: sourceType
+        }
+      );
+
+
+      /* =====================================================
+         BUILD PLAYER
+      ===================================================== */
+
+      let playerHTML = "";
+
+
+      /* -----------------------------------------------------
+         MUX
+      ----------------------------------------------------- */
+
+      if (sourceType === "mux") {
+
+        const playbackId =
+          extractMuxPlaybackId(url);
+
+
+        if (!playbackId) {
+
+          showEpisodeError(
+            "Invalid Mux Source",
+            "The Mux playback link could not be understood."
+          );
+
+          return;
+        }
+
+
+        playerHTML = `
+
+          <div
+            class="relative w-full overflow-hidden rounded-xl bg-black"
+            style="aspect-ratio:16/9;"
+          >
+
+            <mux-player
+
+              playback-id="${escapeAttribute(
+                playbackId
+              )}"
+
+              controls
+
+              playsinline
+
+              style="
+                width:100%;
+                height:100%;
+              "
+
+            ></mux-player>
+
+          </div>
+
+        `;
+
+      }
+
+
+      /* -----------------------------------------------------
+         HLS
+      ----------------------------------------------------- */
+
+      else if (sourceType === "hls") {
+
+        playerHTML = `
+
+          <div
+            class="relative w-full overflow-hidden rounded-xl bg-black"
+            style="aspect-ratio:16/9;"
+          >
+
+            <video
+
+              id="danimeHlsPlayer"
+
+              class="absolute inset-0 w-full h-full"
+              controls
+              playsinline
+              preload="metadata"
+
+            ></video>
+
+          </div>
+
+        `;
+
+      }
+
+
+      /* -----------------------------------------------------
+         DIRECT VIDEO
+         MP4 / WEBM / OGG
+      ----------------------------------------------------- */
+
+      else if (sourceType === "direct") {
+
+        playerHTML = `
+
+          <div
+            class="relative w-full overflow-hidden rounded-xl bg-black"
+            style="aspect-ratio:16/9;"
+          >
+
+            <video
+
+              class="absolute inset-0 w-full h-full"
+              controls
+              playsinline
+              preload="metadata"
+
+              src="${escapeAttribute(url)}"
+
+            ></video>
+
+          </div>
+
+        `;
+
+      }
+
+
+      /* -----------------------------------------------------
+         EMBED / IFRAME
+      ----------------------------------------------------- */
+
+      else {
+
+        playerHTML = `
+
+          <div
+            class="relative w-full overflow-hidden rounded-xl"
+            style="padding-top:56.25%;"
+          >
+
+            <iframe
+
+              src="${escapeAttribute(url)}"
+
+              class="absolute inset-0 w-full h-full"
+
+              allowfullscreen
+
+              allow="autoplay; fullscreen; picture-in-picture"
+
+              frameborder="0"
+
+            ></iframe>
+
+          </div>
+
+        `;
+      }
+
+
+      /* -----------------------------------------------------
+         SERVER BUTTONS + PLAYER
+      ----------------------------------------------------- */
+
+      watchArea.innerHTML = `
+
+        <div class="mb-3 flex flex-wrap gap-2">
+
+          ${videos.map(
+            (video, index) => `
+
+              <button
+
+                type="button"
+
+                class="server-btn ${
+                  index === currentServer
+                    ? "active"
+                    : ""
+                }"
+
+                data-server-index="${index}"
+
+              >
+
+                ${escapeHtml(
+                  video.server ||
+                  `Server ${index + 1}`
+                )}
+
+              </button>
+
+            `
+          ).join("")}
+
+        </div>
+
+
+        ${playerHTML}
+
+      `;
+
+
+      /* -----------------------------------------------------
+         SERVER BUTTON EVENTS
+      ----------------------------------------------------- */
+
+      watchArea
+        .querySelectorAll(".server-btn")
+        .forEach(button => {
+
+          button.addEventListener(
+            "click",
+            () => {
+
+              currentServer =
+                Number(
+                  button.dataset.serverIndex
+                );
+
+              renderCurrentServer();
+
+            }
+          );
+
+        });
+
+
+      /* -----------------------------------------------------
+         INITIALIZE HLS
+      ----------------------------------------------------- */
+
+      if (sourceType === "hls") {
+
+        setupHLSPlayer(url);
+
+      }
+
+    }
+
+
+    renderCurrentServer();
+
+  }
+
+
+  /* =========================================================
+     DETECT VIDEO SOURCE
+  ========================================================= */
+
+  function detectVideoSource(url) {
+
+    const cleanUrl =
+      url.split("?")[0]
+         .split("#")[0]
+         .toLowerCase();
+
+
+    /* MUX */
+
+    if (
+      cleanUrl.includes("stream.mux.com") ||
+      cleanUrl.includes("player.mux.com")
+    ) {
+
+      return "mux";
+
+    }
+
+
+    /* HLS */
+
+    if (
+      cleanUrl.endsWith(".m3u8")
+    ) {
+
+      return "hls";
+
+    }
+
+
+    /* DIRECT VIDEO FILE */
+
+    if (
+      cleanUrl.endsWith(".mp4") ||
+      cleanUrl.endsWith(".webm") ||
+      cleanUrl.endsWith(".ogg") ||
+      cleanUrl.endsWith(".ogv") ||
+      cleanUrl.endsWith(".mov")
+    ) {
+
+      return "direct";
+
+    }
+
+
+    /* OTHERWISE */
+
+    return "iframe";
+
+  }
+
+
+  /* =========================================================
+     EXTRACT MUX PLAYBACK ID
+  ========================================================= */
+
+  function extractMuxPlaybackId(url) {
+
+    try {
+
+      const parsed =
+        new URL(url);
+
+
+      /*
+
+        Example:
+
+        https://stream.mux.com/ABC123.m3u8
+
+      */
+
+      if (
+        parsed.hostname.includes(
+          "stream.mux.com"
+        )
+      ) {
+
+        return parsed
+          .pathname
+          .replace(/^\/+/, "")
+          .replace(
+            /\.(m3u8|mp4)$/i,
+            ""
+          );
+
+      }
+
+
+      return "";
+
+    }
+
+    catch {
+
+      return "";
+
+    }
+
+  }
+
+
+  /* =========================================================
+     HLS PLAYER
+  ========================================================= */
+
+  async function setupHLSPlayer(url) {
+
+    const video =
+      document.getElementById(
+        "danimeHlsPlayer"
+      );
+
+
+    if (!video) {
+      return;
+    }
+
+
+    /* -------------------------------------------------------
+       NATIVE HLS
+       Safari / iOS and browsers that support it
+    ------------------------------------------------------- */
+
+    if (
+      video.canPlayType(
+        "application/vnd.apple.mpegurl"
+      )
+    ) {
+
+      video.src = url;
+
+      return;
+
+    }
+
+
+    /* -------------------------------------------------------
+       HLS.JS
+    ------------------------------------------------------- */
+
+    if (
+      !window.Hls
+    ) {
+
+      await loadHLSJS();
+
+    }
+
+
+    if (
+      window.Hls &&
+      window.Hls.isSupported()
+    ) {
+
+      const hls =
+        new window.Hls();
+
+      hls.loadSource(url);
+
+      hls.attachMedia(video);
+
+
+      hls.on(
+        window.Hls.Events.ERROR,
+        (
+          event,
+          details
+        ) => {
+
+          console.error(
+            "❌ HLS ERROR:",
+            details
+          );
+
+        }
+      );
+
+      return;
+
+    }
+
+
+    showEpisodeError(
+      "HLS Not Supported",
+      "This browser cannot play this HLS stream."
+    );
+
+  }
+
+
+  /* =========================================================
+     LOAD HLS.JS
+  ========================================================= */
+
+  function loadHLSJS() {
+
+    return new Promise(
+      (resolve, reject) => {
+
+        if (
+          window.Hls
+        ) {
+
+          resolve();
+
+          return;
+
+        }
+
+
+        const script =
+          document.createElement(
+            "script"
+          );
+
+
+        script.src =
+          "https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js";
+
+
+        script.onload =
+          () => resolve();
+
+
+        script.onerror =
+          () =>
+            reject(
+              new Error(
+                "Failed to load HLS.js"
+              )
+            );
+
+
+        document.head.appendChild(
+          script
+        );
+
+      }
+    );
 
   }
 
