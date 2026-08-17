@@ -671,35 +671,31 @@ function createAnimeCard(anime, isFreshDrop = false) {
         anime.id ||
         anime.anilist_id ||
         "";
+    card.dataset.malId =
+        anime.mal_id ||
+        anime.malId ||
+        "";
 
-
-    /* =========================================================
-       LOCAL STORAGE
-    ========================================================= */
-
-    const watchlist =
-        JSON.parse(
-            localStorage.getItem("watchlist")
-        ) || [];
-
-    const favourites =
-        JSON.parse(
-            localStorage.getItem("favourites")
-        ) || [];
-
-    const isInWatchlist =
-        watchlist.some(
-            item =>
-                String(item.mal_id || item.id) ===
-                String(animeId)
+    card.dataset.anilistId =
+        anime.anilist_id ||
+        anime.anilistId ||
+        (
+            anime.id && !anime.mal_id
+                ? anime.id
+                : ""
         );
 
-    const isFavourite =
-        favourites.some(
-            item =>
-                String(item.mal_id || item.id) ===
-                String(animeId)
-        );
+    card.dataset.animeTitle =
+        title;
+
+    card.dataset.animeImage =
+        image;
+
+    card.dataset.animeGenres =
+        genres;
+
+    card.dataset.animeDescription =
+        description;
 
 
     /* =========================================================
@@ -708,10 +704,11 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
     if (isFreshDrop) {
 
-      card.className = `
-          group
-          relative
-          shrink-0
+     card.className = `
+    glass-card
+    group
+    relative
+    shrink-0
           flex-none
           w-[180px]
           min-w-[180px]
@@ -813,82 +810,8 @@ function createAnimeCard(anime, isFreshDrop = false) {
             </span>
 
 
-            <!-- WATCHLIST -->
-
-            <button
-                type="button"
-                class="
-                    watchlist-btn
-                    absolute
-                    right-3
-                    bottom-24
-                    z-[60]
-                    w-10
-                    h-10
-                    rounded-full
-                    bg-black/80
-                    border
-                    border-white/20
-                    flex
-                    items-center
-                    justify-center
-                    hover:bg-pink-500
-                    hover:scale-110
-                    transition-all
-                "
-                data-id="${animeId}"
-                title="${
-                    isInWatchlist
-                        ? "Remove from Watchlist"
-                        : "Add to Watchlist"
-                }"
-            >
-                ${
-                    isInWatchlist
-                        ? "✅"
-                        : "🔖"
-                }
-            </button>
-
-
-            <!-- FAVOURITE -->
-
-            <button
-                type="button"
-                class="
-                    favourite-btn
-                    absolute
-                    right-3
-                    bottom-12
-                    z-[60]
-                    w-10
-                    h-10
-                    rounded-full
-                    bg-black/80
-                    border
-                    border-white/20
-                    flex
-                    items-center
-                    justify-center
-                    hover:bg-yellow-500
-                    hover:text-black
-                    hover:scale-110
-                    transition-all
-                "
-                data-id="${animeId}"
-                title="${
-                    isFavourite
-                        ? "Remove from Favourites"
-                        : "Add to Favourites"
-                }"
-            >
-                ${
-                    isFavourite
-                        ? "💛"
-                        : "⭐"
-                }
-            </button>
-
+           
+          
 
             <!-- PLAY -->
 
@@ -1027,10 +950,11 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
       else {
 
-          card.className = `
-              group
-              relative
-              cursor-pointer
+        card.className = `
+    glass-card
+    group
+    relative
+    cursor-pointer
               transition-all
               duration-500
               hover:-translate-y-2
@@ -1113,61 +1037,8 @@ function createAnimeCard(anime, isFreshDrop = false) {
                 >
                     ${type}
                 </span>
-
-
-                <button
-                    type="button"
-                    class="
-                        watchlist-btn
-                        absolute
-                        right-3
-                        bottom-24
-                        z-50
-                        w-11
-                        h-11
-                        rounded-full
-                        bg-black/70
-                        flex
-                        items-center
-                        justify-center
-                    "
-                    data-id="${animeId}"
-                >
-                    ${
-                        isInWatchlist
-                            ? "✅"
-                            : "🔖"
-                    }
-                </button>
-
-
-                <button
-                    type="button"
-                    class="
-                        favourite-btn
-                        absolute
-                        right-3
-                        bottom-12
-                        z-50
-                        w-11
-                        h-11
-                        rounded-full
-                        bg-black/70
-                        flex
-                        items-center
-                        justify-center
-                    "
-                    data-id="${animeId}"
-                >
-                    ${
-                        isFavourite
-                            ? "💛"
-                            : "⭐"
-                    }
-                </button>
-
-
-                <button
+                
+                            <button
                     type="button"
                     class="
                         watch-btn
@@ -1297,195 +1168,7 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
     }
 
-
-    /* =========================================================
-       WATCHLIST
-    ========================================================= */
-
-    const watchlistButton =
-        card.querySelector(".watchlist-btn");
-
-    if (watchlistButton) {
-
-        watchlistButton.addEventListener(
-            "click",
-            function(event) {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                let currentWatchlist =
-                    JSON.parse(
-                        localStorage.getItem("watchlist")
-                    ) || [];
-
-                const existingIndex =
-                    currentWatchlist.findIndex(
-                        item =>
-                            String(
-                                item.mal_id || item.id
-                            ) === String(animeId)
-                    );
-
-                if (existingIndex !== -1) {
-
-                    currentWatchlist.splice(
-                        existingIndex,
-                        1
-                    );
-
-                    watchlistButton.textContent =
-                        "🔖";
-
-                    watchlistButton.title =
-                        "Add to Watchlist";
-
-                } else {
-
-                    currentWatchlist.push(anime);
-
-                    watchlistButton.textContent =
-                        "✅";
-
-                    watchlistButton.title =
-                        "Remove from Watchlist";
-                }
-
-                localStorage.setItem(
-                    "watchlist",
-                    JSON.stringify(
-                        currentWatchlist
-                    )
-                );
-
-            }
-        );
-
-    }
-/* =========================================================
-       FAVOURITES
-    ========================================================= */
-
-    const favouriteButton =
-        card.querySelector(".favourite-btn");
-
-    if (favouriteButton) {
-
-        favouriteButton.addEventListener("click", (event) => {
-
-            event.preventDefault();
-            event.stopPropagation();
-
-            console.log("⭐ FAVOURITE BUTTON CLICKED:", anime);
-
-            let currentFavourites = [];
-
-            try {
-
-                currentFavourites =
-                    JSON.parse(
-                        localStorage.getItem("favourites") || "[]"
-                    );
-
-                if (!Array.isArray(currentFavourites)) {
-                    currentFavourites = [];
-                }
-
-            } catch (error) {
-
-                console.error(
-                    "❌ Could not read favourites:",
-                    error
-                );
-
-                currentFavourites = [];
-
-            }
-
-
-            const existingIndex =
-                currentFavourites.findIndex(item => {
-
-                    const itemId =
-                        item.mal_id ||
-                        item.malId ||
-                        item.idMal ||
-                        item.id;
-
-                    return String(itemId) === String(animeId);
-
-                });
-
-
-            /* ===============================================
-               REMOVE
-            =============================================== */
-
-            if (existingIndex !== -1) {
-
-                currentFavourites.splice(
-                    existingIndex,
-                    1
-                );
-
-                favouriteButton.textContent = "⭐";
-
-                favouriteButton.title =
-                    "Add to Favourites";
-
-                console.log(
-                    "💔 Removed from favourites:",
-                    title
-                );
-
-            }
-
-            /* ===============================================
-               ADD
-            =============================================== */
-
-            else {
-
-                currentFavourites.push(anime);
-
-                favouriteButton.textContent = "💛";
-
-                favouriteButton.title =
-                    "Remove from Favourites";
-
-                console.log(
-                    "💛 Added to favourites:",
-                    title
-                );
-
-            }
-
-
-            /* ===============================================
-               SAVE
-            =============================================== */
-
-            localStorage.setItem(
-                "favourites",
-                JSON.stringify(
-                    currentFavourites
-                )
-            );
-
-
-            console.log(
-                "💾 FAVOURITES SAVED:",
-                currentFavourites
-            );
-
-            console.log(
-                "💾 RAW STORAGE:",
-                localStorage.getItem("favourites")
-            );
-
-        });
-
-    }
+           
     /* =========================================================
        CARD CLICK
     ========================================================= */
@@ -1496,8 +1179,9 @@ function createAnimeCard(anime, isFreshDrop = false) {
 
             if (
                 event.target.closest(".watch-btn") ||
-                event.target.closest(".watchlist-btn") ||
-                event.target.closest(".favourite-btn")
+                event.target.closest(".wl-btn") ||
+                event.target.closest(".favourite-btn") ||
+                event.target.closest(".danimeverse-card-buttons")
             ) {
                 return;
             }
