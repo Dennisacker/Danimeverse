@@ -1081,74 +1081,48 @@ function renderAnime(
 }
 
 
-/* =========================================================
-   FIRESTORE NEW EPISODES
-========================================================= */
+  /* =========================================================
+     FIRESTORE NEW EPISODES
+  ========================================================= */
 
-async function loadNewEpisodes(
-  anime
-) {
+  async function loadNewEpisodes(anime) {
 
-  const episodes = [];
+    const episodes = [];
 
+    /*
+      Prefer MAL ID because your
+      existing Firebase structure uses it.
 
-  /*
-    Prefer MAL ID because your
-    existing Firebase structure uses it.
+      Fallback to AniList ID if needed.
+    */
 
-    Fallback to AniList ID if needed.
-  */
+    const possibleIds = [];
 
-  const possibleIds = [];
-
-
-  if (
-    anime.idMal
-  ) {
-
-    possibleIds.push(
-      String(anime.idMal)
-    );
-
-  }
-
-
-  if (
-    anime.id
-  ) {
-
-    possibleIds.push(
-      String(anime.id)
-    );
-
-  }
-
-
-  const checked =
-    new Set();
-
-
-  for (
-    const id
-    of possibleIds
-  ) {
-
-    if (
-      checked.has(id)
-    ) {
-
-      continue;
-
+    if (anime.idMal) {
+      possibleIds.push(
+        String(anime.idMal)
+      );
     }
 
+    if (anime.id) {
+      possibleIds.push(
+        String(anime.id)
+      );
+    }
 
-    checked.add(id);
+    const checked = new Set();
 
+    for (const id of possibleIds) {
 
-    try {
+      if (checked.has(id)) {
+        continue;
+      }
 
-      const snapshot =
-        await getDocs(
+      checked.add(id);
+
+      try {
+
+        const snapshot = await getDocs(
           collection(
             db,
             "animes",
@@ -1157,31 +1131,20 @@ async function loadNewEpisodes(
           )
         );
 
+        if (snapshot.empty) {
+          continue;
+        }
 
-      if (
-        snapshot.empty
-      ) {
-
-        continue;
-
-      }
-
-
-      snapshot.forEach(
-        episodeDoc => {
+        snapshot.forEach(episodeDoc => {
 
           const data =
             episodeDoc.data();
 
-
           let episodeNumber =
-
             Number(
               data.episode ||
-
               data.episodeNumber
             );
-
 
           /*
             Support:
@@ -1190,100 +1153,75 @@ async function loadNewEpisodes(
             1
           */
 
-          if (
-            !episodeNumber
-          ) {
+          if (!episodeNumber) {
 
             const match =
-
               episodeDoc.id.match(
                 /^(?:ep_|episode_)?(\d+)$/
               );
 
-
-            if (
-              match
-            ) {
-
+            if (match) {
               episodeNumber =
-                Number(
-                  match[1]
-                );
-
+                Number(match[1]);
             }
-
           }
 
-
-          if (
-            !episodeNumber
-          ) {
-
+          if (!episodeNumber) {
             return;
-
           }
 
+          episodes.push({
 
-      episodes.push({
+            episode:
+              episodeNumber,
 
-        episode:
-          episodeNumber,
+            title:
+              data.title ||
+              `Episode ${episodeNumber}`,
 
-        title:
-          data.title ||
-          `Episode ${episodeNumber}`,
+            videos:
+              Array.isArray(data.videos)
+                ? data.videos.filter(
+                    video =>
+                      video &&
+                      typeof video.url === "string" &&
+                      video.url.trim() !== ""
+                  )
+                : [],
 
-        videos:
-          Array.isArray(data.videos)
-            ? data.videos
-                .filter(
-                  video =>
-                    video &&
-                    typeof video.url === "string" &&
-                    video.url.trim() !== ""
-                )
-            : [],
+            source:
+              "new",
 
-        source:
-          "new",
+            firestoreId:
+              id
 
-        firestoreId:
-          id
+          });
 
-      });
-      /*
-        Once we find episodes
-        for the primary ID,
-        stop checking fallback IDs.
-      */
+        }); // ✅ CLOSE snapshot.forEach()
 
-      if (
-        episodes.length
-      ) {
+        /*
+          Once we find episodes
+          for the primary ID,
+          stop checking fallback IDs.
+        */
 
-        break;
+        if (episodes.length) {
+          break;
+        }
+
+      } catch (error) {
+
+        console.warn(
+          `Could not load episodes for ${id}:`,
+          error
+        );
 
       }
 
     }
 
-    catch (error) {
-
-      console.warn(
-        `Could not load episodes for ${id}:`,
-        error
-      );
-
-    }
-
+    return episodes;
   }
-
-
-  return episodes;
-
-}
-
-
 /* =========================================================
    LEGACY VIDEOS
 ========================================================= */
