@@ -1738,12 +1738,13 @@ async function loadUploadedEpisodes() {
                   }
                 </span>
 
-                <button
-                  type="button"
-                  class="delete-episode-btn"
-                  data-episode="${episode.episode}"
-                  title="Delete episode"
-                >
+               <button
+  type="button"
+  class="delete-episode-btn"
+  data-episode="${episode.episode}"
+  data-document-id="${escapeHtml(episode.id)}"
+  title="Delete episode"
+>
                   🗑
                 </button>
 
