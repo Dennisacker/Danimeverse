@@ -3383,30 +3383,42 @@ function injectDashboardStyles() {
                 =====================================================
                 */
 
-                setTimeout(
-                    () => {
+setTimeout(
+  () => {
 
-                        observer.disconnect();
+    observer.disconnect();
 
-                        console.log(
-                            "👀 Card observer stopped."
-                        );
-
-                    },
-                    15000
-                );
-
-              }
-            }
-
-            catch (error) {
-
-                console.error(
-                    "❌ Danimeverse dashboard initialization failed:",
-                    error
-                );
-
-            }
-
-        }
+    console.log(
+      "👀 Card observer stopped."
     );
+
+  },
+  15000
+);
+
+}
+
+
+/* =========================================
+ START THE OBSERVER
+========================================= */
+
+startWatchlistButtonObserver(
+user.uid,
+slugs,
+favouriteSlugs
+);
+
+}
+
+catch (error) {
+
+console.error(
+"❌ Danimeverse dashboard initialization failed:",
+error
+);
+
+}
+
+}
+);

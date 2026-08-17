@@ -96,6 +96,23 @@ body {
 .dark .genre-card:hover::before {
   opacity: 1;
 }
+      .hero-action-btn {
+        min-height: 44px;
+      }
+
+      @media (max-width: 640px) {
+
+        .hero-action-btn {
+          padding: 10px 16px !important;
+          font-size: 13px !important;
+          line-height: 1 !important;
+        }
+
+        #hero .mt-8.flex {
+          gap: 8px !important;
+        }
+
+      }
       .animated-fade {
         opacity: 1;
         transform: translateY(32px);
@@ -475,29 +492,30 @@ body {
                 <div class="flex items-center gap-4 mt-7">
 
                     <!-- WATCH NOW -->
-                    <button
-                        id="heroWatchBtn"
-                        type="button"
-                        class="
-                            inline-flex
-                            items-center
-                            justify-center
-                            gap-3
-                            min-w-[150px]
-                            px-6
-                            py-3
-                            rounded-xl
-                            bg-pink-600
-                            hover:bg-pink-500
-                            text-white
-                            font-bold
-                            shadow-[0_0_30px_rgba(236,72,153,0.35)]
-                            hover:shadow-[0_0_40px_rgba(236,72,153,0.55)]
-                            hover:-translate-y-1
-                            transition-all
-                            duration-300
-                        "
-                    >
+                      <button
+                          id="heroWatchBtn"
+                          type="button"
+                          class="
+                              hero-action-btn
+                              inline-flex
+                              items-center
+                              justify-center
+                              gap-3
+                              min-w-[150px]
+                              px-6
+                              py-3
+                              rounded-xl
+                              bg-pink-600
+                              hover:bg-pink-500
+                              text-white
+                              font-bold
+                              shadow-[0_0_30px_rgba(236,72,153,0.35)]
+                              hover:shadow-[0_0_40px_rgba(236,72,153,0.55)]
+                              hover:-translate-y-1
+                              transition-all
+                              duration-300
+                          "
+                      >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
@@ -512,30 +530,31 @@ body {
 
 
                   <!-- ADD TO WATCHLIST -->
-                  <button
-                      id="heroWatchlistBtn"
-                      type="button"
-                      class="
-                          inline-flex
-                          items-center
-                          justify-center
-                          gap-2
-                          min-w-[175px]
-                          px-5
-                          py-3
-                          rounded-xl
-                          bg-white/10
-                          hover:bg-white/20
-                          border
-                          border-white/20
-                          backdrop-blur-md
-                          text-white
-                          font-semibold
-                          transition-all
-                          duration-300
-                          hover:-translate-y-1
-                      "
-                  >
+                    <button
+                        id="heroWatchlistBtn"
+                        type="button"
+                        class="
+                            hero-action-btn
+                            inline-flex
+                            items-center
+                            justify-center
+                            gap-2
+                            min-w-[175px]
+                            px-5
+                            py-3
+                            rounded-xl
+                            bg-white/10
+                            hover:bg-white/20
+                            border
+                            border-white/20
+                            backdrop-blur-md
+                            text-white
+                            font-semibold
+                            transition-all
+                            duration-300
+                            hover:-translate-y-1
+                        "
+                    >
                       <span class="text-2xl leading-none font-light">
                           +
                       </span>
