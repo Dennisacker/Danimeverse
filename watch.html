@@ -277,6 +277,86 @@ content="width=device-width, initial-scale=1.0"
       }
 
     }
+    .server-switcher {
+      margin-bottom: 14px;
+    }
+
+    .server-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .server-heading > span:first-child {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      color: rgba(255,255,255,.75);
+    }
+
+    .server-hint {
+      font-size: 11px;
+      color: rgba(255,255,255,.3);
+    }
+
+    .server-buttons {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .server-buttons::-webkit-scrollbar {
+      display: none;
+    }
+
+    .server-btn {
+      flex: 0 0 auto;
+      min-width: 92px;
+      padding: 10px 14px;
+      border-radius: 11px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.55);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .22s ease;
+    }
+
+    .server-btn:hover:not(:disabled) {
+      color: white;
+      border-color: rgba(236,72,153,.35);
+      background: rgba(236,72,153,.08);
+      transform: translateY(-1px);
+    }
+
+    .server-btn.active {
+      color: white;
+      border-color: rgba(236,72,153,.65);
+      background: linear-gradient(
+        135deg,
+        rgba(236,72,153,.22),
+        rgba(168,85,247,.16)
+      );
+      box-shadow:
+        0 8px 24px rgba(236,72,153,.10);
+    }
+
+    .server-btn.disabled {
+      opacity: .35;
+      cursor: not-allowed;
+      background: rgba(255,255,255,.025);
+    }
+
+    .server-status {
+      display: block;
+      margin-top: 2px;
+      font-size: 9px;
+      font-weight: 500;
+      color: rgba(255,255,255,.25);
+    }
   </style>
 
 </head>
@@ -2045,41 +2125,57 @@ function renderEpisodeList(
 
         <div class="mb-3 flex flex-wrap gap-2">
 
-          ${videos.map(
-            (video, index) => `
+      ${[0, 1, 2, 3].map(index => {
 
-              <button
+        const video = videos[index];
+        const available = !!video?.url;
 
-                type="button"
+        return `
+<div class="server-switcher">
 
-                class="server-btn ${
-                  index === currentServer
-                    ? "active"
-                    : ""
-                }"
+  <div class="server-heading">
+    <span>WATCH SERVERS</span>
+    <span class="server-hint">
+      Choose a source
+    </span>
+  </div>
 
-                data-server-index="${index}"
+  <div class="server-buttons">
+    <!-- generated buttons -->
+  </div>
 
-              >
+</div>
+          <button
 
-                ${escapeHtml(
-                  video.server ||
-                  `Server ${index + 1}`
-                )}
+            type="button"
 
-              </button>
+            class="server-btn
+              ${index === currentServer && available ? "active" : ""}
+              ${!available ? "disabled" : ""}
+            "
 
-            `
-          ).join("")}
+            data-server-index="${index}"
 
-        </div>
+            ${!available ? "disabled" : ""}
 
+          >
 
-        ${playerHTML}
+            ${escapeHtml(
+              video?.server ||
+              `Server ${index + 1}`
+            )}
 
-      `;
+            ${
+              !available
+                ? `<span class="server-status">Unavailable</span>`
+                : ""
+            }
 
+          </button>
 
+        `;
+
+      }).join("")}
       /* -----------------------------------------------------
          SERVER BUTTON EVENTS
       ----------------------------------------------------- */
