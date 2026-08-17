@@ -24,7 +24,10 @@ content="width=device-width, initial-scale=1.0"
     rel="stylesheet"
     href="tailwind.min.css"
   >
-
+  <script
+    type="module"
+    src="https://cdn.jsdelivr.net/npm/@mux/mux-player/+esm">
+  </script>
   <style>
 
     body {
@@ -1725,78 +1728,123 @@ function renderEpisodeList(
 }
 
 
-/* =========================================================
-   VIDEO PLAYER
-========================================================= */
+  /* =========================================================
+     VIDEO PLAYER
+  ========================================================= */
 
-function renderVideoPlayer(
-  data
-) {
+  function renderVideoPlayer(data) {
 
-  const videoUrl =
+    const provider =
+      data.provider ||
+      data.streamingProvider ||
+      "";
 
-    data.playerUrl ||
+    /* =======================================================
+       MUX
+    ======================================================= */
 
-    data.video ||
+    if (provider === "mux") {
 
-    data.videoUrl ||
+      const playbackId =
+        data.playbackId ||
+        data.muxPlaybackId ||
+        "";
 
-    data.febboxUrl ||
+      if (!playbackId) {
 
-    "";
+        showEpisodeError(
+          "Video Not Available",
+          "Mux was selected, but no Playback ID was found."
+        );
+
+        return;
+      }
+
+      watchArea.style.display = "block";
+      errorState.style.display = "none";
+
+      watchArea.innerHTML = `
+
+        <div
+          class="relative w-full overflow-hidden rounded-xl bg-black"
+          style="aspect-ratio:16/9;"
+        >
+
+          <mux-player
+            playback-id="${escapeAttribute(playbackId)}"
+            controls
+            playsinline
+            style="width:100%;height:100%;"
+          ></mux-player>
+
+        </div>
+
+      `;
+
+      return;
+    }
 
 
-  if (!videoUrl) {
+    /* =======================================================
+       IFRAME-BASED HOSTS
+    ======================================================= */
 
-    showEpisodeError(
+    const videoUrl =
 
-      "Video Not Available",
+      data.playerUrl ||
 
-      "This episode exists, but no video URL was found."
+      data.video ||
 
-    );
+      data.videoUrl ||
+
+      data.febboxUrl ||
+
+      "";
+
+    if (!videoUrl) {
+
+      showEpisodeError(
+        "Video Not Available",
+        "This episode exists, but no streaming source was found."
+      );
+
+      return;
+    }
 
 
-    return;
+    watchArea.style.display =
+      "block";
+
+    errorState.style.display =
+      "none";
+
+
+    watchArea.innerHTML = `
+
+      <div
+        class="relative w-full overflow-hidden rounded-xl"
+        style="padding-top:56.25%;"
+      >
+
+        <iframe
+
+          src="${escapeAttribute(videoUrl)}"
+
+          class="absolute inset-0 w-full h-full"
+
+          allowfullscreen
+
+          allow="autoplay; fullscreen"
+
+          frameborder="0"
+
+        ></iframe>
+
+      </div>
+
+    `;
 
   }
-
-
-  watchArea.style.display =
-    "block";
-
-
-  errorState.style.display =
-    "none";
-
-
-  watchArea.innerHTML = `
-
-    <div
-      class="relative w-full overflow-hidden rounded-xl"
-      style="padding-top:56.25%;"
-    >
-
-      <iframe
-
-        src="${escapeAttribute(videoUrl)}"
-
-        class="absolute inset-0 w-full h-full"
-
-        allowfullscreen
-
-        allow="autoplay; fullscreen"
-
-        frameborder="0"
-
-      ></iframe>
-
-    </div>
-
-  `;
-
-}
-
 
 /* =========================================================
    NAVIGATION
