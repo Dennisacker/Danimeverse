@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
        HERO WATCHLIST BUTTON
     ========================================================= */
 
-    function updateHeroWatchlistButton() {
+    async function updateHeroWatchlistButton() {
 
         if (
             !currentHeroAnime ||
@@ -75,55 +75,42 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        const watchlist =
-            JSON.parse(
-                localStorage.getItem("watchlist")
-            ) || [];
-
-
-        const animeId =
-            currentHeroAnime.mal_id ||
-            currentHeroAnime.malId ||
-            currentHeroAnime.idMal ||
-            currentHeroAnime.id ||
-            "";
-
-
-        const isInWatchlist =
-            watchlist.some(
-                item => {
-
-                    const itemId =
-                        item.mal_id ||
-                        item.malId ||
-                        item.idMal ||
-                        item.id ||
-                        "";
-
-                    return (
-                        String(itemId) ===
-                        String(animeId)
-                    );
-
-                }
-            );
-
-
-        if (isInWatchlist) {
-
-            heroWatchlistText.textContent =
-                "✓ In Watchlist";
-
-        } else {
+        if (
+            !window.danimeverseWatchlist
+        ) {
 
             heroWatchlistText.textContent =
                 "Add to Watchlist";
 
+            return;
+
+        }
+
+
+        try {
+
+            const inWatchlist =
+                await window.danimeverseWatchlist.isInWatchlist(
+                    currentHeroAnime
+                );
+
+
+            heroWatchlistText.textContent =
+                inWatchlist
+                    ? "✓ In Watchlist"
+                    : "Add to Watchlist";
+
+
+        } catch (error) {
+
+            console.error(
+                "❌ Hero watchlist check failed:",
+                error
+            );
+
         }
 
     }
-
-
     /* =========================================================
        HERO WATCH NOW
     ========================================================= */
@@ -165,116 +152,86 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================================
-       HERO ADD TO WATCHLIST
-    ========================================================= */
+        /* =========================================================
+           HERO ADD TO WATCHLIST
+        ========================================================= */
 
-    if (heroWatchlistBtn) {
+        if (heroWatchlistBtn) {
 
-        heroWatchlistBtn.addEventListener(
-            "click",
-            function(event) {
+            heroWatchlistBtn.addEventListener(
+                "click",
+                async function(event) {
 
-                event.preventDefault();
-                event.stopPropagation();
-
-
-                if (!currentHeroAnime) {
-
-                    console.error(
-                        "❌ No hero anime selected."
-                    );
-
-                    return;
-
-                }
+                    event.preventDefault();
+                    event.stopPropagation();
 
 
-                let watchlist =
-                    JSON.parse(
-                        localStorage.getItem("watchlist")
-                    ) || [];
+                    if (!currentHeroAnime) {
+
+                        console.error(
+                            "❌ No hero anime selected."
+                        );
+
+                        return;
+
+                    }
 
 
-                const animeId =
-                    currentHeroAnime.mal_id ||
-                    currentHeroAnime.malId ||
-                    currentHeroAnime.idMal ||
-                    currentHeroAnime.id ||
-                    "";
+                    if (
+                        !window.danimeverseWatchlist
+                    ) {
+
+                        console.error(
+                            "❌ Firebase Watchlist system is not available."
+                        );
+
+                        return;
+
+                    }
 
 
-                /* =================================================
-                   CHECK IF ALREADY IN WATCHLIST
-                ================================================= */
+                    try {
 
-                const existingIndex =
-                    watchlist.findIndex(
-                        item => {
+                        heroWatchlistBtn.disabled =
+                            true;
 
-                            const itemId =
-                                item.mal_id ||
-                                item.malId ||
-                                item.idMal ||
-                                item.id ||
-                                "";
 
-                            return (
-                                String(itemId) ===
-                                String(animeId)
+                        const result =
+                            await window.danimeverseWatchlist.addOrRemove(
+                                currentHeroAnime
                             );
 
+
+                        if (
+                            result.success
+                        ) {
+
+                            heroWatchlistText.textContent =
+                                result.inWatchlist
+                                    ? "✓ In Watchlist"
+                                    : "Add to Watchlist";
+
                         }
-                    );
 
 
-                /* =================================================
-                   ADD ANIME
-                ================================================= */
+                    } catch (error) {
 
-                if (existingIndex === -1) {
+                        console.error(
+                            "❌ Hero Watchlist error:",
+                            error
+                        );
 
-                    watchlist.push(
-                        currentHeroAnime
-                    );
+                    } finally {
 
+                        heroWatchlistBtn.disabled =
+                            false;
 
-                    localStorage.setItem(
-                        "watchlist",
-                        JSON.stringify(
-                            watchlist
-                        )
-                    );
-
-
-                    console.log(
-                        "✅ Added to Watchlist:",
-                        currentHeroAnime.title
-                    );
-
-                } else {
-
-                    console.log(
-                        "ℹ️ Anime already in Watchlist:",
-                        currentHeroAnime.title
-                    );
+                    }
 
                 }
+            );
 
-
-                /* =================================================
-                   OPEN WATCHLIST PAGE
-                ================================================= */
-
-                window.location.href =
-                    "watchlist.html";
-
-            }
-        );
-
-    }
-
-
+        }
     /* =========================================================
        CREATE HERO DOTS
     ========================================================= */
@@ -335,7 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
            UPDATE WATCHLIST BUTTON
         ===================================================== */
 
-        updateHeroWatchlistButton();
+        await updateHeroWatchlistButton();
 
 
         const next =
@@ -487,3 +444,131 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 });
+/* =========================================================
+   HERO WATCHLIST BRIDGE
+========================================================= */
+
+window.danimeverseWatchlist = {
+
+    async addOrRemove(anime) {
+
+        const user =
+            auth.currentUser;
+
+
+        if (!user) {
+
+            showToast(
+                "Please sign in first.",
+                false
+            );
+
+            return {
+                success: false,
+                reason: "not-signed-in"
+            };
+
+        }
+
+
+        const title =
+            anime?.title ||
+            "Unknown Anime";
+
+
+        const slug =
+            slugify(title);
+
+
+        const snapshot =
+            await getDoc(
+                doc(
+                    db,
+                    "watchlists",
+                    user.uid,
+                    "items",
+                    slug
+                )
+            );
+
+
+        if (snapshot.exists()) {
+
+            await removeItem(
+                user.uid,
+                slug
+            );
+
+
+            showToast(
+                "Removed from My List",
+                false
+            );
+
+
+            return {
+                success: true,
+                inWatchlist: false
+            };
+
+        }
+
+
+        await addItem(
+            user.uid,
+            anime
+        );
+
+
+        showToast(
+            "Added to My List ✓"
+        );
+
+
+        return {
+            success: true,
+            inWatchlist: true
+        };
+
+    },
+
+
+    async isInWatchlist(anime) {
+
+        const user =
+            auth.currentUser;
+
+
+        if (!user) {
+
+            return false;
+
+        }
+
+
+        const title =
+            anime?.title ||
+            "Unknown Anime";
+
+
+        const slug =
+            slugify(title);
+
+
+        const snapshot =
+            await getDoc(
+                doc(
+                    db,
+                    "watchlists",
+                    user.uid,
+                    "items",
+                    slug
+                )
+            );
+
+
+        return snapshot.exists();
+
+    }
+
+};
