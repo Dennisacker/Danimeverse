@@ -1920,6 +1920,17 @@ async function loadUploadedEpisodes() {
 
               try {
 
+                const episode = episodes.find(
+                  ep =>
+                    ep.episode === episodeNumber
+                );
+
+                if (!episode) {
+                  throw new Error(
+                    "Episode record not found."
+                  );
+                }
+
                 const episodeRef =
                   doc(
                     db,
@@ -1928,11 +1939,8 @@ async function loadUploadedEpisodes() {
                       selectedAnime.malId
                     ),
                     "episodes",
-                    String(
-                      episodeNumber
-                    )
+                    episode.id
                   );
-
 
                 await deleteDoc(
                   episodeRef
