@@ -152,86 +152,118 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-        /* =========================================================
-           HERO ADD TO WATCHLIST
-        ========================================================= */
+    /* =========================================================
+       HERO ADD TO WATCHLIST
+    ========================================================= */
 
-        if (heroWatchlistBtn) {
+    if (heroWatchlistBtn) {
 
-            heroWatchlistBtn.addEventListener(
-                "click",
-                async function(event) {
+        heroWatchlistBtn.addEventListener(
+            "click",
+            async function(event) {
 
-                    event.preventDefault();
-                    event.stopPropagation();
+                event.preventDefault();
+                event.stopPropagation();
+
+                console.log(
+                    "🖱️ HERO WATCHLIST CLICKED"
+                );
 
 
-                    if (!currentHeroAnime) {
+                if (!currentHeroAnime) {
 
-                        console.error(
-                            "❌ No hero anime selected."
+                    console.error(
+                        "❌ No hero anime selected."
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    !window.danimeverseWatchlist
+                ) {
+
+                    console.error(
+                        "❌ Watchlist bridge not available."
+                    );
+
+                    heroWatchlistText.textContent =
+                        "Please wait...";
+
+                    return;
+
+                }
+
+
+                try {
+
+                    heroWatchlistBtn.disabled =
+                        true;
+
+
+                    heroWatchlistText.textContent =
+                        "Saving...";
+
+
+                    console.log(
+                        "📚 Sending hero anime to Firebase:",
+                        currentHeroAnime
+                    );
+
+
+                    const result =
+                        await window.danimeverseWatchlist.addOrRemove(
+                            currentHeroAnime
                         );
 
-                        return;
 
-                    }
+                    console.log(
+                        "📚 Hero watchlist result:",
+                        result
+                    );
 
 
                     if (
-                        !window.danimeverseWatchlist
+                        result.success
                     ) {
 
-                        console.error(
-                            "❌ Firebase Watchlist system is not available."
-                        );
+                        heroWatchlistText.textContent =
+                            result.inWatchlist
+                                ? "✓ In Watchlist"
+                                : "Add to Watchlist";
 
-                        return;
+                    } else {
 
-                    }
-
-
-                    try {
-
-                        heroWatchlistBtn.disabled =
-                            true;
-
-
-                        const result =
-                            await window.danimeverseWatchlist.addOrRemove(
-                                currentHeroAnime
-                            );
-
-
-                        if (
-                            result.success
-                        ) {
-
-                            heroWatchlistText.textContent =
-                                result.inWatchlist
-                                    ? "✓ In Watchlist"
-                                    : "Add to Watchlist";
-
-                        }
-
-
-                    } catch (error) {
-
-                        console.error(
-                            "❌ Hero Watchlist error:",
-                            error
-                        );
-
-                    } finally {
-
-                        heroWatchlistBtn.disabled =
-                            false;
+                        heroWatchlistText.textContent =
+                            "Add to Watchlist";
 
                     }
+
+
+                } catch (error) {
+
+                    console.error(
+                        "❌ HERO WATCHLIST ERROR:",
+                        error
+                    );
+
+
+                    heroWatchlistText.textContent =
+                        "Add to Watchlist";
+
+                } finally {
+
+                    heroWatchlistBtn.disabled =
+                        false;
 
                 }
-            );
 
-        }
+            }
+        );
+
+    }
     /* =========================================================
        CREATE HERO DOTS
     ========================================================= */

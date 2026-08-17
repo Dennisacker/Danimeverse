@@ -44,7 +44,184 @@ const app = getApps().length
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+/* =========================================================
+   GLOBAL WATCHLIST BRIDGE
+   Used by hero.js and other pages
+========================================================= */
 
+window.danimeverseWatchlist = {
+
+    async addOrRemove(anime) {
+
+        const user = auth.currentUser;
+
+        if (!user) {
+            showToast(
+                "Please sign in first.",
+                false
+            );
+
+            return {
+                success: false,
+                reason: "not-signed-in"
+            };
+        }
+
+        const title =
+            anime?.title ||
+            "Unknown Anime";
+
+        const slug =
+            slugify(title);
+
+        try {
+
+            const itemRef =
+                doc(
+                    db,
+                    "watchlists",
+                    user.uid,
+                    "items",
+                    slug
+                );
+
+            const snapshot =
+                await getDoc(itemRef);
+
+            if (snapshot.exists()) {
+
+                await deleteDoc(itemRef);
+
+                showToast(
+                    "Removed from My List",
+                    false
+                );
+
+                return {
+                    success: true,
+                    inWatchlist: false
+                };
+
+            }
+
+            await setDoc(
+                itemRef,
+                {
+                    title: title,
+
+                    img:
+                        anime.img ||
+                        anime.image ||
+                        "",
+
+                    desc:
+                        anime.desc ||
+                        anime.description ||
+                        "",
+
+                    href:
+                        anime.href ||
+                        "",
+
+                    genres:
+                        anime.genres ||
+                        "",
+
+                    malId:
+                        anime.malId
+                            ? Number(anime.malId)
+                            : null,
+
+                    anilistId:
+                        anime.anilistId
+                            ? Number(anime.anilistId)
+                            : null,
+
+                    addedAt:
+                        Date.now()
+                }
+            );
+
+            showToast(
+                "Added to My List ✓"
+            );
+
+            return {
+                success: true,
+                inWatchlist: true
+            };
+
+        } catch (error) {
+
+            console.error(
+                "❌ Global watchlist error:",
+                error
+            );
+
+            showToast(
+                "Could not update My List.",
+                false
+            );
+
+            return {
+                success: false,
+                error
+            };
+
+        }
+
+    },
+
+
+    async isInWatchlist(anime) {
+
+        const user =
+            auth.currentUser;
+
+        if (!user) {
+            return false;
+        }
+
+        const title =
+            anime?.title ||
+            "Unknown Anime";
+
+        const slug =
+            slugify(title);
+
+        try {
+
+            const snapshot =
+                await getDoc(
+                    doc(
+                        db,
+                        "watchlists",
+                        user.uid,
+                        "items",
+                        slug
+                    )
+                );
+
+            return snapshot.exists();
+
+        } catch (error) {
+
+            console.error(
+                "❌ Watchlist check failed:",
+                error
+            );
+
+            return false;
+
+        }
+
+    }
+
+};
+
+console.log(
+    "✅ Global Firebase watchlist bridge ready"
+);
 /* =========================================================
    HELPERS
 ========================================================= */
