@@ -2117,90 +2117,111 @@ function renderEpisodeList(
       }
 
 
-      /* -----------------------------------------------------
-         SERVER BUTTONS + PLAYER
-      ----------------------------------------------------- */
+     /* -----------------------------------------------------
+   SERVER BUTTONS + PLAYER
+----------------------------------------------------- */
 
-      watchArea.innerHTML = `
+const serverButtons = [0, 1, 2, 3]
+  .map(index => {
 
-        <div class="mb-3 flex flex-wrap gap-2">
+    const video = videos[index];
 
-      ${[0, 1, 2, 3].map(index => {
+    const available =
+      !!video?.url;
 
-        const video = videos[index];
-        const available = !!video?.url;
+    return `
 
-        return `
-<div class="server-switcher">
+      <button
+        type="button"
 
-  <div class="server-heading">
-    <span>WATCH SERVERS</span>
-    <span class="server-hint">
-      Choose a source
-    </span>
+        class="server-btn
+          ${index === currentServer && available ? "active" : ""}
+          ${!available ? "disabled" : ""}
+        "
+
+        data-server-index="${index}"
+
+        ${!available ? "disabled" : ""}
+      >
+
+        <span>
+          ${escapeHtml(
+            video?.server ||
+            `Server ${index + 1}`
+          )}
+        </span>
+
+        ${
+          !available
+            ? `
+              <span class="server-status">
+                Unavailable
+              </span>
+            `
+            : ""
+        }
+
+      </button>
+
+    `;
+  })
+  .join("");
+
+
+watchArea.innerHTML = `
+
+  <div class="server-switcher">
+
+    <div class="server-heading">
+
+      <span>
+        WATCH SERVERS
+      </span>
+
+      <span class="server-hint">
+        Choose a source
+      </span>
+
+    </div>
+
+
+    <div class="server-buttons">
+
+      ${serverButtons}
+
+    </div>
+
   </div>
 
-  <div class="server-buttons">
-    <!-- generated buttons -->
-  </div>
 
-</div>
-          <button
+  ${playerHTML}
 
-            type="button"
+`;
 
-            class="server-btn
-              ${index === currentServer && available ? "active" : ""}
-              ${!available ? "disabled" : ""}
-            "
 
-            data-server-index="${index}"
+/* -----------------------------------------------------
+   SERVER BUTTON EVENTS
+----------------------------------------------------- */
 
-            ${!available ? "disabled" : ""}
+watchArea
+  .querySelectorAll(".server-btn")
+  .forEach(button => {
 
-          >
+    button.addEventListener(
+      "click",
+      () => {
 
-            ${escapeHtml(
-              video?.server ||
-              `Server ${index + 1}`
-            )}
-
-            ${
-              !available
-                ? `<span class="server-status">Unavailable</span>`
-                : ""
-            }
-
-          </button>
-
-        `;
-
-      }).join("")}
-      /* -----------------------------------------------------
-         SERVER BUTTON EVENTS
-      ----------------------------------------------------- */
-
-      watchArea
-        .querySelectorAll(".server-btn")
-        .forEach(button => {
-
-          button.addEventListener(
-            "click",
-            () => {
-
-              currentServer =
-                Number(
-                  button.dataset.serverIndex
-                );
-
-              renderCurrentServer();
-
-            }
+        currentServer =
+          Number(
+            button.dataset.serverIndex
           );
 
-        });
+        renderCurrentServer();
 
+      }
+    );
 
+  });
       /* -----------------------------------------------------
          INITIALIZE HLS
       ----------------------------------------------------- */
