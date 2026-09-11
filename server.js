@@ -41,12 +41,39 @@ const COMPRESSIBLE = new Set([
 ]);
 
 function injectCookieConsent(html) {
+  const cookieBanner = `
+    <aside id="dvConsentBanner" class="dv-consent" aria-live="polite">
+      <h2>Your privacy matters</h2>
+      <p>Danimeverse uses essential storage to keep the site working. You can allow or reject optional preferences on this device.</p>
+      <div class="dv-consent-actions">
+        <button type="button" class="dv-cookie-btn dv-cookie-btn-primary" data-consent="all">Accept All</button>
+        <button type="button" class="dv-cookie-btn" data-consent="reject">Reject Non-Essential</button>
+        <button type="button" class="dv-cookie-btn" data-open-cookie-settings>Cookie Settings</button>
+      </div>
+    </aside>`;
   const shared = `
-    <link rel="stylesheet" href="/cookie-consent.css?v=1">
-    <script src="/cookie-consent.js?v=1"></script>`;
-  return html.includes("/cookie-consent.js?v=")
+    <link rel="stylesheet" href="/cookie-consent.css?v=2">
+    <script>
+      (function () {
+        try {
+          const stored = JSON.parse(localStorage.getItem("danimeverse_cookie_consent") || "null");
+          const valid = stored && stored.essential &&
+            (["all", "reject", "custom"].includes(stored.choice) || stored.preferences !== undefined);
+          if (!valid) document.documentElement.classList.add("dv-consent-required");
+        } catch (_) {
+          document.documentElement.classList.add("dv-consent-required");
+        }
+      })();
+    </script>
+    <script src="/cookie-consent.js?v=2"></script>`;
+
+  let result = html.includes("/cookie-consent.js?v=")
     ? html
     : html.replace("</head>", `${shared}\n</head>`);
+  if (!result.includes('id="dvConsentBanner"')) {
+    result = result.replace("</body>", `${cookieBanner}\n</body>`);
+  }
+  return result;
 }
 
   const server = http.createServer(async (req, res) => {

@@ -44,8 +44,14 @@
       savedAt: new Date().toISOString()
     }));
 
-    document.getElementById("dvConsentBanner")?.classList.remove("is-visible");
+    syncBannerVisibility();
     closeCookieSettings();
+  }
+
+  function syncBannerVisibility() {
+    const needsConsent = !getStoredConsent();
+    document.documentElement.classList.toggle("dv-consent-required", needsConsent);
+    document.getElementById("dvConsentBanner")?.classList.toggle("is-visible", needsConsent);
   }
 
   function openCookieSettings() {
@@ -107,7 +113,10 @@
   }
 
   function createConsentBanner() {
-    if (document.getElementById("dvConsentBanner")) return;
+    if (document.getElementById("dvConsentBanner")) {
+      syncBannerVisibility();
+      return;
+    }
 
     const banner = document.createElement("aside");
     banner.id = "dvConsentBanner";
@@ -123,12 +132,13 @@
       </div>`;
 
     document.body.appendChild(banner);
-    if (!getStoredConsent()) banner.classList.add("is-visible");
+    syncBannerVisibility();
   }
 
   function init() {
     createCookieSettings();
     createConsentBanner();
+    syncBannerVisibility();
 
     document.addEventListener("click", (event) => {
       const consentButton = event.target.closest("[data-consent]");

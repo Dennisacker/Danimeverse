@@ -132,6 +132,7 @@
   box-shadow: var(--dv-cookie-shadow);
 }
 
+.dv-consent-required .dv-consent,
 .dv-consent.is-visible {
   display: block;
 }

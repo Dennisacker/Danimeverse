@@ -1,0 +1,61 @@
+The cookie banner STILL DOES NOT SHOW.
+
+Do not just tell me it is implemented. Actually debug the existing code and FIX the reason it is not appearing.
+
+For testing, I want this exact behavior:
+
+1. Temporarily clear/remove the existing cookie-consent value from localStorage/cookies on the client.
+2. Open the Danimeverse HOME PAGE.
+3. The cookie banner MUST visibly appear.
+4. It must appear automatically for a visitor who has no saved consent.
+
+IMPORTANT DEBUGGING:
+
+Inspect the entire cookie-consent flow and find why the banner is not rendering.
+
+Check for:
+
+* Incorrect localStorage/cookie key
+* Consent state incorrectly defaulting to "accepted"
+* Cookie banner component never being mounted
+* Conditional rendering preventing the banner
+* useEffect running incorrectly
+* Hydration/client-side rendering issues
+* Existing stale consent data
+* CSS making the banner invisible
+* z-index placing it behind another element
+* display:none / visibility:hidden / opacity:0
+* Incorrect pathname/homepage detection
+* Errors preventing the consent component from loading
+
+Do NOT simply add another cookie banner on top of the existing implementation.
+
+Find the existing cookie-consent implementation, understand it, and fix it properly.
+
+TEST REQUIREMENT:
+
+After fixing it, verify this exact sequence:
+
+FRESH VISITOR:
+No saved consent → open homepage → banner appears.
+
+ACCEPT ALL:
+Click Accept All → banner disappears → consent is persisted.
+
+REFRESH:
+Refresh homepage → banner remains hidden.
+
+REJECT:
+Clear consent → reopen homepage → banner appears → click Reject Non-Essential → banner disappears and choice persists.
+
+COOKIE SETTINGS:
+Open Cookie Settings → change preferences → save → verify the new choice is persisted.
+
+FRESH SESSION:
+Clear the relevant site storage / use a fresh private browser session → open homepage → banner appears again.
+
+Also make sure the banner has a sufficiently high z-index and is actually visible above the page content.
+
+Do NOT add Light Mode, Dark Mode, System Mode, or any theme toggle. Danimeverse should have ONE visual theme only.
+
+Before saying "done", actually test the homepage as a fresh visitor and confirm that the cookie banner is visible.
