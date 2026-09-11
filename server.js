@@ -42,9 +42,9 @@ const COMPRESSIBLE = new Set([
 
 function injectSharedPreferences(html) {
   const shared = `
-    <link rel="stylesheet" href="/preferences.css">
-    <script src="/preferences.js"></script>`;
-  return html.includes("/preferences.js")
+    <link rel="stylesheet" href="/preferences.css?v=5">
+    <script src="/preferences.js?v=5"></script>`;
+  return html.includes("/preferences.js?v=")
     ? html
     : html.replace("</head>", `${shared}\n</head>`);
 }

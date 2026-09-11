@@ -1,0 +1,1 @@
+- [Shared asset cache busting](shared-asset-cache-busting.md) — version server-injected CSS/JS URLs when static assets use long browser cache headers.

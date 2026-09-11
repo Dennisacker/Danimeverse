@@ -1,0 +1,182 @@
+The Light Mode implementation is NOT visually correct. Look at the current preview carefully and fix it.
+
+The screenshot shows that the site is using a light background while many existing elements are still using DARK MODE text/colors, especially the navbar. This creates poor contrast and makes the UI look broken.
+
+DO NOT redesign Danimeverse from scratch and DO NOT change the existing dark mode design.
+
+I want you to FIX the LIGHT MODE so it feels like a professionally designed second theme.
+
+IMPORTANT:
+Before making changes, inspect the existing theme implementation and identify every component that still has hard-coded dark-mode/light-mode colors.
+
+==================================================
+LIGHT MODE FIX
+==================================================
+
+Create a proper, cohesive Light Mode palette.
+
+The Light Mode should have:
+
+- Clean light/white or slightly tinted page background
+- Dark readable primary text
+- Dark/medium secondary text
+- Proper navbar contrast
+- Proper card contrast
+- Subtle borders
+- Appropriate shadows
+- Proper input/search-bar styling
+- Proper buttons
+- Proper dropdowns
+- Proper modals
+- Proper badges
+- Proper hover states
+- Proper active navigation states
+
+DO NOT simply invert the dark theme.
+
+==================================================
+NAVBAR — VERY IMPORTANT
+==================================================
+
+The current navbar is one of the biggest problems.
+
+In Light Mode:
+
+- Navbar background should be clearly light.
+- Navigation links such as:
+  Trending
+  Popular
+  Episodes
+  Genres
+  My List
+
+  must use a DARK readable color.
+
+- Search input must have readable placeholder and text.
+- Sign In must be readable.
+- Sign Up must retain Danimeverse's accent styling.
+- The logo must remain properly visible.
+- Active/hover states must remain readable.
+
+Do NOT leave white text on a light navbar.
+
+In Dark Mode, preserve the current navbar appearance as much as possible.
+
+==================================================
+ALL PAGES
+==================================================
+
+Audit Light Mode on:
+
+- Homepage
+- Anime detail page
+- Search results
+- My List
+- Login
+- Signup
+- Watch/episode page
+- Episode lists
+- Video player area
+- Mobile navigation
+- Footer
+- Modals
+- Dropdowns
+- Settings
+- Cookie consent banner
+- Cookie settings modal
+
+There must be NO instances of:
+
+- white text on a white/light background
+- black/dark text on a dark background
+- invisible placeholders
+- invisible borders
+- buttons with unreadable text
+- icons that disappear
+- hover states that become unreadable
+
+==================================================
+THEME TOGGLE
+==================================================
+
+Fix the theme toggle as well.
+
+The current toggle says "Light" and is confusing.
+
+Use a clean theme control that clearly communicates the current setting.
+
+Prefer:
+
+☀ Light
+🌙 Dark
+or a compact sun/moon toggle.
+
+If the system setting option is supported, keep:
+
+Dark
+Light
+System
+
+Make the control accessible and keyboard friendly.
+
+The theme must still persist after refresh using localStorage.
+
+==================================================
+IMPORTANT IMPLEMENTATION RULE
+==================================================
+
+Do NOT fix individual elements by randomly adding !important everywhere.
+
+Instead:
+
+1. Find the existing theme architecture.
+2. Use CSS variables/theme classes/Tailwind dark mode appropriately.
+3. Replace hard-coded colors that prevent the theme from working.
+4. Make components inherit the correct theme colors.
+5. Keep the dark theme intact.
+
+If the project uses Tailwind, use the existing Tailwind architecture instead of adding another styling framework.
+
+==================================================
+VISUAL QUALITY
+==================================================
+
+The Light Mode should look like Danimeverse intentionally supports two themes.
+
+It should NOT look like:
+
+"dark website + white background."
+
+It should look like:
+
+"the same Danimeverse design, professionally adapted for light mode."
+
+Keep the existing Danimeverse branding, pink accent color, anime imagery, layout, cards, typography and overall identity.
+
+Do NOT change the anime posters or replace the current content.
+
+==================================================
+TEST IT
+==================================================
+
+After making the changes:
+
+1. Open the homepage in Light Mode.
+2. Check the navbar.
+3. Check all navigation links.
+4. Check search.
+5. Check anime cards.
+6. Check buttons.
+7. Check anime detail pages.
+8. Check watch pages.
+9. Check login/signup.
+10. Check mobile navigation.
+11. Check cookie banner/settings.
+12. Switch to Dark Mode and make sure Dark Mode still looks correct.
+13. Switch between Light/Dark several times.
+14. Refresh the page and verify persistence.
+15. Check the browser console for errors.
+
+Do NOT tell me the task is complete until the Light Mode is visually coherent and readable across the entire site.
+
+The screenshot I provided shows the current problem: the navbar has a light background but white navigation text. Fix this kind of issue throughout the entire application.

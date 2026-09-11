@@ -7,6 +7,7 @@
 
   const THEME_KEY = "danimeverse_theme";
   const CONSENT_KEY = "danimeverse_cookie_consent";
+  const CONSENT_CHOICES = new Set(["all", "reject", "custom"]);
   const VALID_THEMES = new Set(["dark", "light", "system"]);
   const systemQuery = window.matchMedia("(prefers-color-scheme: light)");
 
@@ -55,10 +56,14 @@
     }
   }
 
-  function saveConsent(preferences) {
+  function saveConsent(choice, preferences) {
+    const selectedChoice = CONSENT_CHOICES.has(choice) ? choice : "custom";
     writeStorage(CONSENT_KEY, JSON.stringify({
       essential: true,
-      preferences: Boolean(preferences),
+      choice: selectedChoice,
+      preferences: typeof preferences === "boolean"
+        ? preferences
+        : selectedChoice !== "reject",
       savedAt: new Date().toISOString()
     }));
     const banner = document.getElementById("dvConsentBanner");
@@ -68,7 +73,11 @@
   function hasConsent() {
     try {
       const stored = JSON.parse(readStorage(CONSENT_KEY) || "null");
-      return Boolean(stored && stored.essential);
+      return Boolean(
+        stored &&
+        stored.essential &&
+        (CONSENT_CHOICES.has(stored.choice) || stored.preferences !== undefined)
+      );
     } catch (_) {
       return false;
     }
@@ -167,12 +176,15 @@
   function init() {
     applyTheme(getTheme());
     createThemeTrigger();
+    applyTheme(getTheme());
     createPreferencesModal();
     createConsentBanner();
 
     document.addEventListener("click", (event) => {
       const consentButton = event.target.closest("[data-consent]");
-      if (consentButton) saveConsent(consentButton.dataset.consent === "all");
+      if (consentButton) {
+        saveConsent(consentButton.dataset.consent);
+      }
       if (event.target.closest("[data-open-cookie-settings]")) openPreferences();
       if (event.target.closest("[data-close-preferences]")) closePreferences();
       if (event.target.closest("[data-save-preferences]")) {
@@ -180,7 +192,7 @@
         const preferenceToggle = document.getElementById("dvPreferencesConsent");
         writeStorage(THEME_KEY, mode);
         applyTheme(mode);
-        saveConsent(preferenceToggle ? preferenceToggle.checked : true);
+        saveConsent("custom", preferenceToggle ? preferenceToggle.checked : true);
         closePreferences();
       }
     });

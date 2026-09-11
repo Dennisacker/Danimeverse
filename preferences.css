@@ -366,3 +366,353 @@ html[data-theme="light"] .dv-theme-trigger {
     transition: none !important;
   }
 }
+
+/* =========================================================
+   LIGHT THEME ADAPTATION
+   These selectors translate existing page components into
+   the light palette without changing the dark-mode artwork
+   or the existing layout.
+========================================================= */
+html[data-theme="dark"] {
+  --bg: #07030f;
+  --text: #e8ecff;
+  --glow-1: rgba(255, 0, 80, 0.12);
+  --glow-2: rgba(120, 0, 255, 0.1);
+}
+
+html[data-theme="light"] {
+  --bg: #f7f5fb;
+  --text: #211b35;
+  --glow-1: rgba(236, 72, 153, 0.08);
+  --glow-2: rgba(124, 58, 237, 0.08);
+}
+
+html[data-theme="light"] body {
+  background:
+    radial-gradient(circle at top left, var(--glow-1), transparent 42%),
+    radial-gradient(circle at bottom right, var(--glow-2), transparent 48%),
+    var(--bg) !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] body::before {
+  background:
+    radial-gradient(circle at top, rgba(168, 85, 247, 0.08), transparent 40%),
+    radial-gradient(circle at bottom, rgba(236, 72, 153, 0.06), transparent 50%);
+}
+
+/* Main homepage navigation */
+html[data-theme="light"] body > header:not(.watch-header),
+html[data-theme="light"] .prof-nav,
+html[data-theme="light"] .wl-nav,
+html[data-theme="light"] .watch-header {
+  color: var(--dv-text);
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(49, 39, 78, 0.12) !important;
+  box-shadow: 0 8px 30px rgba(55, 45, 95, 0.08);
+}
+
+html[data-theme="light"] body > header nav,
+html[data-theme="light"] body > header .nav-link,
+html[data-theme="light"] body > header #userProfile,
+html[data-theme="light"] body > header #userProfile a,
+html[data-theme="light"] body > header .wl-logo-text,
+html[data-theme="light"] .prof-nav a:not(.prof-nav-logo),
+html[data-theme="light"] .wl-nav a,
+html[data-theme="light"] .wl-home-btn,
+html[data-theme="light"] .back-home {
+  color: #352c50 !important;
+}
+
+html[data-theme="light"] body > header .wl-logo-text span,
+html[data-theme="light"] .wl-logo-text span,
+html[data-theme="light"] .prof-nav-logo span {
+  color: #db2777 !important;
+}
+
+html[data-theme="light"] body > header .nav-link:hover,
+html[data-theme="light"] body > header #userProfile a:hover,
+html[data-theme="light"] .prof-nav a:hover,
+html[data-theme="light"] .wl-nav a:hover,
+html[data-theme="light"] .wl-nav a.active,
+html[data-theme="light"] .back-home:hover {
+  color: #d6287d !important;
+}
+
+html[data-theme="light"] body > header #myListLink {
+  color: #c02670 !important;
+  background: rgba(236, 72, 153, 0.1) !important;
+  border-color: rgba(219, 39, 119, 0.22) !important;
+}
+
+html[data-theme="light"] body > header #myListLink:hover {
+  color: #fff !important;
+  background: #db2777 !important;
+}
+
+html[data-theme="light"] body > header #userProfile a:last-child {
+  color: #fff !important;
+}
+
+html[data-theme="light"] body > header #searchInput,
+html[data-theme="light"] body > header input[type="search"],
+html[data-theme="light"] #searchResults,
+html[data-theme="light"] #adminSearchResults {
+  color: #211b35 !important;
+  background: #fff !important;
+  border-color: rgba(49, 39, 78, 0.16) !important;
+  box-shadow: 0 12px 30px rgba(55, 45, 95, 0.12);
+}
+
+html[data-theme="light"] body > header #searchInput::placeholder,
+html[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder,
+html[data-theme="light"] .prof-input::placeholder {
+  color: #77738b !important;
+  opacity: 1;
+}
+
+html[data-theme="light"] body > header #navToggle .bar {
+  background: #352c50 !important;
+}
+
+html[data-theme="light"] #mobileMenu {
+  color: #211b35 !important;
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(49, 39, 78, 0.12) !important;
+  box-shadow: 0 20px 40px rgba(55, 45, 95, 0.16);
+}
+
+html[data-theme="light"] #mobileMenu .mobile-link {
+  color: #352c50 !important;
+  background: rgba(49, 39, 78, 0.05) !important;
+}
+
+html[data-theme="light"] #mobileMenu .mobile-link:hover {
+  color: #c02670 !important;
+  background: rgba(236, 72, 153, 0.1) !important;
+}
+
+/* Shared surfaces, forms, search results, and dialogs */
+html[data-theme="light"] .glass,
+html[data-theme="light"] .panel,
+html[data-theme="light"] .prof-card,
+html[data-theme="light"] .modal-content,
+html[data-theme="light"] [role="dialog"]:not(.dv-preferences),
+html[data-theme="light"] #modal > div,
+html[data-theme="light"] #animeModal > div {
+  color: var(--dv-text);
+  background: rgba(255, 255, 255, 0.88) !important;
+  border-color: rgba(49, 39, 78, 0.13) !important;
+  box-shadow: var(--dv-shadow);
+}
+
+html[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]),
+html[data-theme="light"] textarea,
+html[data-theme="light"] select,
+html[data-theme="light"] .prof-input,
+html[data-theme="light"] .search-input {
+  color: #211b35 !important;
+  background: #fff !important;
+  border-color: rgba(49, 39, 78, 0.16) !important;
+}
+
+html[data-theme="light"] .text-slate-300,
+html[data-theme="light"] .text-slate-400,
+html[data-theme="light"] .text-slate-500,
+html[data-theme="light"] .text-gray-400,
+html[data-theme="light"] .text-gray-500,
+html[data-theme="light"] .text-white\/60,
+html[data-theme="light"] .text-white\/40,
+html[data-theme="light"] .text-white\/30 {
+  color: #646078 !important;
+}
+
+html[data-theme="light"] #searchResults .text-white,
+html[data-theme="light"] #searchResults .text-slate-300,
+html[data-theme="light"] #searchResults .text-slate-400,
+html[data-theme="light"] #searchResults .text-slate-500,
+html[data-theme="light"] #adminSearchResults .text-white,
+html[data-theme="light"] #adminSearchResults .text-slate-300,
+html[data-theme="light"] #adminSearchResults .text-slate-400,
+html[data-theme="light"] #adminSearchResults .text-slate-500 {
+  color: #352c50 !important;
+}
+
+html[data-theme="light"] .prof-input {
+  color: #211b35 !important;
+}
+
+html[data-theme="light"] .prof-card label,
+html[data-theme="light"] .prof-card .text-white,
+html[data-theme="light"] .prof-card h1,
+html[data-theme="light"] .prof-card h2,
+html[data-theme="light"] .prof-card h3 {
+  color: #211b35 !important;
+}
+
+html[data-theme="light"] .suggestion-btn {
+  color: #4b4265;
+  background: rgba(49, 39, 78, 0.05);
+  border-color: rgba(49, 39, 78, 0.14);
+}
+
+html[data-theme="light"] .suggestion-btn:hover {
+  color: #c02670;
+  background: rgba(236, 72, 153, 0.1);
+}
+
+/* Keep poster overlays intentionally dark so their white labels remain readable. */
+html[data-theme="light"] .glass-card {
+  border-color: rgba(49, 39, 78, 0.14) !important;
+  box-shadow: 0 14px 32px rgba(55, 45, 95, 0.12);
+}
+
+html[data-theme="light"] .glass-card h3,
+html[data-theme="light"] .glass-card .text-white,
+html[data-theme="light"] .glass-card .text-white\/80,
+html[data-theme="light"] .glass-card .text-white\/60 {
+  color: #fff !important;
+}
+
+html[data-theme="light"] .glass-card .bg-gradient-to-t,
+html[data-theme="light"] .glass-card .bg-black\/70,
+html[data-theme="light"] .glass-card .bg-black\/50 {
+  color: #fff;
+}
+
+/* My List has its own component stylesheet, so give it explicit light surfaces. */
+html[data-theme="light"] .wl-main {
+  color: #211b35;
+}
+
+html[data-theme="light"] .wl-list-title,
+html[data-theme="light"] .wl-card-title,
+html[data-theme="light"] .wl-empty-title {
+  color: #211b35 !important;
+}
+
+html[data-theme="light"] .wl-list-eyebrow,
+html[data-theme="light"] .wl-card-genres,
+html[data-theme="light"] .wl-empty-text,
+html[data-theme="light"] .wl-hero-sub {
+  color: #646078 !important;
+}
+
+html[data-theme="light"] .wl-card {
+  background: #fff !important;
+  border-color: rgba(49, 39, 78, 0.13) !important;
+  box-shadow: 0 14px 32px rgba(55, 45, 95, 0.12);
+}
+
+html[data-theme="light"] .wl-skeleton,
+html[data-theme="light"] .wl-skel-card {
+  background: #ebe8f3 !important;
+}
+
+/* Watch and episode pages */
+html[data-theme="light"] .watch-header .brand,
+html[data-theme="light"] .watch-header .back-home,
+html[data-theme="light"] .watch-header .text-white,
+html[data-theme="light"] .watch-header h1,
+html[data-theme="light"] .watch-header h2,
+html[data-theme="light"] .watch-header h3 {
+  color: #211b35 !important;
+}
+
+html[data-theme="light"] .nav-btn,
+html[data-theme="light"] .ep-row {
+  color: #352c50 !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  border-color: rgba(49, 39, 78, 0.14) !important;
+}
+
+html[data-theme="light"] .nav-btn:hover:not([disabled]),
+html[data-theme="light"] .ep-row:hover {
+  color: #c02670 !important;
+  background: rgba(236, 72, 153, 0.08) !important;
+}
+
+html[data-theme="light"] .info-label {
+  color: #77738b !important;
+}
+
+html[data-theme="light"] .info-value {
+  color: #352c50 !important;
+}
+
+html[data-theme="light"] body > .p-6 > .bg-gray-900,
+html[data-theme="light"] body > .bg-gray-900 {
+  color: #211b35 !important;
+  background: #fff !important;
+}
+
+/* Footer keeps its branded structure while switching to a light surface. */
+html[data-theme="light"] .site-footer,
+html[data-theme="light"] .danime-footer,
+html[data-theme="light"] #footer > section:first-child {
+  color: #211b35 !important;
+  background: linear-gradient(135deg, #f3e8ff, #fff, #fce7f3) !important;
+  border-color: rgba(147, 51, 234, 0.28) !important;
+}
+
+html[data-theme="light"] .site-footer .text-white,
+html[data-theme="light"] .site-footer .text-slate-300,
+html[data-theme="light"] .site-footer .text-slate-400,
+html[data-theme="light"] .site-footer .text-slate-500,
+html[data-theme="light"] .danime-footer .text-white,
+html[data-theme="light"] .danime-footer .text-slate-300,
+html[data-theme="light"] .danime-footer .text-slate-400,
+html[data-theme="light"] .danime-footer .text-slate-500,
+html[data-theme="light"] #footer > section:first-child .text-white,
+html[data-theme="light"] #footer > section:first-child .text-slate-300 {
+  color: #4b4265 !important;
+}
+
+html[data-theme="light"] .site-footer a,
+html[data-theme="light"] .danime-footer a,
+html[data-theme="light"] .danime-footer button {
+  color: #4b4265 !important;
+}
+
+html[data-theme="light"] .site-footer a:hover,
+html[data-theme="light"] .danime-footer a:hover,
+html[data-theme="light"] .danime-footer button:hover {
+  color: #c02670 !important;
+}
+
+/* Ensure the consent and settings surfaces remain readable in both themes. */
+html[data-theme="light"] .dv-preferences,
+html[data-theme="light"] .dv-consent {
+  color: #211b35;
+  background: #fff;
+  border-color: rgba(49, 39, 78, 0.15);
+  box-shadow: 0 20px 60px rgba(55, 45, 95, 0.2);
+}
+
+html[data-theme="light"] .dv-preferences-intro,
+html[data-theme="light"] .dv-consent p,
+html[data-theme="light"] .dv-consent-row span {
+  color: #646078;
+}
+
+html[data-theme="light"] .dv-theme-option,
+html[data-theme="light"] .dv-btn {
+  color: #4b4265;
+  background: #f8f7fb;
+  border-color: rgba(49, 39, 78, 0.14);
+}
+
+html[data-theme="light"] .dv-theme-option small {
+  color: #77738b;
+}
+
+html[data-theme="light"] .dv-btn:hover,
+html[data-theme="light"] .dv-theme-option:hover {
+  background: #f1eefa;
+}
+
+html[data-theme="light"] .dv-btn-primary {
+  color: #fff !important;
+  background: linear-gradient(135deg, #db2777, #9333ea);
+}

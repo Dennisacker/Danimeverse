@@ -1,0 +1,65 @@
+ALSO FIX THE COOKIE CONSENT BEHAVIOR.
+
+The cookie banner must appear when a user visits Danimeverse for the first time and has not previously made a cookie-consent choice.
+
+IMPORTANT:
+
+When a completely new visitor opens the Danimeverse HOME PAGE:
+
+- Show the cookie consent banner immediately after the page loads.
+- Do not require the user to visit another page first.
+- Do not hide it behind Settings.
+- Do not wait several seconds before showing it.
+- It should be visible on the homepage.
+
+The behavior should be:
+
+NEW VISITOR:
+Homepage opens → Cookie banner appears.
+
+USER ACCEPTS:
+Save the consent choice → Hide the banner.
+
+USER REJECTS NON-ESSENTIAL:
+Save the choice → Hide the banner.
+
+USER SAVES CUSTOM PREFERENCES:
+Save the choice → Hide the banner.
+
+RETURNING USER:
+If a valid consent choice already exists → Do NOT show the banner again.
+
+PAGE REFRESH:
+Do NOT show the banner again if consent was already saved.
+
+CLOSE AND REOPEN BROWSER:
+Do NOT show the banner again if consent was already saved.
+
+PRIVATE/INCOGNITO WINDOW OR CLEARED SITE DATA:
+Show the banner again because there is no stored consent.
+
+IMPORTANT:
+Do not use a temporary React state variable as the only way to remember consent.
+
+Persist the consent choice using appropriate browser storage.
+
+Also make sure the cookie banner itself respects BOTH Light Mode and Dark Mode.
+
+LIGHT MODE:
+- Light card/background
+- Dark readable text
+- Danimeverse pink accent for important buttons
+- Proper borders/shadows
+
+DARK MODE:
+- Dark card/background
+- Light readable text
+- Existing Danimeverse accent styling
+
+The banner must be responsive and should not cover the entire screen.
+
+It should appear near the bottom of the viewport and look like a professional website privacy/cookie notice.
+
+Also make sure the Cookie Settings option can be reopened later from the site's settings/footer so the user can change their preferences.
+
+After implementing this, test the behavior using a fresh/private browser session and confirm that the banner appears on the HOME PAGE before declaring it complete.
