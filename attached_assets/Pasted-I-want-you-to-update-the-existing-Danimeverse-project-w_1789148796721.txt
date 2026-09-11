@@ -1,0 +1,280 @@
+I want you to update the existing Danimeverse project with THREE major improvements:
+
+1. LIGHT / DARK MODE
+2. COOKIE CONSENT SYSTEM
+3. USER PREFERENCES / SETTINGS
+
+IMPORTANT:
+- First inspect the ENTIRE existing project structure and understand how the current frontend, backend, Firebase, authentication, anime pages, video player, navbar, and styling work.
+- Do NOT rebuild the project from scratch.
+- Do NOT remove or break any existing functionality.
+- Preserve the current Danimeverse design, layout, anime data, authentication, Firebase integration, API routes, video servers, My List, search, anime pages, episode pages, and existing responsive behavior.
+- Make the changes cleanly and integrate them into the existing architecture.
+
+==================================================
+1. LIGHT / DARK MODE
+==================================================
+
+Add a complete Light Mode and Dark Mode system.
+
+Requirements:
+
+- Dark Mode should remain the DEFAULT theme for Danimeverse.
+- Add a visible theme toggle in the existing navbar/user menu/settings area.
+- The toggle should allow:
+  - Dark
+  - Light
+  - System
+
+- "System" should follow the user's operating-system/browser preference.
+- Save the user's selected theme using localStorage so their preference persists after refreshing or returning to the website.
+- If the user has never selected a theme, use Dark Mode by default unless there is a strong existing system-theme architecture that requires otherwise.
+
+The theme must affect the ENTIRE website, not just the body.
+
+Make sure these all adapt properly:
+- Navbar
+- Mobile navigation
+- Homepage
+- Hero sections
+- Anime cards
+- Anime detail pages
+- Search results
+- My List
+- Authentication screens
+- Episode/watch pages
+- Video player container
+- Episode lists
+- Buttons
+- Inputs
+- Search bars
+- Dropdowns
+- Modals
+- Loading states
+- Error messages
+- Footer
+- Borders
+- Shadows
+- Backgrounds
+- Text colors
+- Secondary/muted text
+- Firebase/auth UI if applicable
+
+Do NOT simply invert colors.
+
+Create a deliberate Light Mode color palette that still feels like Danimeverse.
+
+Dark Mode should maintain the existing anime/streaming aesthetic.
+
+Light Mode should feel clean, modern and readable while still looking like the SAME Danimeverse brand.
+
+Ensure WCAG-friendly contrast for normal text.
+
+Avoid flashes of the wrong theme during page load if possible. Apply the saved/system theme as early as possible before the UI renders.
+
+Use CSS variables/theme classes or the project's existing styling system where appropriate rather than scattering hard-coded colors everywhere.
+
+==================================================
+2. COOKIE CONSENT
+==================================================
+
+Add a proper cookie consent system.
+
+On a user's first visit, show a small professional cookie-consent banner near the bottom of the screen.
+
+It should contain:
+
+Title:
+"Your privacy matters"
+
+Short explanation:
+"Danimeverse uses cookies and similar storage technologies to keep the site working, remember your preferences, and improve your experience."
+
+Buttons:
+- Accept All
+- Reject Non-Essential
+- Cookie Settings
+
+Do NOT make the banner obnoxious or cover important content.
+
+Cookie Settings should open a small modal/panel where the user can see categories such as:
+
+Essential
+- Required for the website to function.
+- Cannot be disabled.
+
+Preferences
+- Used for things such as theme and other user preferences.
+
+Analytics
+- Only include this category if the existing project actually uses analytics.
+- Do not add an analytics service just for this task.
+
+If analytics is not currently implemented, do not pretend that it is.
+
+Allow the user to:
+- Accept all
+- Reject non-essential cookies/storage
+- Save custom preferences
+
+Store the user's consent choice so the banner does not appear on every visit.
+
+Add a way to reopen Cookie Settings later, preferably through the footer or Settings page.
+
+Do NOT store unnecessary personal information.
+
+Do NOT collect or transmit cookie-consent data to an external service.
+
+Make the consent system work on both desktop and mobile.
+
+==================================================
+3. USER SETTINGS / PREFERENCES
+==================================================
+
+Add or improve a Settings/Preferences area.
+
+It should contain at minimum:
+
+Appearance
+- Dark
+- Light
+- System
+
+Privacy
+- Cookie Settings
+
+If Danimeverse already has a user profile/account menu, integrate the settings into it instead of creating a completely separate UI unnecessarily.
+
+For logged-out users:
+- Theme preference should still work.
+- Cookie preferences should still work.
+
+For logged-in users:
+- Keep the local preference working immediately.
+- If there is already a suitable Firebase user-preferences system, you may optionally synchronize the preference with the user's account.
+- Do NOT introduce unnecessary Firestore reads/writes just for theme switching.
+
+==================================================
+IMPORTANT TECHNICAL REQUIREMENTS
+==================================================
+
+Before changing anything:
+
+1. Inspect package.json and determine the framework/build system.
+2. Inspect the existing CSS/Tailwind configuration.
+3. Inspect the existing navbar/header components.
+4. Inspect authentication.
+5. Inspect Firebase configuration.
+6. Inspect the homepage and anime/watch pages.
+7. Determine the cleanest architecture for theme state and cookie consent.
+
+Use the project's EXISTING framework and conventions.
+
+If the project already uses Tailwind:
+- Use Tailwind's dark-mode system where appropriate.
+- Do not introduce another CSS framework.
+
+If the project uses React:
+- Create reusable ThemeProvider/context/hooks only if appropriate.
+- Avoid unnecessary global state libraries.
+
+If the project is vanilla HTML/CSS/JS:
+- Use CSS variables and a lightweight JavaScript theme manager.
+
+Do not install unnecessary dependencies.
+
+==================================================
+DESIGN REQUIREMENTS
+==================================================
+
+The new UI must feel native to Danimeverse.
+
+Do not make it look like a generic template.
+
+Theme toggle:
+- Use a clean sun/moon icon.
+- Include accessible aria-label/title.
+- Make it keyboard accessible.
+- Animate the transition subtly.
+
+Cookie banner:
+- Modern
+- Compact
+- Rounded
+- Responsive
+- Does not block the whole screen
+- Matches the Danimeverse visual language
+
+Cookie Settings:
+- Clean modal
+- Mobile friendly
+- Clear category descriptions
+- Toggle controls where appropriate
+
+Make sure the UI has:
+- proper focus states
+- keyboard navigation
+- aria labels
+- readable text
+- good contrast
+
+==================================================
+DO NOT BREAK THESE EXISTING FEATURES
+==================================================
+
+Before finishing, verify that these still work:
+
+- Firebase authentication
+- Sign up/login/logout
+- My List
+- Search
+- Anime cards
+- Anime detail pages
+- Episode lists
+- Video player
+- Server 1–4
+- Existing video/API functionality
+- AniList/Jikan integration
+- TMDB backdrop functionality
+- Mobile navigation
+- Responsive layout
+- Existing navigation links
+- Existing Firestore episode structure
+- Existing uploader/admin functionality
+
+Do not change the database structure unless absolutely necessary.
+
+Do not delete existing files or components unless they are genuinely unused and you have verified that.
+
+==================================================
+TESTING
+==================================================
+
+After implementing everything:
+
+1. Run the project.
+2. Check the browser console for errors.
+3. Test Dark Mode.
+4. Test Light Mode.
+5. Test System Mode.
+6. Refresh the page and confirm the theme persists.
+7. Test on a mobile-sized viewport.
+8. Test cookie banner.
+9. Test Accept All.
+10. Test Reject Non-Essential.
+11. Test Cookie Settings.
+12. Test reopening Cookie Settings.
+13. Test logged-out state.
+14. Test logged-in state.
+15. Check every major page for unreadable text or broken backgrounds.
+
+Fix any issues you find.
+
+Finally, give me a concise summary of:
+- files/components changed
+- how the theme system works
+- how cookie consent works
+- any dependencies added
+- any issues that still need attention
+
+Most importantly: this is an UPDATE to the existing Danimeverse project, not a redesign or rebuild. Preserve the existing site and functionality.
