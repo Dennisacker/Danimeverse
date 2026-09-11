@@ -1,0 +1,107 @@
+I need you to completely REMOVE the Light Mode / Dark Mode theme feature you recently added.
+
+I DID NOT HAVE A THEME TOGGLE BEFORE.
+
+I DO NOT WANT:
+
+* Light Mode
+* Dark Mode
+* System Mode
+* A theme toggle
+* A theme selector
+* A sun/moon button
+* Any theme settings
+
+Remove the entire theme-switching implementation you added.
+
+IMPORTANT:
+Restore Danimeverse to ONE consistent visual theme — the original Danimeverse appearance that existed before the theme changes.
+
+Do not redesign the site.
+Do not add another theme control.
+Do not leave behind unused theme CSS, theme state, theme localStorage, or duplicate theme UI.
+
+Make sure removing the theme feature does NOT break:
+
+* Navbar
+* Anime cards
+* Anime details
+* Search
+* My List
+* Login/signup
+* Watch/episode pages
+* Mobile navigation
+* Footer
+* Modals
+* Existing styling
+
+COOKIE CONSENT:
+
+Keep/fix the cookie consent system.
+
+For a completely new visitor who has no previously saved consent:
+
+→ Open Danimeverse HOME PAGE
+→ Cookie consent banner must appear automatically.
+
+The cookie banner must actually work.
+
+Required behavior:
+
+NEW VISITOR:
+
+* Cookie banner appears on the homepage.
+
+ACCEPT ALL:
+
+* Save consent.
+* Hide banner.
+
+REJECT NON-ESSENTIAL:
+
+* Save consent.
+* Hide banner.
+
+SAVE PREFERENCES:
+
+* Save the selected preferences.
+* Hide banner.
+
+RETURNING USER:
+
+* If consent has already been saved, do not show the banner again.
+
+REFRESH:
+
+* Do not show the banner again after consent has been saved.
+
+CLEAR SITE DATA / FRESH INCOGNITO SESSION:
+
+* Banner should appear again because there is no saved consent.
+
+COOKIE SETTINGS:
+
+* User must be able to reopen Cookie Settings later.
+* User must be able to change their preferences.
+* Saving the new preferences must actually update the stored consent.
+
+Make sure the cookie consent state is persisted properly using browser storage and is not just temporary component state.
+
+Also make sure the cookie banner itself looks correct with the EXISTING Danimeverse design.
+
+Do not introduce any Light/Dark styling while doing this.
+
+After implementing this:
+
+1. Remove all theme-switching UI and code that you added.
+2. Test the homepage with cleared site data.
+3. Confirm the cookie banner appears for a new visitor.
+4. Accept the cookies and refresh.
+5. Confirm it stays hidden.
+6. Open Cookie Settings and change the preferences.
+7. Clear site data/use a fresh private session.
+8. Confirm the banner appears again.
+9. Check the browser console for errors.
+10. Check the homepage and other existing pages for visual regressions.
+
+Do not declare the task complete until the cookie consent behavior has actually been tested and works.

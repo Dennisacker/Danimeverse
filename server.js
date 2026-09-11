@@ -40,11 +40,11 @@ const COMPRESSIBLE = new Set([
   'application/json', 'image/svg+xml'
 ]);
 
-function injectSharedPreferences(html) {
+function injectCookieConsent(html) {
   const shared = `
-    <link rel="stylesheet" href="/preferences.css?v=5">
-    <script src="/preferences.js?v=5"></script>`;
-  return html.includes("/preferences.js?v=")
+    <link rel="stylesheet" href="/cookie-consent.css?v=1">
+    <script src="/cookie-consent.js?v=1"></script>`;
+  return html.includes("/cookie-consent.js?v=")
     ? html
     : html.replace("</head>", `${shared}\n</head>`);
 }
@@ -132,7 +132,7 @@ function injectSharedPreferences(html) {
           res.end('<h1>500 Internal Server Error</h1>');
           return;
         }
-        const content = Buffer.from(injectSharedPreferences(html.toString('utf8')));
+      const content = Buffer.from(injectCookieConsent(html.toString('utf8')));
         headers['Content-Length'] = content.length;
         res.writeHead(200, headers);
         res.end(content);
