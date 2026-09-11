@@ -1,0 +1,137 @@
+Optimize Danimeverse for significantly faster initial page load and perceived performance.
+
+IMPORTANT:
+Do NOT redesign the site.
+Do NOT remove existing functionality.
+Do NOT change the visual design unnecessarily.
+Do NOT remove anime content just to make it faster.
+
+First inspect the project and identify what is actually slowing down the initial homepage load.
+
+Focus especially on:
+
+1. IMAGES
+
+* Lazy-load anime posters that are below the fold.
+* Do NOT lazy-load the main hero image if it is visible immediately.
+* Use appropriately sized/compressed images instead of loading unnecessarily huge images.
+* Avoid loading full-resolution images when a smaller version is sufficient.
+* Make sure images have width/height or aspect-ratio defined so the page doesn't jump while loading.
+* Preload only the most important above-the-fold image(s).
+
+2. JAVASCRIPT
+
+* Reduce unnecessary JavaScript executed during initial page load.
+* Code-split heavy components where appropriate.
+* Dynamically import components that are not needed immediately.
+* Avoid running expensive functions repeatedly during initial rendering.
+* Remove duplicate API calls.
+* Make sure API requests are not being triggered multiple times because of React effects/rerenders.
+
+3. API REQUESTS
+   Inspect every request made when the homepage first loads.
+
+Prevent unnecessary duplicate requests.
+
+Prioritize the requests needed to render the initial viewport.
+
+Defer non-critical requests until after the initial page has rendered.
+
+If the homepage is requesting data that isn't immediately visible, load it afterward.
+
+4. ANIME DATA
+   Do not fetch hundreds of anime records just to display the first few rows.
+
+Only request the amount of data actually needed for the initial view.
+
+Use pagination or smaller API responses where appropriate.
+
+5. BACKDROPS / HERO
+   The homepage hero/backdrop should load efficiently.
+
+Do not download multiple large backdrop images immediately if only one is displayed.
+
+If there is an auto-changing hero carousel, avoid downloading every large backdrop at once.
+
+Load the initial hero first and defer the others.
+
+6. FONTS
+   Check whether fonts are blocking rendering.
+
+Avoid loading unnecessary font weights/styles.
+
+Only load the font variants actually used by Danimeverse.
+
+7. THIRD-PARTY SERVICES
+   Inspect external scripts, analytics, embeds, APIs, etc.
+
+Do not allow non-essential third-party resources to block the initial page render.
+
+Load non-critical third-party resources asynchronously/deferred where possible.
+
+8. FIREBASE
+   Inspect Firebase initialization and Firestore requests.
+
+Make sure Firebase is initialized only once.
+
+Prevent duplicate Firestore listeners/queries.
+
+Do not fetch user-specific data before it is actually needed.
+
+9. REACT PERFORMANCE
+   Check for unnecessary rerenders on the homepage.
+
+Use memoization only where it actually helps.
+
+Do not add random useMemo/useCallback everywhere.
+
+Fix expensive components or calculations that run unnecessarily.
+
+10. LOADING EXPERIENCE
+    The page should render useful content as quickly as possible.
+
+Use proper skeleton/loading states where necessary instead of leaving the page blank while everything loads.
+
+Do not make the entire homepage wait for non-critical API requests.
+
+11. CACHING
+    Where appropriate, cache data that does not need to be fetched again immediately.
+
+Avoid repeatedly requesting the same anime data during navigation.
+
+12. MOBILE
+    Pay particular attention to mobile performance.
+
+The site should not download desktop-sized assets unnecessarily on mobile.
+
+TESTING:
+
+Before declaring this complete, test the homepage with the browser Network/Performance tools.
+
+Check:
+
+* Initial page load
+* Number of network requests
+* Largest image requests
+* JavaScript bundle size
+* API request timing
+* Duplicate requests
+* Console errors
+* Mobile performance
+
+Compare the page before and after optimization if possible.
+
+Most importantly:
+
+DO NOT sacrifice the existing Danimeverse design or functionality for speed.
+
+Do not replace anime posters with placeholders permanently.
+Do not remove features.
+Do not remove the hero.
+Do not remove API functionality.
+
+Optimize the way everything loads.
+
+Also make sure the cookie-consent banner still works after these changes and appears for a completely new visitor on the homepage.
+
+Do NOT add Light Mode, Dark Mode, System Mode, or any theme toggle.
