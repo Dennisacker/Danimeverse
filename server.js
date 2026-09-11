@@ -40,6 +40,15 @@ const COMPRESSIBLE = new Set([
   'application/json', 'image/svg+xml'
 ]);
 
+function injectSharedPreferences(html) {
+  const shared = `
+    <link rel="stylesheet" href="/preferences.css">
+    <script src="/preferences.js"></script>`;
+  return html.includes("/preferences.js")
+    ? html
+    : html.replace("</head>", `${shared}\n</head>`);
+}
+
   const server = http.createServer(async (req, res) => {
 
   // TMDB BACKDROP API
@@ -116,7 +125,19 @@ const COMPRESSIBLE = new Set([
       'Cache-Control': cacheControl,
     };
 
-    if (shouldCompress) {
+    if (ext === '.html') {
+      fs.readFile(filePath, (readErr, html) => {
+        if (readErr) {
+          res.writeHead(500, { 'Content-Type': 'text/html' });
+          res.end('<h1>500 Internal Server Error</h1>');
+          return;
+        }
+        const content = Buffer.from(injectSharedPreferences(html.toString('utf8')));
+        headers['Content-Length'] = content.length;
+        res.writeHead(200, headers);
+        res.end(content);
+      });
+    } else if (shouldCompress) {
       headers['Content-Encoding'] = 'gzip';
       headers['Vary'] = 'Accept-Encoding';
       res.writeHead(200, headers);

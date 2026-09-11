@@ -27,8 +27,9 @@ async function searchAnime(query) {
   console.log("SEARCHING:", query);
 
   const url =
-    "/api/anime?search=" +
-    encodeURIComponent(query);
+    "https://api.jikan.moe/v4/anime?q=" +
+    encodeURIComponent(query) +
+    "&limit=10&sfw=true";
 
   const response =
     await fetch(url);
@@ -55,19 +56,15 @@ async function searchAnime(query) {
     result
   );
 
-  if (
-    !result.success ||
-    !result.data
-  ) {
-
-    throw new Error(
-      result.error ||
-      "Search failed"
-    );
-
-  }
-
-  return result.data;
+  return (result.data || []).map((anime) => ({
+    title: anime.title_english || anime.title || "Unknown Anime",
+    nativeTitle: anime.title_japanese || "",
+    poster: anime.images?.jpg?.image_url || "",
+    year: anime.aired?.prop?.from?.year || "",
+    format: anime.type || "Anime",
+    malId: anime.mal_id || "",
+    score: anime.score || ""
+  }));
 
 }
 
